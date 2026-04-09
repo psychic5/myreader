@@ -25,12 +25,12 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-html { scroll-behavior: smooth; font-size: 120%; }
+html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Noto Sans KR', sans-serif;
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.7;
   padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
   overflow-x: hidden;
@@ -52,14 +52,14 @@ body {
 }
 .header-tag {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--accent);
   letter-spacing: 3px;
   text-transform: uppercase;
   margin-bottom: 10px;
 }
 .header h1 {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 900;
   color: #202124;
   line-height: 1.25;
@@ -75,7 +75,7 @@ body {
   border-radius: 20px;
   padding: 4px 12px;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--accent);
   margin-bottom: 8px;
 }
@@ -86,13 +86,13 @@ body {
   margin-top: 12px;
 }
 .meta-row {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   font-family: 'IBM Plex Mono', monospace;
 }
 .meta-row strong { color: var(--label); }
 .meta-warn {
-  font-size: 11px;
+  font-size: 13px;
   color: #ef4444;
   margin-top: 6px;
 }
@@ -108,7 +108,7 @@ body {
 }
 .toc-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -125,7 +125,7 @@ body {
 .toc-scroll::-webkit-scrollbar { display: none; }
 .toc-chip {
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   padding: 6px 14px;
   background: rgba(0,0,0,0.03);
@@ -164,26 +164,26 @@ body {
 .card-header:active { background: rgba(26,115,232,0.05); }
 .company-num {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   min-width: 18px;
 }
 .company-name {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
   color: #202124;
   flex: 1;
 }
 .company-ticker {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   background: rgba(0,0,0,0.04);
   padding: 2px 7px;
   border-radius: 4px;
 }
 .badge {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
   padding: 3px 9px;
@@ -224,25 +224,25 @@ body {
   padding: 12px;
 }
 .stat-label {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   letter-spacing: 0.5px;
   text-transform: uppercase;
   margin-bottom: 4px;
   font-family: 'IBM Plex Mono', monospace;
 }
-.stat-value { font-size: 15px; font-weight: 700; }
+.stat-value { font-size: 18px; font-weight: 700; }
 .stat-value.accent { color: var(--accent); }
 .stat-value.positive { color: var(--green); }
 .stat-value.negative { color: var(--red); }
-.stat-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
 /* ── 52주 바 ── */
 .price-bar-wrap { margin-bottom: 16px; }
 .price-bar-label {
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   margin-bottom: 6px;
   font-family: 'IBM Plex Mono', monospace;
@@ -279,7 +279,7 @@ body {
 .tab-nav::-webkit-scrollbar { display: none; }
 .tab-btn {
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   padding: 8px 14px;
   color: var(--muted);
@@ -308,7 +308,7 @@ body {
   margin-bottom: 10px;
 }
 .section-title {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -317,7 +317,7 @@ body {
   margin-bottom: 8px;
 }
 .section-content {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--label);
   line-height: 1.8;
 }
@@ -332,7 +332,7 @@ body {
   margin-bottom: 10px;
 }
 .highlight-title {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--accent);
   font-family: 'IBM Plex Mono', monospace;
@@ -341,7 +341,7 @@ body {
   margin-bottom: 8px;
 }
 .highlight-content {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--label);
   line-height: 1.8;
 }
@@ -354,13 +354,13 @@ body {
   gap: 8px;
   margin-top: 8px;
 }
-.prob-label { font-size: 11px; color: var(--muted); flex: 1; }
+.prob-label { font-size: 13px; color: var(--muted); flex: 1; }
 .prob-bar-track { width: 80px; height: 4px; background: var(--border); border-radius: 2px; }
 .prob-bar-fill { height: 100%; border-radius: 2px; }
 .prob-high { background: var(--green); }
 .prob-mid { background: var(--accent3); }
 .prob-low { background: var(--red); }
-.prob-pct { font-size: 11px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 32px; text-align: right; }
+.prob-pct { font-size: 13px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 32px; text-align: right; }
 .prob-pct.high { color: var(--green); }
 .prob-pct.mid { color: var(--accent3); }
 .prob-pct.low { color: var(--red); }
@@ -371,7 +371,7 @@ body {
 .sw-box.strength { background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); }
 .sw-box.weakness { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); }
 .sw-title {
-  font-size: 10px; font-weight: 700;
+  font-size: 12px; font-weight: 700;
   letter-spacing: 1px; text-transform: uppercase;
   margin-bottom: 8px;
   font-family: 'IBM Plex Mono', monospace;
@@ -380,7 +380,7 @@ body {
 .sw-box.weakness .sw-title { color: var(--red); }
 .sw-list { list-style: none; }
 .sw-list li {
-  font-size: 12px; color: var(--label);
+  font-size: 14px; color: var(--label);
   padding: 3px 0 3px 14px;
   position: relative; line-height: 1.6;
 }
@@ -396,25 +396,25 @@ body {
 }
 .keyword-title {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; font-weight: 700;
+  font-size: 12px; font-weight: 700;
   letter-spacing: 2px; text-transform: uppercase;
   color: var(--accent2);
   margin-bottom: 6px;
 }
 .keyword-desc {
-  font-size: 11px; color: var(--muted);
+  font-size: 13px; color: var(--muted);
   margin-bottom: 12px; line-height: 1.6;
 }
 .tag-group { margin-bottom: 10px; }
 .tag-group-label {
-  font-size: 10px; color: var(--muted);
+  font-size: 12px; color: var(--muted);
   font-family: 'IBM Plex Mono', monospace;
   margin-bottom: 6px;
 }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
+  font-size: 13px;
   padding: 5px 11px;
   border-radius: 20px;
   cursor: pointer;
@@ -439,7 +439,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 10px;
 }
-.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); }
 .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
 /* ── 종합 테이블 ── */
@@ -454,7 +454,7 @@ body {
   padding: 16px 18px;
   border-bottom: 1px solid var(--border);
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--accent);
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -468,8 +468,8 @@ body {
   align-items: start;
 }
 .summary-item:last-child { border-bottom: none; }
-.summary-name { font-size: 15px; font-weight: 700; color: #202124; }
-.summary-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
+.summary-name { font-size: 18px; font-weight: 700; color: #202124; }
+.summary-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); }
 .summary-stats {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -477,17 +477,17 @@ body {
   margin-top: 8px;
 }
 .sum-stat { }
-.sum-stat-label { font-size: 9px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; }
-.sum-stat-val { font-size: 12px; font-weight: 600; }
+.sum-stat-label { font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; }
+.sum-stat-val { font-size: 14px; font-weight: 600; }
 .sum-stat-val.green { color: var(--green); }
 .sum-stat-val.red { color: var(--red); }
 .sum-stat-val.amber { color: var(--accent3); }
 .sum-stat-val.blue { color: var(--accent); }
 .sum-stat-val.muted { color: var(--muted); }
-.risk-stars { font-size: 13px; }
+.risk-stars { font-size: 16px; }
 .summary-driver {
   margin-top: 6px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--label);
 }
 
@@ -497,7 +497,7 @@ body {
   background: rgba(26,115,232,0.05);
   border: 1px solid rgba(26,115,232,0.12);
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--label);
   line-height: 1.8;
 }
@@ -509,7 +509,7 @@ body {
   background: rgba(100,116,139,0.08);
   border: 1px solid rgba(100,116,139,0.2);
   border-radius: 10px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.8;
 }
@@ -548,8 +548,8 @@ body {
   transition: color 0.2s;
 }
 .nav-item:active { color: var(--accent); }
-.nav-icon { font-size: 18px; line-height: 1; }
-.nav-label { font-size: 10px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; }
+.nav-icon { font-size: 22px; line-height: 1; }
+.nav-label { font-size: 12px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; }
 
 /* ── 토스트 ── */
 .toast {
@@ -559,7 +559,7 @@ body {
   transform: translateX(-50%) translateY(20px);
   background: rgba(26,115,232,0.9);
   color: #ffffff;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   padding: 8px 18px;
   border-radius: 20px;
@@ -592,21 +592,6 @@ body {
   </div>
 </div>
 
-<!-- 목차 (sticky) -->
-<div class="toc-wrap">
-  <div class="toc-label">종목 바로가기</div>
-  <div class="toc-scroll">
-    <a class="toc-chip" href="#c1">01 알테오젠</a>
-    <a class="toc-chip" href="#c2">02 삼천당</a>
-    <a class="toc-chip" href="#c3">03 에이비엘</a>
-    <a class="toc-chip" href="#c4">04 HLB</a>
-    <a class="toc-chip" href="#c5">05 리가켐</a>
-    <a class="toc-chip" href="#c6">06 펩트론</a>
-    <a class="toc-chip" href="#c7">07 코오롱</a>
-    <a class="toc-chip" href="#c8">08 케어젠</a>
-  </div>
-</div>
-
 <!-- 태그 범례 -->
 <div class="tag-legend" style="margin-top:16px;">
   <div class="legend-item"><div class="legend-dot" style="background:#93c5fd"></div>핵심기술</div>
@@ -631,7 +616,7 @@ body {
         <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~15조</div><div class="stat-sub">코스피 이전 중</div></div>
         <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">2,159억</div><div class="stat-sub">+110% YoY</div></div>
         <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value positive">1,069억</div><div class="stat-sub">이익률 50%↑</div></div>
-        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">56.9만/31.6만</div><div class="stat-sub">현재 ~36만</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size: 14px;">56.9만/31.6만</div><div class="stat-sub">현재 ~36만</div></div>
       </div>
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 315,500</span><span>현재 ~360,000</span><span>고 569,000</span></div>
@@ -695,7 +680,7 @@ body {
         <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~7~9조</div><div class="stat-sub">고점 17.3조 급락</div></div>
         <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">2,318억</div><div class="stat-sub">+9.9% YoY</div></div>
         <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value positive">85억</div><div class="stat-sub">이익률 3.7%</div></div>
-        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">123만/~20만</div><div class="stat-sub">현재 ~53~68만</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size: 14px;">123만/~20만</div><div class="stat-sub">현재 ~53~68만</div></div>
       </div>
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 ~200,000</span><span>현재 ~600,000</span><span>고 1,230,000</span></div>
@@ -754,7 +739,7 @@ body {
         <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~10조</div><div class="stat-sub">3월 10.65조</div></div>
         <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">~1,000억↑</div><div class="stat-sub">계약금 분할인식</div></div>
         <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value" style="color:var(--accent3);">흑전 유력</div><div class="stat-sub">릴리 계약금 인식</div></div>
-        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~28만/~8.5만</div><div class="stat-sub">현재 ~20만</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size: 14px;">~28만/~8.5만</div><div class="stat-sub">현재 ~20만</div></div>
       </div>
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 ~85,000</span><span>현재 ~201,500</span><span>고 ~280,000</span></div>
@@ -812,7 +797,7 @@ body {
         <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~5~6조</div><div class="stat-sub">3월 6.75조</div></div>
         <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">소규모</div><div class="stat-sub">상업화 전</div></div>
         <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value negative">적자</div><div class="stat-sub">허가 전 구조적</div></div>
-        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~11만/~4만</div><div class="stat-sub">현재 ~5.1만</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size: 14px;">~11만/~4만</div><div class="stat-sub">현재 ~5.1만</div></div>
       </div>
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 ~40,000</span><span>현재 ~53,000</span><span>고 ~110,000</span></div>
@@ -870,7 +855,7 @@ body {
         <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~5~6조</div><div class="stat-sub">2025말 6.36조</div></div>
         <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">증가</div><div class="stat-sub">기술이전 계약금</div></div>
         <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value negative">적자 심화</div><div class="stat-sub">R&D 1,133억</div></div>
-        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~28만/~13만</div><div class="stat-sub">현재 ~19만</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size: 14px;">~28만/~13만</div><div class="stat-sub">현재 ~19만</div></div>
       </div>
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 ~130,000</span><span>현재 ~191,900</span><span>고 ~280,000</span></div>
@@ -928,7 +913,7 @@ body {
         <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~7조</div><div class="stat-sub">3월 7.26조</div></div>
         <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">소규모</div><div class="stat-sub">상업화 전</div></div>
         <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value negative">적자</div><div class="stat-sub">R&D 집중</div></div>
-        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~9만/~1.5만</div><div class="stat-sub">현재 ~6만</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size: 14px;">~9만/~1.5만</div><div class="stat-sub">현재 ~6만</div></div>
       </div>
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 ~15,000</span><span>현재 ~62,000</span><span>고 ~90,000</span></div>
@@ -986,7 +971,7 @@ body {
         <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~4~5조</div><div class="stat-sub">2025말 6.6조</div></div>
         <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value negative">거의 없음</div><div class="stat-sub">허가 취소 후</div></div>
         <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value negative">적자</div><div class="stat-sub">구조적 적자</div></div>
-        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~17만/~3만</div><div class="stat-sub">현재 ~10만</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size: 14px;">~17만/~3만</div><div class="stat-sub">현재 ~10만</div></div>
       </div>
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 ~30,000</span><span>현재 ~106,400</span><span>고 ~170,000</span></div>
@@ -1044,7 +1029,7 @@ body {
         <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~5~6조</div><div class="stat-sub">3월 5.89조</div></div>
         <div class="stat-box"><div class="stat-label">2024 매출</div><div class="stat-value">826억</div><div class="stat-sub">+4.3% YoY</div></div>
         <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value positive">363억</div><div class="stat-sub">이익률 44%</div></div>
-        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~32만/~4.5만</div><div class="stat-sub">현재 ~25만</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size: 14px;">~32만/~4.5만</div><div class="stat-sub">현재 ~25만</div></div>
       </div>
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 ~45,000</span><span>현재 ~250,000</span><span>고 ~320,000</span></div>
@@ -1106,7 +1091,7 @@ body {
       <div class="summary-stats" style="margin-top:4px;">
         <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val green">+1,069억</div></div>
         <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐</div></div>
-        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">실적+기대</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size: 13px; color:var(--label);">실적+기대</div></div>
       </div>
     </div>
   </div>
@@ -1122,7 +1107,7 @@ body {
       <div class="summary-stats" style="margin-top:4px;">
         <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val green">+85억</div></div>
         <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐⭐</div></div>
-        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">기대감 95%</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size: 13px; color:var(--label);">기대감 95%</div></div>
       </div>
     </div>
   </div>
@@ -1138,7 +1123,7 @@ body {
       <div class="summary-stats" style="margin-top:4px;">
         <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val amber">흑전 중</div></div>
         <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐</div></div>
-        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">기대감 90%</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size: 13px; color:var(--label);">기대감 90%</div></div>
       </div>
     </div>
   </div>
@@ -1154,7 +1139,7 @@ body {
       <div class="summary-stats" style="margin-top:4px;">
         <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val red">적자</div></div>
         <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐⭐</div></div>
-        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">FDA 허가 여부</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size: 13px; color:var(--label);">FDA 허가 여부</div></div>
       </div>
     </div>
   </div>
@@ -1170,7 +1155,7 @@ body {
       <div class="summary-stats" style="margin-top:4px;">
         <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val red">적자심화</div></div>
         <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐</div></div>
-        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">기대감 85%</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size: 13px; color:var(--label);">기대감 85%</div></div>
       </div>
     </div>
   </div>
@@ -1186,7 +1171,7 @@ body {
       <div class="summary-stats" style="margin-top:4px;">
         <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val red">적자</div></div>
         <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐⭐</div></div>
-        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">기대감 100%</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size: 13px; color:var(--label);">기대감 100%</div></div>
       </div>
     </div>
   </div>
@@ -1202,7 +1187,7 @@ body {
       <div class="summary-stats" style="margin-top:4px;">
         <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val red">적자</div></div>
         <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐⭐</div></div>
-        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">기대감 100%</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size: 13px; color:var(--label);">기대감 100%</div></div>
       </div>
     </div>
   </div>
@@ -1218,7 +1203,7 @@ body {
       <div class="summary-stats" style="margin-top:4px;">
         <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val green">+363억</div></div>
         <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐</div></div>
-        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">실적+기대</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size: 13px; color:var(--label);">실적+기대</div></div>
       </div>
     </div>
   </div>
