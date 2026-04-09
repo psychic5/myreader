@@ -9,18 +9,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0a0e17;
-  --surface: #111827;
-  --surface2: #1a2235;
-  --border: #1e2d45;
-  --accent: #00d4aa;
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --surface2: #f0f1f3;
+  --border: #e0e0e0;
+  --accent: #1a73e8;
   --accent2: #3b82f6;
-  --accent3: #f59e0b;
-  --red: #ef4444;
-  --green: #22c55e;
-  --text: #e2e8f0;
-  --muted: #64748b;
-  --label: #94a3b8;
+  --accent3: #e67e00;
+  --red: #d93025;
+  --green: #188038;
+  --text: #202124;
+  --muted: #80868b;
+  --label: #5f6368;
   --nav-h: 60px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -38,7 +38,7 @@ body {
 
 /* ── 상단 헤더 ── */
 .header {
-  background: linear-gradient(160deg, #0f1e35 0%, #0a0e17 100%);
+  background: linear-gradient(160deg, #e8edf2 0%, #f8f9fa 100%);
   padding: 52px 20px 24px;
   position: relative;
   border-bottom: 1px solid var(--border);
@@ -47,7 +47,7 @@ body {
   content:'';
   position:absolute; top:-60px; right:-60px;
   width:280px; height:280px;
-  background: radial-gradient(circle, rgba(0,212,170,0.10) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(26,115,232,0.08) 0%, transparent 70%);
   pointer-events:none;
 }
 .header-tag {
@@ -61,7 +61,7 @@ body {
 .header h1 {
   font-size: 22px;
   font-weight: 900;
-  color: #fff;
+  color: #202124;
   line-height: 1.25;
   margin-bottom: 8px;
 }
@@ -70,8 +70,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(0,212,170,0.1);
-  border: 1px solid rgba(0,212,170,0.2);
+  background: rgba(26,115,232,0.1);
+  border: 1px solid rgba(26,115,232,0.2);
   border-radius: 20px;
   padding: 4px 12px;
   font-family: 'IBM Plex Mono', monospace;
@@ -128,7 +128,7 @@ body {
   font-size: 12px;
   font-weight: 500;
   padding: 6px 14px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(0,0,0,0.03);
   border: 1px solid var(--border);
   border-radius: 20px;
   color: var(--label);
@@ -138,8 +138,8 @@ body {
   transition: all 0.2s;
 }
 .toc-chip:active {
-  background: rgba(0,212,170,0.15);
-  border-color: rgba(0,212,170,0.4);
+  background: rgba(26,115,232,0.12);
+  border-color: rgba(26,115,232,0.4);
   color: var(--accent);
 }
 
@@ -161,7 +161,7 @@ body {
   user-select: none;
   -webkit-user-select: none;
 }
-.card-header:active { background: rgba(0,212,170,0.05); }
+.card-header:active { background: rgba(26,115,232,0.05); }
 .company-num {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 10px;
@@ -171,14 +171,14 @@ body {
 .company-name {
   font-size: 17px;
   font-weight: 700;
-  color: #fff;
+  color: #202124;
   flex: 1;
 }
 .company-ticker {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 10px;
   color: var(--muted);
-  background: rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.04);
   padding: 2px 7px;
   border-radius: 4px;
 }
@@ -218,7 +218,7 @@ body {
   margin-bottom: 16px;
 }
 .stat-box {
-  background: rgba(255,255,255,0.03);
+  background: rgba(0,0,0,0.02);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 12px;
@@ -301,7 +301,7 @@ body {
 
 /* ── 섹션 콘텐츠 ── */
 .section-block {
-  background: rgba(255,255,255,0.02);
+  background: rgba(0,0,0,0.02);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 14px;
@@ -325,8 +325,8 @@ body {
 
 /* ── 하이라이트 박스 ── */
 .highlight-box {
-  background: rgba(0,212,170,0.05);
-  border: 1px solid rgba(0,212,170,0.2);
+  background: rgba(26,115,232,0.05);
+  border: 1px solid rgba(26,115,232,0.2);
   border-radius: 10px;
   padding: 14px;
   margin-bottom: 10px;
@@ -424,7 +424,7 @@ body {
 }
 .tag:active { opacity: 0.6; }
 .tag-core { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
-.tag-product { background: rgba(0,212,170,0.12); color: #6ee7d8; border: 1px solid rgba(0,212,170,0.25); }
+.tag-product { background: rgba(26,115,232,0.1); color: #1a73e8; border: 1px solid rgba(26,115,232,0.25); }
 .tag-event { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
 .tag-risk { background: rgba(239,68,68,0.10); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
 
@@ -468,7 +468,7 @@ body {
   align-items: start;
 }
 .summary-item:last-child { border-bottom: none; }
-.summary-name { font-size: 15px; font-weight: 700; color: #fff; }
+.summary-name { font-size: 15px; font-weight: 700; color: #202124; }
 .summary-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
 .summary-stats {
   display: grid;
@@ -494,8 +494,8 @@ body {
 .insight-box {
   margin: 0 16px 16px;
   padding: 14px 16px;
-  background: rgba(0,212,170,0.05);
-  border: 1px solid rgba(0,212,170,0.15);
+  background: rgba(26,115,232,0.05);
+  border: 1px solid rgba(26,115,232,0.12);
   border-radius: 10px;
   font-size: 12px;
   color: var(--label);
@@ -557,8 +557,8 @@ body {
   bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: rgba(0,212,170,0.9);
-  color: #0a0e17;
+  background: rgba(26,115,232,0.9);
+  color: #ffffff;
   font-size: 12px;
   font-weight: 700;
   padding: 8px 18px;
