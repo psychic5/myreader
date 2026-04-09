@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>코스닥 바이오 8대 기업 분석 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --border: #1e2d45;
+  --accent: #00d4aa;
+  --accent2: #3b82f6;
+  --accent3: #f59e0b;
+  --red: #ef4444;
+  --green: #22c55e;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --label: #94a3b8;
+  --nav-h: 60px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+  overflow-x: hidden;
+}
+
+/* ── 상단 헤더 ── */
+.header {
+  background: linear-gradient(160deg, #0f1e35 0%, #0a0e17 100%);
+  padding: 52px 20px 24px;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+.header::after {
+  content:'';
+  position:absolute; top:-60px; right:-60px;
+  width:280px; height:280px;
+  background: radial-gradient(circle, rgba(0,212,170,0.10) 0%, transparent 70%);
+  pointer-events:none;
+}
+.header-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.header h1 {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+.header h1 span { color: var(--accent); }
+.header-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,212,170,0.1);
+  border: 1px solid rgba(0,212,170,0.2);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.header-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+.meta-row {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.meta-row strong { color: var(--label); }
+.meta-warn {
+  font-size: 11px;
+  color: #ef4444;
+  margin-top: 6px;
+}
+
+/* ── 목차 ── */
+.toc-wrap {
+  padding: 16px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.toc-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.toc-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 4px;
+}
+.toc-scroll::-webkit-scrollbar { display: none; }
+.toc-chip {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--label);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.toc-chip:active {
+  background: rgba(0,212,170,0.15);
+  border-color: rgba(0,212,170,0.4);
+  color: var(--accent);
+}
+
+/* ── 회사 카드 ── */
+.company-card {
+  margin: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  background: var(--surface2);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.card-header:active { background: rgba(0,212,170,0.05); }
+.company-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 18px;
+}
+.company-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  flex: 1;
+}
+.company-ticker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  background: rgba(255,255,255,0.06);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.badge-profit { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.badge-loss { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.badge-mixed { background: rgba(245,158,11,0.15); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
+.chevron {
+  width: 18px; height: 18px;
+  color: var(--muted);
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+.chevron svg { width:100%; height:100%; }
+.card-header.open .chevron { transform: rotate(180deg); }
+
+/* ── 카드 바디 (아코디언) ── */
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.card-body.open { max-height: 9999px; }
+.card-inner { padding: 16px; }
+
+/* ── 스탯 그리드 ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+.stat-label {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.stat-value { font-size: 15px; font-weight: 700; }
+.stat-value.accent { color: var(--accent); }
+.stat-value.positive { color: var(--green); }
+.stat-value.negative { color: var(--red); }
+.stat-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* ── 52주 바 ── */
+.price-bar-wrap { margin-bottom: 16px; }
+.price-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.price-bar-track {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  position: relative;
+}
+.price-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  border-radius: 2px;
+}
+.price-bar-dot {
+  position: absolute;
+  top: -4px;
+  width: 12px; height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  border: 2px solid var(--accent);
+}
+
+/* ── 탭 섹션 ── */
+.tab-nav {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 14px;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── 섹션 콘텐츠 ── */
+.section-block {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 8px;
+}
+.section-content {
+  font-size: 13px;
+  color: var(--label);
+  line-height: 1.8;
+}
+.section-content strong { color: var(--text); }
+
+/* ── 하이라이트 박스 ── */
+.highlight-box {
+  background: rgba(0,212,170,0.05);
+  border: 1px solid rgba(0,212,170,0.2);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.highlight-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.highlight-content {
+  font-size: 13px;
+  color: var(--label);
+  line-height: 1.8;
+}
+.highlight-content strong { color: var(--accent); }
+
+/* ── 확률 바 ── */
+.probability {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.prob-label { font-size: 11px; color: var(--muted); flex: 1; }
+.prob-bar-track { width: 80px; height: 4px; background: var(--border); border-radius: 2px; }
+.prob-bar-fill { height: 100%; border-radius: 2px; }
+.prob-high { background: var(--green); }
+.prob-mid { background: var(--accent3); }
+.prob-low { background: var(--red); }
+.prob-pct { font-size: 11px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 32px; text-align: right; }
+.prob-pct.high { color: var(--green); }
+.prob-pct.mid { color: var(--accent3); }
+.prob-pct.low { color: var(--red); }
+
+/* ── SW ── */
+.sw-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.sw-box { border-radius: 8px; padding: 12px; }
+.sw-box.strength { background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); }
+.sw-box.weakness { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); }
+.sw-title {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.sw-box.strength .sw-title { color: var(--green); }
+.sw-box.weakness .sw-title { color: var(--red); }
+.sw-list { list-style: none; }
+.sw-list li {
+  font-size: 12px; color: var(--label);
+  padding: 3px 0 3px 14px;
+  position: relative; line-height: 1.6;
+}
+.sw-box.strength .sw-list li::before { content:'+'; position:absolute; left:0; color:var(--green); font-weight:700; }
+.sw-box.weakness .sw-list li::before { content:'−'; position:absolute; left:0; color:var(--red); font-weight:700; }
+
+/* ── 키워드 태그 ── */
+.keyword-box {
+  background: rgba(59,130,246,0.05);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 10px;
+  padding: 14px;
+}
+.keyword-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent2);
+  margin-bottom: 6px;
+}
+.keyword-desc {
+  font-size: 11px; color: var(--muted);
+  margin-bottom: 12px; line-height: 1.6;
+}
+.tag-group { margin-bottom: 10px; }
+.tag-group-label {
+  font-size: 10px; color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 6px;
+}
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  user-select: all;
+  -webkit-user-select: all;
+}
+.tag:active { opacity: 0.6; }
+.tag-core { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
+.tag-product { background: rgba(0,212,170,0.12); color: #6ee7d8; border: 1px solid rgba(0,212,170,0.25); }
+.tag-event { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
+.tag-risk { background: rgba(239,68,68,0.10); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
+
+/* ── 태그 범례 ── */
+.tag-legend {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 16px 0;
+  padding: 12px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── 종합 테이블 ── */
+.summary-card {
+  margin: 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.summary-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.summary-item {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(30,45,69,0.5);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.summary-item:last-child { border-bottom: none; }
+.summary-name { font-size: 15px; font-weight: 700; color: #fff; }
+.summary-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
+.summary-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-top: 8px;
+}
+.sum-stat { }
+.sum-stat-label { font-size: 9px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; }
+.sum-stat-val { font-size: 12px; font-weight: 600; }
+.sum-stat-val.green { color: var(--green); }
+.sum-stat-val.red { color: var(--red); }
+.sum-stat-val.amber { color: var(--accent3); }
+.sum-stat-val.blue { color: var(--accent); }
+.sum-stat-val.muted { color: var(--muted); }
+.risk-stars { font-size: 13px; }
+.summary-driver {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--label);
+}
+
+.insight-box {
+  margin: 0 16px 16px;
+  padding: 14px 16px;
+  background: rgba(0,212,170,0.05);
+  border: 1px solid rgba(0,212,170,0.15);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--label);
+  line-height: 1.8;
+}
+.insight-box strong { color: var(--accent); }
+
+.per-note {
+  margin: 0 16px 80px;
+  padding: 12px 14px;
+  background: rgba(100,116,139,0.08);
+  border: 1px solid rgba(100,116,139,0.2);
+  border-radius: 10px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.per-note strong { color: var(--label); }
+
+/* ── 하단 네비게이션 ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: calc(var(--nav-h) + var(--safe-bottom));
+  background: rgba(10,14,23,0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+  z-index: 200;
+}
+.nav-items {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  min-width: 52px;
+  text-decoration: none;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.nav-item:active { color: var(--accent); }
+.nav-icon { font-size: 18px; line-height: 1; }
+.nav-label { font-size: 10px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; }
+
+/* ── 토스트 ── */
+.toast {
+  position: fixed;
+  bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(0,212,170,0.9);
+  color: #0a0e17;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 20px;
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 300;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── 섹션 앵커 ── */
+.anchor { display: block; position: relative; top: -80px; visibility: hidden; }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="header">
+  <div class="header-tag">KOSDAQ Bio Research</div>
+  <h1>코스닥 <span>바이오 8대 기업</span><br>심층 분석 보고서</h1>
+  <div class="header-date">📅 2026년 4월 9일 (목) 기준</div>
+  <div class="header-meta">
+    <div class="meta-row">실적 <strong>2025년 연간 공시 (케어젠 2024년)</strong></div>
+    <div class="meta-row">주가·시총 <strong>2026.04.09 장마감</strong></div>
+    <div class="meta-warn">※ 투자 참고용 — 결과 책임은 투자자 본인에게 있음</div>
+  </div>
+</div>
+
+<!-- 목차 (sticky) -->
+<div class="toc-wrap">
+  <div class="toc-label">종목 바로가기</div>
+  <div class="toc-scroll">
+    <a class="toc-chip" href="#c1">01 알테오젠</a>
+    <a class="toc-chip" href="#c2">02 삼천당</a>
+    <a class="toc-chip" href="#c3">03 에이비엘</a>
+    <a class="toc-chip" href="#c4">04 HLB</a>
+    <a class="toc-chip" href="#c5">05 리가켐</a>
+    <a class="toc-chip" href="#c6">06 펩트론</a>
+    <a class="toc-chip" href="#c7">07 코오롱</a>
+    <a class="toc-chip" href="#c8">08 케어젠</a>
+  </div>
+</div>
+
+<!-- 태그 범례 -->
+<div class="tag-legend" style="margin-top:16px;">
+  <div class="legend-item"><div class="legend-dot" style="background:#93c5fd"></div>핵심기술</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#6ee7d8"></div>제품/파트너</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fcd34d"></div>이벤트신호</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fca5a5"></div>적신호</div>
+</div>
+
+<!-- ===== 1. 알테오젠 ===== -->
+<span class="anchor" id="c1"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="company-num">01</span>
+    <span class="company-name">알테오젠</span>
+    <span class="company-ticker">196170</span>
+    <span class="badge badge-profit">흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~15조</div><div class="stat-sub">코스피 이전 중</div></div>
+        <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">2,159억</div><div class="stat-sub">+110% YoY</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value positive">1,069억</div><div class="stat-sub">이익률 50%↑</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">56.9만/31.6만</div><div class="stat-sub">현재 ~36만</div></div>
+      </div>
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 315,500</span><span>현재 ~360,000</span><span>고 569,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:17%"></div><div class="price-bar-dot" style="left:17%"></div></div>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'알테오젠')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'알테오젠')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'알테오젠')">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'알테오젠')">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 제품 & 사업</div><div class="section-content"><strong>ALT-B4 (하이브로자임)</strong>: IV→SC 제형 전환 플랫폼. MSD·AZ·바이오젠·GSK 등 8개 빅파마 계약. <strong>키트루다 SC (큐렉스)</strong>: 2025년 FDA·EMA 허가. 로열티 수익 원년 개시. <strong>안곡타</strong>: 중국 허셉틴 바이오시밀러 로열티.</div></div>
+        <div class="highlight-box"><div class="highlight-title">🎯 최대 기대 제품</div><div class="highlight-content"><strong>키트루다 SC 로열티</strong>: 키트루다 세계 매출 ~32조 × 로열티율 2% = 연간 ~6,400억 잠재력. 이미 허가 완료, 상업화 개시.</div>
+          <div class="probability"><span class="prob-label">로열티 수익화</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:85%"></div></div><span class="prob-pct high">85%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">하나증권: <strong>매출 4,712억, 영업이익 3,082억</strong> 추정. 로열티 본격화 시 영업이익률 65% 이상 예상.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">올해 주가 흐름</div><div class="section-content">연초 47만 → JP모건 컨퍼런스 후 51.8만 고점 → MSD 로열티율 2% 공개(시장 기대 5%) 충격으로 급락 → 35~36만. 3월 바이오젠 8,675억 딜로 일시 반등.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content">2025년 흑자 전환 + 실적 성장 인정. 그러나 <strong>로열티율 2% 논란</strong>과 <strong>키트루다 SC 특허 분쟁(PGR)</strong> 미해소가 주가 할인 요인. PER ~160배 / ROE 29.5%.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>글로벌 독점 SC 전환 플랫폼</li><li>흑자 + 영업이익률 50%</li><li>빅파마 8개사 파트너</li><li>2026 로열티 원년</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>로열티율 2% 실망</li><li>특허 분쟁 PGR 미해소</li><li>단일 플랫폼 의존</li><li>코스피 이전 패시브 이탈</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">🔍 뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">ALT-B4</span><span class="tag tag-core" onclick="copyTag(this)">하이브로자임</span><span class="tag tag-core" onclick="copyTag(this)">SC 제형 전환</span><span class="tag tag-core" onclick="copyTag(this)">Hybrozyme</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">제품/파트너</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">키트루다 큐렉스</span><span class="tag tag-product" onclick="copyTag(this)">Keytruda Qlex</span><span class="tag tag-product" onclick="copyTag(this)">알테오젠 로열티</span><span class="tag tag-product" onclick="copyTag(this)">알테오젠 MSD</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">알테오젠 코스피 이전</span><span class="tag tag-event" onclick="copyTag(this)">알테오젠 기술수출</span><span class="tag tag-event" onclick="copyTag(this)">알테오젠 계약</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">키트루다 특허 분쟁</span><span class="tag tag-risk" onclick="copyTag(this)">PGR 심결</span><span class="tag tag-risk" onclick="copyTag(this)">알테오젠 로열티율</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2. 삼천당제약 ===== -->
+<span class="anchor" id="c2"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="company-num">02</span>
+    <span class="company-name">삼천당제약</span>
+    <span class="company-ticker">000250</span>
+    <span class="badge badge-mixed">이익 미약</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~7~9조</div><div class="stat-sub">고점 17.3조 급락</div></div>
+        <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">2,318억</div><div class="stat-sub">+9.9% YoY</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value positive">85억</div><div class="stat-sub">이익률 3.7%</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">123만/~20만</div><div class="stat-sub">현재 ~53~68만</div></div>
+      </div>
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 ~200,000</span><span>현재 ~600,000</span><span>고 1,230,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:38%"></div><div class="price-bar-dot" style="left:38%"></div></div>
+      </div>
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'삼천당')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'삼천당')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'삼천당')">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'삼천당')">뉴스키워드</button>
+      </div>
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 제품 & 사업</div><div class="section-content"><strong>기존 제약 사업</strong>: 완제의약품 제조·판매 (실제 매출 원천). <strong>SCD411 (아일리아 시밀러)</strong>: 황반변성. 한·일·유럽·캐나다 허가 완료, 미국·중남미 공급 계약. <strong>경구 인슐린</strong>: 유럽 임상 진입 추진 — 주가 폭등의 직접 원인.</div></div>
+        <div class="highlight-box"><div class="highlight-title">🎯 최대 기대 제품</div><div class="highlight-content"><strong>경구 인슐린</strong>: 성공 시 수백조원 시장 게임체인저. 단 수십 년간 빅파마 전부 실패한 난제.</div>
+          <div class="probability"><span class="prob-label">아일리아 시밀러 상업화</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:75%"></div></div><span class="prob-pct high">75%</span></div>
+          <div class="probability"><span class="prob-label">경구 인슐린 임상 성공</span><div class="prob-bar-track"><div class="prob-bar-fill prob-low" style="width:20%"></div></div><span class="prob-pct low">20%</span></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">올해 주가 흐름</div><div class="section-content">연초 23.3만 → 경구 인슐린 유럽 임상 소식으로 <strong>3월 123만 돌파(황제주 +379%)</strong> → 계약 내용 실망으로 47% 급락 → 현재 53~68만 등락.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>100% 기대감</strong>. 영업이익 85억으로 시총 수조원 설명 불가. PER 수천배 / ROE ~3%.</div></div>
+      </div>
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>아일리아 시밀러 다국가 허가</li><li>실제 매출 2,318억 기반</li><li>성공 시 글로벌 퍼스트무버</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>이익 85억 — 극단적 고평가</li><li>임상 실패 시 -80% 가능</li><li>하루 ±15% 변동성 일상</li></ul></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">🔍 뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">경구 인슐린</span><span class="tag tag-core" onclick="copyTag(this)">먹는 인슐린</span><span class="tag tag-core" onclick="copyTag(this)">SCD411</span><span class="tag tag-core" onclick="copyTag(this)">아일리아 바이오시밀러</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">제품/파트너</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">비젠프리</span><span class="tag tag-product" onclick="copyTag(this)">삼천당 아일리아</span><span class="tag tag-product" onclick="copyTag(this)">삼천당 유럽</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">삼천당 임상 결과</span><span class="tag tag-event" onclick="copyTag(this)">삼천당 유럽 임상</span><span class="tag tag-event" onclick="copyTag(this)">삼천당 미국 파트너</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">삼천당 임상 실패</span><span class="tag tag-risk" onclick="copyTag(this)">삼천당 계약 해지</span><span class="tag tag-risk" onclick="copyTag(this)">삼천당 유상증자</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 3. 에이비엘바이오 ===== -->
+<span class="anchor" id="c3"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="company-num">03</span>
+    <span class="company-name">에이비엘바이오</span>
+    <span class="company-ticker">298380</span>
+    <span class="badge badge-loss">흑전 중</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~10조</div><div class="stat-sub">3월 10.65조</div></div>
+        <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">~1,000억↑</div><div class="stat-sub">계약금 분할인식</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value" style="color:var(--accent3);">흑전 유력</div><div class="stat-sub">릴리 계약금 인식</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~28만/~8.5만</div><div class="stat-sub">현재 ~20만</div></div>
+      </div>
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 ~85,000</span><span>현재 ~201,500</span><span>고 ~280,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:60%"></div><div class="price-bar-dot" style="left:60%"></div></div>
+      </div>
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'에이비엘')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'에이비엘')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'에이비엘')">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'에이비엘')">뉴스키워드</button>
+      </div>
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 제품 & 사업</div><div class="section-content"><strong>Grabody-B (BBB 셔틀)</strong>: 뇌혈관장벽 통과 플랫폼. GSK(4.1조)·일라이릴리(3.8조) 계약, 2025년 한 해 8조원 딜. <strong>ABL001</strong>: 담도암 ADC, 2026년 FDA 가속 승인 신청 목표.</div></div>
+        <div class="highlight-box"><div class="highlight-title">🎯 최대 기대 제품</div><div class="highlight-content"><strong>Grabody-B BBB 플랫폼</strong>: 알츠하이머·파킨슨 뇌질환 치료제 수백조원 시장. GSK·릴리가 직접 검증하고 돈을 씀.</div>
+          <div class="probability"><span class="prob-label">ABL001 FDA 허가</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:45%"></div></div><span class="prob-pct mid">45%</span></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">올해 주가 흐름</div><div class="section-content">2025년 GSK·릴리 연달아 계약 → 시총 10조 돌파. 2026년 1월 사노피 ABL301 우선순위 하락 → 하루 19% 급락 → 20만대 복귀.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content">기술수출 8조원 달성으로 플랫폼 가치 입증. 단 <strong>실제 현금은 마일스톤 달성 순서대로</strong> 분할 수령. PER N/A (적자) / ROE 마이너스.</div></div>
+      </div>
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>2025 기술수출 8조 — K바이오 최고</li><li>GSK·릴리 동시 파트너</li><li>BBB 셔틀 독점적 위치</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>사노피 ABL301 우선순위 하락</li><li>R&D 비용 막대, 적자</li><li>마일스톤 수령 장기 대기</li></ul></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">🔍 뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">Grabody-B</span><span class="tag tag-core" onclick="copyTag(this)">그랩바디</span><span class="tag tag-core" onclick="copyTag(this)">BBB 셔틀</span><span class="tag tag-core" onclick="copyTag(this)">뇌혈관장벽</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">제품/파트너</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">ABL001 담도암</span><span class="tag tag-product" onclick="copyTag(this)">에이비엘 GSK</span><span class="tag tag-product" onclick="copyTag(this)">에이비엘 릴리</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">에이비엘 기술수출</span><span class="tag tag-event" onclick="copyTag(this)">ABL001 FDA 허가</span><span class="tag tag-event" onclick="copyTag(this)">에이비엘 마일스톤</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">사노피 ABL301 반환</span><span class="tag tag-risk" onclick="copyTag(this)">에이비엘 임상 실패</span><span class="tag tag-risk" onclick="copyTag(this)">에이비엘 유상증자</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4. HLB ===== -->
+<span class="anchor" id="c4"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="company-num">04</span>
+    <span class="company-name">HLB</span>
+    <span class="company-ticker">028300</span>
+    <span class="badge badge-loss">적자 지속</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~5~6조</div><div class="stat-sub">3월 6.75조</div></div>
+        <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">소규모</div><div class="stat-sub">상업화 전</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value negative">적자</div><div class="stat-sub">허가 전 구조적</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~11만/~4만</div><div class="stat-sub">현재 ~5.1만</div></div>
+      </div>
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 ~40,000</span><span>현재 ~53,000</span><span>고 ~110,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:19%"></div><div class="price-bar-dot" style="left:19%"></div></div>
+      </div>
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'HLB')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'HLB')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'HLB')">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'HLB')">뉴스키워드</button>
+      </div>
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 제품 & 사업</div><div class="section-content"><strong>리보세라닙 (Rivoceranib)</strong>: VEGFR2 타깃 간암 1차 치료 표적항암제. 중국 파트너사 허가 완료. 미국 FDA CRL(보완요구서) 수령 후 재심사 준비 중. 그룹 전체가 이 파이프라인 하나에 집중.</div></div>
+        <div class="highlight-box"><div class="highlight-title">🎯 최대 기대 제품</div><div class="highlight-content"><strong>리보세라닙 FDA 재허가</strong>: 간암 1차 치료제 미국 시장. 연 10조원 이상 규모. CRL 보완 후 재제출, 2026~2027년 결과 예상.</div>
+          <div class="probability"><span class="prob-label">FDA 재허가 성공</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:40%"></div></div><span class="prob-pct mid">40%</span></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">올해 주가 흐름</div><div class="section-content">2025년 고점 대비 큰 폭 하락. FDA CRL로 불확실성 확대. 5만원 내외 등락. 중동전쟁 변동성 장세에 추가 하락.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>단일 파이프라인 도박</strong>. FDA 재심사 결과 하나가 전부. 성공·실패 양방향 극단 시나리오. PER N/A / ROE 마이너스.</div></div>
+      </div>
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>중국 이미 상업화, 매출 발생</li><li>허가 시 글로벌 시장 즉시 진입</li><li>그룹 역량 집중</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>단일 파이프라인 All-in</li><li>FDA CRL — 불확실성 장기화</li><li>구조적 적자, 레버리지 우려</li></ul></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">🔍 뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">리보세라닙</span><span class="tag tag-core" onclick="copyTag(this)">Rivoceranib</span><span class="tag tag-core" onclick="copyTag(this)">VEGFR2</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">제품/파트너</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">HLB 간암</span><span class="tag tag-product" onclick="copyTag(this)">HLB FDA</span><span class="tag tag-product" onclick="copyTag(this)">HLB 중국 매출</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">리보세라닙 FDA 재심사</span><span class="tag tag-event" onclick="copyTag(this)">HLB FDA 허가</span><span class="tag tag-event" onclick="copyTag(this)">HLB 재제출</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">HLB CRL</span><span class="tag tag-risk" onclick="copyTag(this)">리보세라닙 거절</span><span class="tag tag-risk" onclick="copyTag(this)">HLB 유상증자</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 5. 리가켐바이오 ===== -->
+<span class="anchor" id="c5"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="company-num">05</span>
+    <span class="company-name">리가켐바이오</span>
+    <span class="company-ticker">141080</span>
+    <span class="badge badge-loss">적자 심화</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~5~6조</div><div class="stat-sub">2025말 6.36조</div></div>
+        <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">증가</div><div class="stat-sub">기술이전 계약금</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value negative">적자 심화</div><div class="stat-sub">R&D 1,133억</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~28만/~13만</div><div class="stat-sub">현재 ~19만</div></div>
+      </div>
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 ~130,000</span><span>현재 ~191,900</span><span>고 ~280,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:41%"></div><div class="price-bar-dot" style="left:41%"></div></div>
+      </div>
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'리가켐')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'리가켐')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'리가켐')">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'리가켐')">뉴스키워드</button>
+      </div>
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 제품 & 사업</div><div class="section-content"><strong>ConjuAll ADC 플랫폼</strong>: 항체-약물 접합체 원천 기술. K바이오 기술수출 누적 2위권. 오노약품·시스톤 공동 개발. <strong>LCB71 (ROR1 ADC)</strong>: DLBCL 임상 중. ORR 76.9% — 경쟁 약물 56% 대비 우위.</div></div>
+        <div class="highlight-box"><div class="highlight-title">🎯 최대 기대 제품</div><div class="highlight-content"><strong>ADC 플랫폼 빅딜</strong>: 2024년 400억달러→2030년 800억달러 성장 섹터. 원천 플랫폼 희소성 프리미엄.</div>
+          <div class="probability"><span class="prob-label">추가 빅딜 계약(12개월)</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:50%"></div></div><span class="prob-pct mid">50%</span></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">올해 주가 흐름</div><div class="section-content">ADC 시장 글로벌 급성장 수혜로 급등 후 현재 고점 대비 30%↓. 외국인 차익 실현 매물 지속. 19만원대 등락.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content">ADC 시장 구조적 성장 + 원천 플랫폼 희소성 프리미엄. <strong>기술수출 계약 소식 하나에 주가 20% 등락</strong> 구조. PER N/A / ROE 마이너스.</div></div>
+      </div>
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>ADC 원천 플랫폼 — 성장 섹터</li><li>K바이오 기술수출 상위권</li><li>LCB71 경쟁 데이터 우위</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>R&D > 매출 — 구조적 적자</li><li>글로벌 빅파마 자체 ADC 개발</li><li>경쟁 극심</li></ul></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">🔍 뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">ConjuAll</span><span class="tag tag-core" onclick="copyTag(this)">ADC 플랫폼</span><span class="tag tag-core" onclick="copyTag(this)">항체약물접합체</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">제품/파트너</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">LCB71</span><span class="tag tag-product" onclick="copyTag(this)">ROR1 ADC</span><span class="tag tag-product" onclick="copyTag(this)">리가켐 오노약품</span><span class="tag tag-product" onclick="copyTag(this)">DLBCL</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">리가켐 기술수출</span><span class="tag tag-event" onclick="copyTag(this)">리가켐 빅딜</span><span class="tag tag-event" onclick="copyTag(this)">LCB71 임상 2상</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">리가켐 임상 실패</span><span class="tag tag-risk" onclick="copyTag(this)">리가켐 계약 반환</span><span class="tag tag-risk" onclick="copyTag(this)">ADC 경쟁사 허가</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 6. 펩트론 ===== -->
+<span class="anchor" id="c6"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="company-num">06</span>
+    <span class="company-name">펩트론</span>
+    <span class="company-ticker">087010</span>
+    <span class="badge badge-loss">기대감 100%</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~7조</div><div class="stat-sub">3월 7.26조</div></div>
+        <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">소규모</div><div class="stat-sub">상업화 전</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value negative">적자</div><div class="stat-sub">R&D 집중</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~9만/~1.5만</div><div class="stat-sub">현재 ~6만</div></div>
+      </div>
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 ~15,000</span><span>현재 ~62,000</span><span>고 ~90,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:62%"></div><div class="price-bar-dot" style="left:62%"></div></div>
+      </div>
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'펩트론')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'펩트론')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'펩트론')">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'펩트론')">뉴스키워드</button>
+      </div>
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 제품 & 사업</div><div class="section-content"><strong>스마트데포 (SmartDepot)</strong>: 약물 서방출 미립구 기술. <strong>PT403 (GLP-1/GIP 이중작용)</strong>: 젭바운드와 동일 기전. <strong>월 1회 투여</strong> — 위고비·젭바운드(주 1회) 대비 편의성 우위. 일라이릴리 기술 평가 계약.</div></div>
+        <div class="highlight-box"><div class="highlight-title">🎯 최대 기대 제품</div><div class="highlight-content"><strong>PT403 비만치료제</strong>: 2030년 비만치료제 시장 200조원. 월 1회 제형 퍼스트무버 가능성. 단, 노보·릴리도 동일 방향 개발 중.</div>
+          <div class="probability"><span class="prob-label">임상 성공 & 릴리 계약</span><div class="prob-bar-track"><div class="prob-bar-fill prob-low" style="width:30%"></div></div><span class="prob-pct low">30%</span></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">올해 주가 흐름</div><div class="section-content">2025년말 1.5만 → 비만치료제 테마 + GLP-1 기대 폭발 → 3월 7.2만 고점 → 현재 5~7만. 외국인 순매수 1위 종목 급부상 후 차익 실현.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content">글로벌 비만치료제 수백조원 기대감 직접 수혜. 릴리 협업 사실이 기술력 검증 신호. 임상 초기 — 현재 실적 제로. PER N/A / ROE 마이너스.</div></div>
+      </div>
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>비만치료제 메가트렌드 정중앙</li><li>월 1회 투여 편의성 우위</li><li>일라이릴리 협업 검증</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>임상 초기, 매출 없음</li><li>노보·릴리 자체 개발 경쟁</li><li>실패 시 2만원대 복귀 가능</li></ul></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">🔍 뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">스마트데포</span><span class="tag tag-core" onclick="copyTag(this)">SmartDepot</span><span class="tag tag-core" onclick="copyTag(this)">GLP-1 장기지속</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">제품/파트너</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">PT403</span><span class="tag tag-product" onclick="copyTag(this)">펩트론 비만치료제</span><span class="tag tag-product" onclick="copyTag(this)">펩트론 릴리</span><span class="tag tag-product" onclick="copyTag(this)">월 1회 비만주사</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">펩트론 임상 결과</span><span class="tag tag-event" onclick="copyTag(this)">PT403 임상 1상</span><span class="tag tag-event" onclick="copyTag(this)">펩트론 기술이전</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">노보 월1회 비만제 허가</span><span class="tag tag-risk" onclick="copyTag(this)">펩트론 임상 중단</span><span class="tag tag-risk" onclick="copyTag(this)">릴리 자체 서방출 개발</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 7. 코오롱티슈진 ===== -->
+<span class="anchor" id="c7"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="company-num">07</span>
+    <span class="company-name">코오롱티슈진</span>
+    <span class="company-ticker">950160</span>
+    <span class="badge badge-loss">매출 없음</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~4~5조</div><div class="stat-sub">2025말 6.6조</div></div>
+        <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value negative">거의 없음</div><div class="stat-sub">허가 취소 후</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value negative">적자</div><div class="stat-sub">구조적 적자</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~17만/~3만</div><div class="stat-sub">현재 ~10만</div></div>
+      </div>
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 ~30,000</span><span>현재 ~106,400</span><span>고 ~170,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:54%"></div><div class="price-bar-dot" style="left:54%"></div></div>
+      </div>
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'코오롱')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'코오롱')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'코오롱')">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'코오롱')">뉴스키워드</button>
+      </div>
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 제품 & 사업</div><div class="section-content"><strong>인보사 (TissueGene-C)</strong>: 퇴행성 관절염 유전자치료제. 2019년 성분 논란 허가 취소 → FDA 임상 3상 재개 추진 중. 세계 최초 관절염 유전자치료제 가능성.</div></div>
+        <div class="highlight-box"><div class="highlight-title">🎯 최대 기대 제품</div><div class="highlight-content"><strong>인보사 FDA 허가</strong>: 성공 시 관절염 치료 패러다임 전환. 단, 8개 기업 중 실현 가능성 최하위.</div>
+          <div class="probability"><span class="prob-label">FDA 최종 허가</span><div class="prob-bar-track"><div class="prob-bar-fill prob-low" style="width:20%"></div></div><span class="prob-pct low">20% 이하</span></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">올해 주가 흐름</div><div class="section-content">2025년 임상 재개 기대감으로 시총 1.9조→6.6조(+258%). 2026년 조정 중. 10만원대. 임상 일정 뉴스에 단기 급등락 반복.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>순수 임상 기대감 100%</strong>. 현재 실적·매출 없음. FDA 임상이 계속된다는 사실 자체가 주가 지지. PER N/A / ROE 마이너스.</div></div>
+      </div>
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>세계 최초 관절염 유전자치료제</li><li>FDA 임상 완전 폐기 아님</li><li>코오롱그룹 지원</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>2019년 성분 오류 신뢰 타격</li><li>매출 제로, 적자</li><li>8개 중 실현가능성 최하위</li></ul></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">🔍 뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">인보사</span><span class="tag tag-core" onclick="copyTag(this)">TissueGene-C</span><span class="tag tag-core" onclick="copyTag(this)">유전자치료제</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">제품/파트너</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">인보사 FDA</span><span class="tag tag-product" onclick="copyTag(this)">코오롱 관절염</span><span class="tag tag-product" onclick="copyTag(this)">인보사 임상 3상</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">인보사 임상 결과</span><span class="tag tag-event" onclick="copyTag(this)">코오롱티슈진 FDA</span><span class="tag tag-event" onclick="copyTag(this)">인보사 허가 재신청</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">인보사 임상 중단</span><span class="tag tag-risk" onclick="copyTag(this)">인보사 FDA 거절</span><span class="tag tag-risk" onclick="copyTag(this)">코오롱티슈진 유상증자</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 8. 케어젠 ===== -->
+<span class="anchor" id="c8"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="company-num">08</span>
+    <span class="company-name">케어젠</span>
+    <span class="company-ticker">214370</span>
+    <span class="badge badge-profit">22년 연속 흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~5~6조</div><div class="stat-sub">3월 5.89조</div></div>
+        <div class="stat-box"><div class="stat-label">2024 매출</div><div class="stat-value">826억</div><div class="stat-sub">+4.3% YoY</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value positive">363억</div><div class="stat-sub">이익률 44%</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:12px;">~32만/~4.5만</div><div class="stat-sub">현재 ~25만</div></div>
+      </div>
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 ~45,000</span><span>현재 ~250,000</span><span>고 ~320,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:74%"></div><div class="price-bar-dot" style="left:74%"></div></div>
+      </div>
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'케어젠')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'케어젠')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'케어젠')">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'케어젠')">뉴스키워드</button>
+      </div>
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 제품 & 사업</div><div class="section-content"><strong>펩타이드 에스테틱</strong>: 주름·탈모 치료 펩타이드 글로벌 수출 (실제 매출 원천). <strong>코글루타이드</strong>: 경구 GLP-1 비만·당뇨 치료제. FDA NDI 승인 추진. <strong>CG-P5</strong>: 황반변성 신약 임상.</div></div>
+        <div class="highlight-box"><div class="highlight-title">🎯 최대 기대 제품</div><div class="highlight-content"><strong>코글루타이드 (경구 GLP-1)</strong>: 먹는 비만치료제 시장 진입 시 게임체인저. 단, <strong>22년 흑자 실적이 하방 안전망</strong> — 8개 중 유일.</div>
+          <div class="probability"><span class="prob-label">코글루타이드 상업화</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:45%"></div></div><span class="prob-pct mid">45%</span></div>
+          <div class="probability"><span class="prob-label">에스테틱 성장 지속</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:80%"></div></div><span class="prob-pct high">80%</span></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">올해 주가 흐름</div><div class="section-content">2026년 1월 GLP-1 경구제 기대감으로 한 달 +75% 급등. 2월 투자경고종목 지정으로 -10% 급락 후 재반등. 3월 고점 32만. 현재 25만대.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>이중 구조</strong>: 에스테틱 실적(영업이익률 44%) + 코글루타이드 기대감. 8개 중 유일하게 실적 기반이 탄탄한 동시에 성장 기대감 존재. PER ~150배 / ROE ~25%.</div></div>
+      </div>
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>22년 연속 흑자 — 압도적 안정성</li><li>영업이익률 44%</li><li>실적+기대감 이중 지지</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>매출 826억 — 시총 대비 고평가</li><li>코글루타이드 FDA 불확실</li><li>비만테마 꺼지면 급락 가능</li></ul></div>
+        </div>
+      </div>
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">🔍 뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">코글루타이드</span><span class="tag tag-core" onclick="copyTag(this)">Coglutide</span><span class="tag tag-core" onclick="copyTag(this)">경구 GLP-1</span><span class="tag tag-core" onclick="copyTag(this)">펩타이드 에스테틱</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">제품/파트너</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">CG-P5</span><span class="tag tag-product" onclick="copyTag(this)">케어젠 황반변성</span><span class="tag tag-product" onclick="copyTag(this)">케어젠 미국 수출</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">코글루타이드 FDA NDI</span><span class="tag tag-event" onclick="copyTag(this)">케어젠 실적 발표</span><span class="tag tag-event" onclick="copyTag(this)">CG-P5 임상 결과</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">케어젠 FDA 거절</span><span class="tag tag-risk" onclick="copyTag(this)">GLP-1 경쟁 심화</span><span class="tag tag-risk" onclick="copyTag(this)">에스테틱 수요 둔화</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 종합 비교 -->
+<span class="anchor" id="summary"></span>
+<div class="summary-card">
+  <div class="summary-header">SUMMARY — 8개 기업 종합</div>
+
+  <div class="summary-item">
+    <div>
+      <div class="summary-name">알테오젠</div>
+      <div class="summary-ticker">196170</div>
+    </div>
+    <div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~15조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">PER</div><div class="sum-stat-val amber">~160배</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">ROE</div><div class="sum-stat-val green">29.5%</div></div>
+      </div>
+      <div class="summary-stats" style="margin-top:4px;">
+        <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val green">+1,069억</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">실적+기대</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">삼천당제약</div><div class="summary-ticker">000250</div></div>
+    <div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~7~9조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">PER</div><div class="sum-stat-val red">수천배⚠</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">ROE</div><div class="sum-stat-val amber">~3%</div></div>
+      </div>
+      <div class="summary-stats" style="margin-top:4px;">
+        <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val green">+85억</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐⭐</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">기대감 95%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">에이비엘바이오</div><div class="summary-ticker">298380</div></div>
+    <div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~10조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">PER</div><div class="sum-stat-val muted">N/A</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">ROE</div><div class="sum-stat-val red">-마이너스</div></div>
+      </div>
+      <div class="summary-stats" style="margin-top:4px;">
+        <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val amber">흑전 중</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">기대감 90%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">HLB</div><div class="summary-ticker">028300</div></div>
+    <div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~5~6조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">PER</div><div class="sum-stat-val muted">N/A</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">ROE</div><div class="sum-stat-val red">-마이너스</div></div>
+      </div>
+      <div class="summary-stats" style="margin-top:4px;">
+        <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val red">적자</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐⭐</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">FDA 허가 여부</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">리가켐바이오</div><div class="summary-ticker">141080</div></div>
+    <div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~5~6조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">PER</div><div class="sum-stat-val muted">N/A</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">ROE</div><div class="sum-stat-val red">-마이너스</div></div>
+      </div>
+      <div class="summary-stats" style="margin-top:4px;">
+        <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val red">적자심화</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">기대감 85%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">펩트론</div><div class="summary-ticker">087010</div></div>
+    <div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~7조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">PER</div><div class="sum-stat-val muted">N/A</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">ROE</div><div class="sum-stat-val red">-마이너스</div></div>
+      </div>
+      <div class="summary-stats" style="margin-top:4px;">
+        <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val red">적자</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐⭐</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">기대감 100%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">코오롱티슈진</div><div class="summary-ticker">950160</div></div>
+    <div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~4~5조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">PER</div><div class="sum-stat-val muted">N/A</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">ROE</div><div class="sum-stat-val red">-마이너스</div></div>
+      </div>
+      <div class="summary-stats" style="margin-top:4px;">
+        <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val red">적자</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐⭐</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">기대감 100%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">케어젠</div><div class="summary-ticker">214370</div></div>
+    <div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~5~6조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">PER</div><div class="sum-stat-val amber">~150배</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">ROE</div><div class="sum-stat-val green">~25%</div></div>
+      </div>
+      <div class="summary-stats" style="margin-top:4px;">
+        <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val green">+363억</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:11px; color:var(--label);">실적+기대</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="insight-box">
+  <strong>핵심 인사이트</strong>: 8개 기업 중 실제 이익을 내는 건 <strong style="color:#fff;">알테오젠·케어젠</strong> 둘뿐. 나머지 6개는 임상 기대감으로만 주가 형성. ⭐⭐⭐⭐⭐ 종목은 임상 실패 시 시총 70~90% 소멸 가능.
+</div>
+
+<div class="per-note">
+  <strong>PER/ROE 해석 주의</strong><br>
+  · <strong>N/A</strong>: 순손실 상태, PER 산출 불가<br>
+  · <strong>삼천당 PER 수천배</strong>: 이익이 극히 작아 밸류에이션 불가 구조<br>
+  · <strong>알테오젠 ~160배</strong>: 2026 로열티 급증 시 포워드 PER 50배 이하 가능<br>
+  · <strong>케어젠 ROE ~25%</strong>: 8개 중 ROE 의미 있는 유이한 종목
+</div>
+
+<!-- 하단 내비게이션 -->
+<nav class="bottom-nav">
+  <div class="nav-items">
+    <a class="nav-item" href="#" onclick="scrollToTop()">
+      <div class="nav-icon">⬆️</div>
+      <div class="nav-label">TOP</div>
+    </a>
+    <a class="nav-item" href="#c1"><div class="nav-icon">💊</div><div class="nav-label">알테오젠</div></a>
+    <a class="nav-item" href="#c4"><div class="nav-icon">🔬</div><div class="nav-label">HLB</div></a>
+    <a class="nav-item" href="#c8"><div class="nav-icon">✨</div><div class="nav-label">케어젠</div></a>
+    <a class="nav-item" href="#summary"><div class="nav-icon">📊</div><div class="nav-label">종합</div></a>
+  </div>
+</nav>
+
+<!-- 토스트 -->
+<div class="toast" id="toast">복사됨 ✓</div>
+
+<script>
+// 아코디언
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  header.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+// 탭
+function switchTab(btn, cardId) {
+  const card = btn.closest('.card-body');
+  const tabs = card.querySelectorAll('.tab-btn');
+  const panes = card.querySelectorAll('.tab-pane');
+  const idx = Array.from(tabs).indexOf(btn);
+  tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
+  panes.forEach((p, i) => p.classList.toggle('active', i === idx));
+}
+
+// 태그 복사
+function copyTag(el) {
+  const text = el.textContent.trim();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => showToast());
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast();
+  }
+}
+
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+function scrollToTop(e) {
+  if (e) e.preventDefault();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 앵커 클릭 시 네비게이션 높이만큼 보정
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const id = this.getAttribute('href').slice(1);
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) {
+      e.preventDefault();
+      const offset = el.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: offset, behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>
