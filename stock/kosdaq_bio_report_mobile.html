@@ -9,18 +9,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f8f9fa;
+  --bg: #e9ecef;
   --surface: #ffffff;
-  --surface2: #f0f1f3;
-  --border: #e0e0e0;
+  --surface2: #f1f3f5;
+  --border: #ced4da;
   --accent: #1a73e8;
   --accent2: #3b82f6;
   --accent3: #e67e00;
   --red: #d93025;
   --green: #188038;
-  --text: #202124;
-  --muted: #80868b;
-  --label: #5f6368;
+  --text: #101828;
+  --muted: #667085;
+  --label: #344054;
   --nav-h: 60px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -38,16 +38,16 @@ body {
 
 /* ── 상단 헤더 ── */
 .header {
-  background: linear-gradient(160deg, #e8edf2 0%, #f8f9fa 100%);
+  background: linear-gradient(160deg, #1a73e8 0%, #1557b0 100%);
   padding: 52px 20px 24px;
   position: relative;
-  border-bottom: 1px solid var(--border);
+  border-bottom: none;
   overflow: hidden;
 }
 .header-tag {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 12px;
-  color: var(--accent);
+  color: rgba(255,255,255,0.7);
   letter-spacing: 3px;
   text-transform: uppercase;
   margin-bottom: 10px;
@@ -55,22 +55,22 @@ body {
 .header h1 {
   font-size: 26px;
   font-weight: 900;
-  color: #202124;
+  color: #ffffff;
   line-height: 1.25;
   margin-bottom: 8px;
 }
-.header h1 span { color: var(--accent); }
+.header h1 span { color: #ffffff; }
 .header-date {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(26,115,232,0.1);
-  border: 1px solid rgba(26,115,232,0.2);
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
   border-radius: 20px;
   padding: 4px 12px;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 13px;
-  color: var(--accent);
+  color: #ffffff;
   margin-bottom: 8px;
 }
 .header-meta {
@@ -81,13 +81,13 @@ body {
 }
 .meta-row {
   font-size: 13px;
-  color: var(--muted);
+  color: rgba(255,255,255,0.6);
   font-family: 'IBM Plex Mono', monospace;
 }
-.meta-row strong { color: var(--label); }
+.meta-row strong { color: rgba(255,255,255,0.85); }
 .meta-warn {
   font-size: 13px;
-  color: #ef4444;
+  color: #fca5a5;
   margin-top: 6px;
 }
 
@@ -139,11 +139,12 @@ body {
 
 /* ── 회사 카드 ── */
 .company-card {
-  margin: 16px;
-  border: 1px solid var(--border);
+  margin: 12px 0;
+  border: none;
   border-radius: 14px;
   overflow: hidden;
   background: var(--surface);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 .card-header {
   display: flex;
@@ -212,7 +213,7 @@ body {
   margin-bottom: 16px;
 }
 .stat-box {
-  background: rgba(0,0,0,0.02);
+  background: #f1f3f5;
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 12px;
@@ -295,7 +296,7 @@ body {
 
 /* ── 섹션 콘텐츠 ── */
 .section-block {
-  background: rgba(0,0,0,0.02);
+  background: #f1f3f5;
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 14px;
