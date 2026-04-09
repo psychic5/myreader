@@ -27,6 +27,89 @@ body {
   padding: 0 20px;
 }
 
+/* 잠금 화면 */
+.lock-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  gap: 24px;
+}
+.lock-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+.lock-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+}
+.pin-wrap {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0;
+}
+.pin-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--muted);
+  transition: all 0.2s;
+}
+.pin-dot.filled {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  gap: 12px;
+  margin-top: 12px;
+}
+.num-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: all 0.15s;
+}
+.num-btn:active {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(0.93);
+}
+.num-btn.empty {
+  visibility: hidden;
+}
+.num-btn.del {
+  font-size: 16px;
+  color: var(--muted);
+}
+.lock-error {
+  color: #ef4444;
+  font-size: 13px;
+  height: 20px;
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .header {
   text-align: center;
   padding: 60px 0 40px;
@@ -103,7 +186,6 @@ body {
   flex-shrink: 0;
 }
 
-/* 카테고리별 아이콘 배경색 */
 .icon-stock { background: linear-gradient(135deg, #00d4aa22, #00d4aa44); }
 
 .footer {
@@ -117,23 +199,105 @@ body {
 </head>
 <body>
 
-<div class="header">
-  <h1>📚 MyReader</h1>
-  <p>분석 리포트 모음</p>
+<!-- 잠금 화면 -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-icon">🔒</div>
+  <div class="lock-title">비밀번호 입력</div>
+  <div class="pin-wrap" id="pinDots">
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+  </div>
+  <div class="lock-error" id="lockError"></div>
+  <div class="numpad">
+    <div class="num-btn" onclick="pressKey('1')">1</div>
+    <div class="num-btn" onclick="pressKey('2')">2</div>
+    <div class="num-btn" onclick="pressKey('3')">3</div>
+    <div class="num-btn" onclick="pressKey('4')">4</div>
+    <div class="num-btn" onclick="pressKey('5')">5</div>
+    <div class="num-btn" onclick="pressKey('6')">6</div>
+    <div class="num-btn" onclick="pressKey('7')">7</div>
+    <div class="num-btn" onclick="pressKey('8')">8</div>
+    <div class="num-btn" onclick="pressKey('9')">9</div>
+    <div class="num-btn empty"></div>
+    <div class="num-btn" onclick="pressKey('0')">0</div>
+    <div class="num-btn del" onclick="pressDelete()">⌫</div>
+  </div>
 </div>
 
-<div class="menu">
-  <a href="stock/" class="menu-btn">
-    <div class="icon icon-stock">📈</div>
-    <div class="info">
-      <div class="title">주식 분석</div>
-      <div class="desc">코스닥 바이오 기업 분석 리포트</div>
-    </div>
-    <div class="arrow">›</div>
-  </a>
+<!-- 메인 콘텐츠 -->
+<div class="main-content" id="mainContent">
+  <div class="header">
+    <h1>📚 MyReader</h1>
+    <p>분석 리포트 모음</p>
+  </div>
+
+  <div class="menu">
+    <a href="stock/" class="menu-btn">
+      <div class="icon icon-stock">📈</div>
+      <div class="info">
+        <div class="title">주식 분석</div>
+        <div class="desc">코스닥 바이오 기업 분석 리포트</div>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+  </div>
+
+  <div class="footer">MyReader · psychic5</div>
 </div>
 
-<div class="footer">MyReader · psychic5</div>
+<script>
+const PIN = '5248';
+let input = '';
+const dots = document.querySelectorAll('.pin-dot');
+
+function updateDots() {
+  dots.forEach((d, i) => d.classList.toggle('filled', i < input.length));
+}
+
+function pressKey(n) {
+  if (input.length >= 4) return;
+  input += n;
+  updateDots();
+  document.getElementById('lockError').textContent = '';
+  if (input.length === 4) {
+    setTimeout(() => {
+      if (input === PIN) {
+        sessionStorage.setItem('unlocked', '1');
+        unlock();
+      } else {
+        document.getElementById('lockError').textContent = '비밀번호가 틀렸습니다';
+        input = '';
+        updateDots();
+        document.getElementById('lockScreen').style.animation = 'shake 0.3s';
+        setTimeout(() => document.getElementById('lockScreen').style.animation = '', 300);
+      }
+    }, 150);
+  }
+}
+
+function pressDelete() {
+  input = input.slice(0, -1);
+  updateDots();
+  document.getElementById('lockError').textContent = '';
+}
+
+function unlock() {
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'flex';
+}
+
+if (sessionStorage.getItem('unlocked') === '1') unlock();
+</script>
+
+<style>
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+</style>
 
 </body>
 </html>
