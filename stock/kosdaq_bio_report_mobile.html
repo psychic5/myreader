@@ -42,13 +42,7 @@ body {
   padding: 52px 20px 24px;
   position: relative;
   border-bottom: 1px solid var(--border);
-}
-.header::after {
-  content:'';
-  position:absolute; top:-60px; right:-60px;
-  width:280px; height:280px;
-  background: radial-gradient(circle, rgba(26,115,232,0.08) 0%, transparent 70%);
-  pointer-events:none;
+  overflow: hidden;
 }
 .header-tag {
   font-family: 'IBM Plex Mono', monospace;
