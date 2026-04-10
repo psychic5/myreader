@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>네이버 vs 카카오 박스권 탈출 분석 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #e9ecef;
+  --surface: #ffffff;
+  --surface2: #f1f3f5;
+  --border: #ced4da;
+  --accent: #1a73e8;
+  --accent2: #3b82f6;
+  --accent3: #e67e00;
+  --red: #d93025;
+  --green: #188038;
+  --text: #101828;
+  --muted: #667085;
+  --label: #344054;
+  --nav-h: 60px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+  overflow-x: hidden;
+}
+
+/* ── 상단 헤더 ── */
+.header {
+  background: linear-gradient(160deg, #0f9d58 0%, #0b7a3e 100%);
+  padding: 52px 20px 24px;
+  position: relative;
+  border-bottom: none;
+  overflow: hidden;
+}
+.header-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.header h1 {
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+.header-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+.header-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+.meta-row {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.meta-row strong { color: rgba(255,255,255,0.85); }
+.meta-warn {
+  font-size: 13px;
+  color: #fca5a5;
+  margin-top: 6px;
+}
+
+/* ── 목차 ── */
+.toc-wrap {
+  padding: 16px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.toc-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.toc-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 4px;
+}
+.toc-scroll::-webkit-scrollbar { display: none; }
+.toc-chip {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 14px;
+  background: rgba(0,0,0,0.03);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--label);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.toc-chip:active {
+  background: rgba(26,115,232,0.12);
+  border-color: rgba(26,115,232,0.4);
+  color: var(--accent);
+}
+
+/* ── 회사 카드 ── */
+.company-card {
+  margin: 12px 0;
+  border: none;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  background: var(--surface2);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.card-header:active { background: rgba(26,115,232,0.05); }
+.company-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 18px;
+}
+.company-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #202124;
+  flex: 1;
+}
+.company-ticker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  background: rgba(0,0,0,0.04);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.badge {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.badge-profit { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.badge-loss { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.badge-mixed { background: rgba(245,158,11,0.15); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
+.chevron {
+  width: 18px; height: 18px;
+  color: var(--muted);
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+.chevron svg { width:100%; height:100%; }
+.card-header.open .chevron { transform: rotate(180deg); }
+
+/* ── 카드 바디 (아코디언) ── */
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.card-body.open { max-height: 9999px; }
+.card-inner { padding: 16px; }
+
+/* ── 스탯 그리드 ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-box {
+  background: #f1f3f5;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.stat-value { font-size: 18px; font-weight: 700; }
+.stat-value.accent { color: var(--accent); }
+.stat-value.positive { color: var(--green); }
+.stat-value.negative { color: var(--red); }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── 52주 바 ── */
+.price-bar-wrap { margin-bottom: 16px; }
+.price-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.price-bar-track {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  position: relative;
+}
+.price-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  border-radius: 2px;
+}
+.price-bar-dot {
+  position: absolute;
+  top: -4px;
+  width: 12px; height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  border: 2px solid var(--accent);
+}
+
+/* ── 탭 섹션 ── */
+.tab-nav {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 14px;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── 섹션 콘텐츠 ── */
+.section-block {
+  background: #f1f3f5;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.section-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 8px;
+}
+.section-content {
+  font-size: 16px;
+  color: var(--label);
+  line-height: 1.8;
+}
+.section-content strong { color: var(--text); }
+
+/* ── 하이라이트 박스 ── */
+.highlight-box {
+  background: rgba(26,115,232,0.05);
+  border: 1px solid rgba(26,115,232,0.2);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.highlight-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.highlight-content {
+  font-size: 16px;
+  color: var(--label);
+  line-height: 1.8;
+}
+.highlight-content strong { color: var(--accent); }
+
+/* ── 확률 바 ── */
+.probability {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.prob-label { font-size: 13px; color: var(--muted); flex: 1; }
+.prob-bar-track { width: 80px; height: 4px; background: var(--border); border-radius: 2px; }
+.prob-bar-fill { height: 100%; border-radius: 2px; }
+.prob-high { background: var(--green); }
+.prob-mid { background: var(--accent3); }
+.prob-low { background: var(--red); }
+.prob-pct { font-size: 13px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 32px; text-align: right; }
+.prob-pct.high { color: var(--green); }
+.prob-pct.mid { color: var(--accent3); }
+.prob-pct.low { color: var(--red); }
+
+/* ── SW ── */
+.sw-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.sw-box { border-radius: 8px; padding: 12px; }
+.sw-box.strength { background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); }
+.sw-box.weakness { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); }
+.sw-title {
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.sw-box.strength .sw-title { color: var(--green); }
+.sw-box.weakness .sw-title { color: var(--red); }
+.sw-list { list-style: none; }
+.sw-list li {
+  font-size: 14px; color: var(--label);
+  padding: 3px 0 3px 14px;
+  position: relative; line-height: 1.6;
+}
+.sw-box.strength .sw-list li::before { content:'+'; position:absolute; left:0; color:var(--green); font-weight:700; }
+.sw-box.weakness .sw-list li::before { content:'−'; position:absolute; left:0; color:var(--red); font-weight:700; }
+
+/* ── 키워드 태그 ── */
+.keyword-box {
+  background: rgba(59,130,246,0.05);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 10px;
+  padding: 14px;
+}
+.keyword-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent2);
+  margin-bottom: 6px;
+}
+.keyword-desc {
+  font-size: 13px; color: var(--muted);
+  margin-bottom: 12px; line-height: 1.6;
+}
+.tag-group { margin-bottom: 10px; }
+.tag-group-label {
+  font-size: 12px; color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 6px;
+}
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  user-select: all;
+  -webkit-user-select: all;
+}
+.tag:active { opacity: 0.6; }
+.tag-core { background: #ffffff; color: #1e40af; border: 2px solid #1e40af; }
+.tag-product { background: #ffffff; color: #854d0e; border: 2px solid #854d0e; }
+.tag-event { background: #ffffff; color: #9a3412; border: 2px solid #9a3412; }
+.tag-risk { background: #ffffff; color: #dc2626; border: 2px solid #dc2626; }
+
+/* ── 태그 범례 ── */
+.tag-legend {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 16px 0;
+  padding: 12px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── 종합 테이블 ── */
+.summary-card {
+  margin: 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.summary-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.summary-item {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(30,45,69,0.5);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.summary-item:last-child { border-bottom: none; }
+.summary-name { font-size: 18px; font-weight: 700; color: #202124; }
+.summary-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); }
+.summary-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-top: 8px;
+}
+.sum-stat { }
+.sum-stat-label { font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; }
+.sum-stat-val { font-size: 14px; font-weight: 600; }
+.sum-stat-val.green { color: var(--green); }
+.sum-stat-val.red { color: var(--red); }
+.sum-stat-val.amber { color: var(--accent3); }
+.sum-stat-val.blue { color: var(--accent); }
+.sum-stat-val.muted { color: var(--muted); }
+.risk-stars { font-size: 16px; }
+
+.insight-box {
+  margin: 0 16px 16px;
+  padding: 14px 16px;
+  background: rgba(26,115,232,0.05);
+  border: 1px solid rgba(26,115,232,0.12);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--label);
+  line-height: 1.8;
+}
+.insight-box strong { color: var(--accent); }
+
+.per-note {
+  margin: 0 16px 80px;
+  padding: 12px 14px;
+  background: rgba(100,116,139,0.08);
+  border: 1px solid rgba(100,116,139,0.2);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.per-note strong { color: var(--label); }
+
+/* ── 하단 네비게이션 ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: calc(var(--nav-h) + var(--safe-bottom));
+  background: rgba(10,14,23,0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+  z-index: 200;
+}
+.nav-items {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  min-width: 52px;
+  text-decoration: none;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.nav-item:active { color: var(--accent); }
+.nav-icon { font-size: 22px; line-height: 1; }
+.nav-label { font-size: 12px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; }
+
+/* ── 토스트 ── */
+.toast {
+  position: fixed;
+  bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(26,115,232,0.9);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 20px;
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 300;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── 딥다이브 분석 섹션 ── */
+.deep-section {
+  margin: 20px 12px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+.deep-header {
+  padding: 18px 18px 14px;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: #fff;
+}
+.deep-header-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 6px;
+}
+.deep-header-title {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.3;
+}
+.deep-body { padding: 16px; }
+.deep-block {
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 10px;
+}
+.deep-block.reason { background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.15); }
+.deep-block.hope { background: rgba(34,197,94,0.04); border: 1px solid rgba(34,197,94,0.15); }
+.deep-block.watch { background: rgba(59,130,246,0.04); border: 1px solid rgba(59,130,246,0.15); }
+.deep-block.compare { background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.15); }
+.deep-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.deep-block.reason .deep-label { color: var(--red); }
+.deep-block.hope .deep-label { color: var(--green); }
+.deep-block.watch .deep-label { color: var(--accent2); }
+.deep-block.compare .deep-label { color: var(--accent3); }
+.deep-text {
+  font-size: 15px;
+  color: var(--label);
+  line-height: 1.85;
+}
+.deep-text strong { color: var(--text); }
+.deep-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0 14px;
+}
+.deep-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.deep-item-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 22px;
+  padding-top: 2px;
+}
+.deep-item-text {
+  font-size: 15px;
+  color: var(--label);
+  line-height: 1.8;
+}
+.deep-item-text strong { color: var(--text); }
+.signal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.signal-card {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.signal-card.bullish { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: var(--green); }
+.signal-card.bearish { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: var(--red); }
+.signal-card .signal-icon { font-size: 18px; margin-bottom: 4px; }
+.signal-card .signal-name { font-weight: 700; }
+.signal-card .signal-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── 섹션 앵커 ── */
+.anchor { display: block; position: relative; top: -80px; visibility: hidden; }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="header">
+  <div class="header-tag">KOSPI Platform Research</div>
+  <h1>네이버 vs 카카오<br>박스권 탈출 분석 2026</h1>
+  <div class="header-date">2026년 4월 10일 (목) 기준</div>
+  <div class="header-meta">
+    <div class="meta-row">실적 <strong>2025년 연간 공시 기준</strong></div>
+    <div class="meta-row">주가 <strong>2026.04.09 장마감 기준</strong></div>
+    <div class="meta-warn">※ 투자 참고용 — 결과 책임은 투자자 본인에게 있음</div>
+  </div>
+</div>
+
+<!-- 목차 -->
+<div class="toc-wrap">
+  <div class="toc-label">Contents</div>
+  <div class="toc-scroll">
+    <a class="toc-chip" href="#c1">네이버</a>
+    <a class="toc-chip" href="#c2">카카오</a>
+    <a class="toc-chip" href="#deep">딥다이브</a>
+    <a class="toc-chip" href="#summary">종합비교</a>
+  </div>
+</div>
+
+<div class="tag-legend" style="margin-top:16px;">
+  <div class="legend-item"><div class="legend-dot" style="background:#93c5fd"></div>핵심기술</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#6ee7d8"></div>사업/서비스</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fcd34d"></div>이벤트신호</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fca5a5"></div>적신호</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 네이버 -->
+<!-- ══════════════════════════════════════ -->
+<span class="anchor" id="c1"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">01</div>
+    <div class="company-name">네이버</div>
+    <div class="company-ticker">035420</div>
+    <span class="badge badge-profit">흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~31조</div><div class="stat-sub">코스피 23위</div></div>
+        <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">12조 350억</div><div class="stat-sub">+12.1% YoY</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value positive">2조 2,081억</div><div class="stat-sub">+11.6% 역대 최고</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size: 14px;">296,000/180,000</div><div class="stat-sub">현재 ~201,500</div></div>
+      </div>
+
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 180,000</span><span>현재 ~201,500</span><span>고 296,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:19%"></div><div class="price-bar-dot" style="left:19%"></div></div>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'네이버')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'네이버')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'네이버')">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'네이버')">뉴스키워드</button>
+      </div>
+
+      <!-- 탭1: 사업분석 -->
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>서치플랫폼</strong>(4.17조, 35%): 검색 광고 + 디스플레이 광고. 여전히 최대 캐시카우. <strong>커머스</strong>(3.69조, 31%): 스마트스토어·네이버쇼핑·멤버십. 2025년 +26% 성장으로 최대 성장 엔진. <strong>핀테크</strong>(1.69조, 14%): 네이버페이·네이버파이낸셜. <strong>콘텐츠</strong>(1.90조, 16%): 웹툰·스노우·제페토. <strong>클라우드</strong>(5,878억, 5%): 네이버클라우드·B2B AI.</div></div>
+        <div class="highlight-box"><div class="highlight-title">핵심 성장 동력</div><div class="highlight-content"><strong>하이퍼클로바X + AI 에이전트</strong>: 옴니모달 업그레이드 완료. 쇼핑 AI 에이전트(3월 출시)로 커머스 전환율 끌어올리는 중. B2B 클로바 스튜디오 2,000개사 도입. GPU 투자 올해 1조원 이상 예정.</div>
+          <div class="probability"><span class="prob-label">AI 수익화 본격화</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:55%"></div></div><span class="prob-pct mid">55%</span></div>
+          <div class="probability"><span class="prob-label">커머스 30%+ 성장 유지</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:70%"></div></div><span class="prob-pct high">70%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">증권사 컨센서스: <strong>매출 ~13.5조, 영업이익 ~2.5조</strong> 추정. 1분기 매출 3.2조(+12% YoY) 예상되나 GPU 투자 비용 증가로 <strong>영업이익은 컨센서스 6% 하회</strong> 전망. 커머스 1분기 +30% 성장 추정(SK증권).</div></div>
+      </div>
+
+      <!-- 탭2: 주가동인 -->
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">박스권 히스토리</div><div class="section-content">2024년 이후 <strong>18만~30만원 박스권</strong>에 갇혀 있음. 2024년 고점 28만 → 하락 → 2025년 초 20만원대 횡보 → 2025년 말 실적 발표 후 잠시 29.6만 터치 → 2026년 초 다시 <strong>19만원대까지 급락</strong>. 1년 넘게 의미 있는 박스 상단 돌파 실패.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content">실적은 역대 최고인데 주가는 못 가는 <strong>"실적 디커플링"</strong> 상태. 원인: ① AI 투자 비용 급증(GPU 1조+)으로 순이익 -5.8% 감소 ② 글로벌 빅테크(구글·오픈AI) 대비 AI 경쟁력 의구심 ③ 증권사 목표가 연이어 하향(평균 33만→30만). PER ~16배로 동종업종 21배 대비 저평가이나 시장이 할인하는 중.</div></div>
+      </div>
+
+      <!-- 탭3: 강점약점 -->
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>매출 12조 역대 최대 + 두자릿수 성장</li><li>커머스 +26% 폭풍 성장</li><li>하이퍼클로바X 자체 AI 보유</li><li>PER 16배 — 글로벌 대비 저평가</li><li>배당수익률 1.33%</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>AI 투자로 순이익 감소</li><li>글로벌 빅테크 대비 AI 경쟁력 의문</li><li>라인야후 지분 매각 불확실성</li><li>목표주가 연이어 하향</li><li>18만~30만 박스권 2년째</li></ul></div>
+        </div>
+      </div>
+
+      <!-- 탭4: 뉴스키워드 -->
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">하이퍼클로바X</span><span class="tag tag-core" onclick="copyTag(this)">네이버 AI 에이전트</span><span class="tag tag-core" onclick="copyTag(this)">클로바 스튜디오</span><span class="tag tag-core" onclick="copyTag(this)">네이버 옴니모달</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">네이버 커머스</span><span class="tag tag-product" onclick="copyTag(this)">네이버 쇼핑라이브</span><span class="tag tag-product" onclick="copyTag(this)">네이버클라우드</span><span class="tag tag-product" onclick="copyTag(this)">네이버 멤버십</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">네이버 실적 발표</span><span class="tag tag-event" onclick="copyTag(this)">네이버 자사주</span><span class="tag tag-event" onclick="copyTag(this)">네이버 GPU 투자</span><span class="tag tag-event" onclick="copyTag(this)">네이버 AMD</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">네이버 목표주가 하향</span><span class="tag tag-risk" onclick="copyTag(this)">라인야후 지분</span><span class="tag tag-risk" onclick="copyTag(this)">네이버 영업이익 미스</span></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 카카오 -->
+<!-- ══════════════════════════════════════ -->
+<span class="anchor" id="c2"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">02</div>
+    <div class="company-name">카카오</div>
+    <div class="company-ticker">035720</div>
+    <span class="badge badge-profit">흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~20조</div><div class="stat-sub">고점 대비 -75%</div></div>
+        <div class="stat-box"><div class="stat-label">2025 매출</div><div class="stat-value">8조 991억</div><div class="stat-sub">+3% YoY 역대최대</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익</div><div class="stat-value positive">7,320억</div><div class="stat-sub">+48% YoY 역대최대</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size: 14px;">71,600/36,300</div><div class="stat-sub">현재 ~47,000</div></div>
+      </div>
+
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 36,300</span><span>현재 ~47,000</span><span>고 71,600</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:30%"></div><div class="price-bar-dot" style="left:30%"></div></div>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'카카오')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'카카오')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'카카오')">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'카카오')">뉴스키워드</button>
+      </div>
+
+      <!-- 탭1: 사업분석 -->
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>톡비즈</strong>(광고+커머스): 4분기 매출 6,271억(+13% YoY). 카카오톡 기반 광고·비즈보드·선물하기. 핵심 수익원. <strong>플랫폼 기타</strong>(모빌리티·페이 등): 4분기 5,239억(+30% YoY). 카카오T·카카오페이 고성장. <strong>콘텐츠</strong>(카카오엔터·게임즈): 수년째 역성장. 카카오엔터 당기순손실 지속. <strong>커머스 거래액</strong>: 연간 10.6조(+6%).</div></div>
+        <div class="highlight-box"><div class="highlight-title">핵심 성장 동력</div><div class="highlight-content"><strong>카나나(Kanana) AI + 오픈AI 제휴</strong>: 카카오톡에 온디바이스 AI '카나나' 탑재. 오픈AI와 국내 최초 전략적 제휴 → '챗GPT 포 카카오' 쇼핑 연동 추진. AI 스튜디오 조직 통합, 정신아 대표 직접 총괄. 2026 목표: <strong>매출 10% 성장, 영업이익률 10%</strong>.</div>
+          <div class="probability"><span class="prob-label">AI 수익화 본격화</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:40%"></div></div><span class="prob-pct mid">40%</span></div>
+          <div class="probability"><span class="prob-label">영업이익 1조 돌파</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:60%"></div></div><span class="prob-pct mid">60%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">SK증권: <strong>영업이익 1조 432억(+55.3%)</strong> 전망. 카카오톡 개편 효과 + AI 에이전트 이용자 증가. 1분기 매출 2.0조, 영업이익 1,717억 추정. 다만 콘텐츠 부문 회복 여부가 관건.</div></div>
+      </div>
+
+      <!-- 탭2: 주가동인 -->
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">박스권 히스토리</div><div class="section-content">2021년 17만원 역대 고점 → <strong>3년 연속 하락</strong>. 2023년 SM엔터 시세조종 사태로 급락 → 2024년 3만원대 터치 → 2025년 실적 반등으로 5~7만원대 회복 → 2026년 4월 다시 <strong>4만원대 후반까지 하락</strong>. 고점 대비 -75%. 사실상 '박스권'이 아니라 <strong>'하락 추세 속 반등 시도'</strong>에 가까움.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>3중 악재 할인</strong> 상태. ① 김범수 SM엔터 시세조종 재판(1심 무죄, 검찰 항소 중 — 징역 15년 구형) ② 카카오엔터 수년째 적자 + 역성장 ③ 자회사 시총 하락(카카오뱅크·카카오페이)으로 지분가치 급감. PER ~42배로 동종업종 21배의 2배. 기대감만으로 프리미엄 받는 구조.</div></div>
+      </div>
+
+      <!-- 탭3: 강점약점 -->
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>카카오톡 MAU 4,800만 — 국민앱</li><li>영업이익 +48% 역대 최대 성장</li><li>오픈AI 전략 제휴(국내 최초)</li><li>핀테크(페이·뱅크) 고성장</li><li>2026 영업이익 1조 돌파 전망</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>김범수 재판 리스크(항소심)</li><li>카카오엔터 적자 지속</li><li>고점 대비 -75% 신뢰 훼손</li><li>PER 42배 — 실적 대비 고평가</li><li>플랫폼 독과점 규제 리스크</li></ul></div>
+        </div>
+      </div>
+
+      <!-- 탭4: 뉴스키워드 -->
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">카나나</span><span class="tag tag-core" onclick="copyTag(this)">카카오 AI 에이전트</span><span class="tag tag-core" onclick="copyTag(this)">챗GPT 포 카카오</span><span class="tag tag-core" onclick="copyTag(this)">카나나 검색</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">카카오톡 개편</span><span class="tag tag-product" onclick="copyTag(this)">카카오페이</span><span class="tag tag-product" onclick="copyTag(this)">카카오모빌리티</span><span class="tag tag-product" onclick="copyTag(this)">카카오엔터</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">카카오 실적 발표</span><span class="tag tag-event" onclick="copyTag(this)">카카오 AI 스튜디오</span><span class="tag tag-event" onclick="copyTag(this)">카카오 오픈AI</span><span class="tag tag-event" onclick="copyTag(this)">카카오 자회사 IPO</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">김범수 재판</span><span class="tag tag-risk" onclick="copyTag(this)">SM엔터 시세조종</span><span class="tag tag-risk" onclick="copyTag(this)">카카오엔터 적자</span><span class="tag tag-risk" onclick="copyTag(this)">카카오 목표주가 하향</span></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 딥다이브: 왜 박스권인가 -->
+<!-- ══════════════════════════════════════ -->
+<span class="anchor" id="deep"></span>
+<div class="deep-section">
+  <div class="deep-header">
+    <div class="deep-header-tag">Deep Dive Analysis</div>
+    <div class="deep-header-title">왜 몇 년째 박스권인가?<br>그리고 탈출구는 있는가</div>
+  </div>
+  <div class="deep-body">
+
+    <!-- 구조적 원인 -->
+    <div class="deep-block reason">
+      <div class="deep-label">구조적 침체 원인 — 실적은 좋은데 왜 안 오르나</div>
+      <div class="deep-item">
+        <div class="deep-item-num">01</div>
+        <div class="deep-item-text"><strong>"AI 투자 = 비용" 구간</strong><br>네이버는 GPU 투자만 올해 1조원 이상. 카카오도 AI 스튜디오 신설 + 오픈AI 제휴 비용. 두 기업 모두 AI에 돈을 쏟고 있지만 <strong>아직 AI가 돈을 벌어다주는 단계가 아님</strong>. 시장은 "비용은 확정, 수익은 불확실"로 봄.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">02</div>
+        <div class="deep-item-text"><strong>글로벌 빅테크와의 직접 경쟁</strong><br>구글 제미나이, 오픈AI 챗GPT가 한국어 검색·커머스 시장에 직접 진입 중. "네이버 검색 대신 AI 검색" 시나리오가 현실화될 경우 <strong>네이버의 서치플랫폼(매출 35%) 자체가 위협</strong>받음. 카카오는 오히려 오픈AI와 제휴했지만, 이는 자체 AI 경쟁력 부족의 반증이기도.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">03</div>
+        <div class="deep-item-text"><strong>카카오 고유 리스크: 창업자 재판 + 자회사 부진</strong><br>김범수 SM엔터 시세조종 1심 무죄였으나 검찰 항소 중(징역 15년 구형). 유죄 확정 시 그룹 지배구조 흔들림. 카카오엔터는 출범 초 매출 2조→ 현재 역성장 + 순손실 지속. <strong>카카오뱅크·카카오페이 시총도 동반 하락</strong>해 모회사 지분가치까지 깎임.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">04</div>
+        <div class="deep-item-text"><strong>밸류에이션 기준점 상실</strong><br>과거 "한국의 구글/카카오톡 독점" 프리미엄으로 PER 30~60배를 받던 시대가 끝남. 글로벌 투자자 기준 <strong>네이버는 "로컬 검색엔진", 카카오는 "메신저+잡화점"</strong>으로 재분류. 메타·구글 대비 성장률이 낮아 글로벌 자금 유입 근거 약화.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">05</div>
+        <div class="deep-item-text"><strong>수급 구조: 외국인·기관 매도 우위</strong><br>네이버는 라인야후 지분 문제(일본 정부 압박), 카카오는 창업자 리스크로 기관 투자자들이 비중 축소 중. 개인 투자자만으로는 대형주 박스권 돌파가 구조적으로 어려움.</div>
+      </div>
+    </div>
+
+    <!-- 네이버 vs 카카오 비교 -->
+    <div class="deep-block compare">
+      <div class="deep-label">네이버 vs 카카오 — 같은 박스권, 다른 체질</div>
+      <div class="deep-text">
+        같은 "K-플랫폼"이지만 박스권의 성격이 다름.<br><br>
+        <strong>네이버</strong>는 실적이 계속 좋아지는데 주가가 안 따라가는 <strong>"저평가 박스권"</strong>. 매출 12조, 영업이익 2.2조, PER 16배. 커머스 +26% 성장. 실적만 보면 올라야 하는데, AI 투자 비용과 글로벌 경쟁 우려가 뚜껑을 누르는 중.<br><br>
+        <strong>카카오</strong>는 실적이 반등했지만 과거 상처가 너무 큰 <strong>"신뢰 회복 박스권"</strong>. 고점 17만 → 현재 4.7만(-75%). 영업이익 +48%로 빠르게 회복 중이지만, PER 42배 = 이미 회복을 상당 부분 선반영. 김범수 재판 결과에 따라 급등·급락 양방향 열려 있음.<br><br>
+        한 줄 요약: <strong>네이버는 "저평가 함정"이냐 "저점 매수 기회"냐의 문제</strong>, <strong>카카오는 "회복 중"이냐 "구조적 하락 중 반등"이냐의 문제</strong>.
+      </div>
+    </div>
+
+    <!-- 반등 탈출구 -->
+    <div class="deep-block hope">
+      <div class="deep-label">반등의 탈출구 — 뭘 기대할 수 있나</div>
+      <div class="deep-item">
+        <div class="deep-item-num">01</div>
+        <div class="deep-item-text"><strong>AI 수익화 가시화 (양사 공통)</strong><br>하이퍼클로바X·카나나가 실제로 <strong>광고 단가 인상, 커머스 전환율 상승, B2B 매출 증가</strong>로 숫자를 만들어내는 순간이 가장 강력한 트리거. 네이버는 쇼핑 AI 에이전트(3월 출시), 카카오는 '카나나 인 카카오톡'(1분기 정식 출시)이 첫 시험대.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">02</div>
+        <div class="deep-item-text"><strong>네이버 커머스의 쿠팡 대항마 입증</strong><br>네이버 커머스가 2025년 +26% 성장, 1분기 +30% 전망. 쿠팡 독주 체제에서 <strong>네이버쇼핑이 실질적 2위로 자리잡으면</strong> 커머스 사업부 단독 재평가(리레이팅) 가능. 멤버십·배송 커버리지 확대가 핵심.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">03</div>
+        <div class="deep-item-text"><strong>카카오 김범수 항소심 무죄 확정</strong><br>현재 주가에 가장 큰 할인 요인. <strong>무죄 확정 시 지배구조 불확실성 해소</strong> → 기관 투자자 복귀 → 단기 20~30% 급등 가능성. 반대로 유죄 시 4만원 하방 열림.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">04</div>
+        <div class="deep-item-text"><strong>카카오엔터 턴어라운드</strong><br>카카오 콘텐츠 부문이 수년째 발목. 카카오엔터가 <strong>분기 흑자 전환에 성공하면</strong> 그룹 전체 실적 레버리지 + 자회사 가치 재평가로 이어짐. 현재 몸집은 줄었지만 순이익 개선 신호 있음.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">05</div>
+        <div class="deep-item-text"><strong>주주환원 강화 (네이버)</strong><br>네이버는 이미 배당수익률 1.33% + 자사주 매입. <strong>자사주 소각이나 배당 대폭 인상</strong> 시 밸류업 프로그램 수혜 + 기관 매수 전환 촉매. PER 16배에서 자사주 소각은 즉각적 주가 부양 효과.</div>
+      </div>
+    </div>
+
+    <!-- 시그널 카드 -->
+    <div class="deep-block watch">
+      <div class="deep-label">실전 시그널 — 이 신호가 오면 주목</div>
+      <div class="deep-text" style="margin-bottom:12px;">아래 신호 중 <strong>2~3개가 동시에</strong> 나타나면 박스권 탈출 확률이 크게 높아짐.</div>
+      <div class="signal-grid">
+        <div class="signal-card bullish">
+          <div class="signal-icon">📈</div>
+          <div class="signal-name">네이버 영업이익 서프라이즈</div>
+          <div class="signal-desc">분기 실적에서 AI 비용 통제 + 이익 컨센서스 상회</div>
+        </div>
+        <div class="signal-card bullish">
+          <div class="signal-icon">🤖</div>
+          <div class="signal-name">AI 에이전트 MAU 공개</div>
+          <div class="signal-desc">쇼핑 AI·카나나 이용자 수가 유의미한 수준 도달</div>
+        </div>
+        <div class="signal-card bullish">
+          <div class="signal-icon">⚖️</div>
+          <div class="signal-name">김범수 항소심 무죄</div>
+          <div class="signal-desc">카카오 지배구조 불확실성 해소 → 기관 복귀</div>
+        </div>
+        <div class="signal-card bullish">
+          <div class="signal-icon">💰</div>
+          <div class="signal-name">자사주 소각 / 배당 인상</div>
+          <div class="signal-desc">밸류업 프로그램 참여로 기관 매수 전환</div>
+        </div>
+        <div class="signal-card bearish">
+          <div class="signal-icon">🌐</div>
+          <div class="signal-name">구글 AI 검색 한국 점유율 급등</div>
+          <div class="signal-desc">네이버 검색 광고 매출 구조적 훼손 시작</div>
+        </div>
+        <div class="signal-card bearish">
+          <div class="signal-icon">⚠️</div>
+          <div class="signal-name">김범수 유죄 확정</div>
+          <div class="signal-desc">카카오 그룹 지배구조 재편 불가피 → 급락</div>
+        </div>
+        <div class="signal-card bearish">
+          <div class="signal-icon">📉</div>
+          <div class="signal-name">카카오엔터 추가 감손</div>
+          <div class="signal-desc">콘텐츠 자회사 가치 추가 하락 → 순자산 훼손</div>
+        </div>
+        <div class="signal-card bearish">
+          <div class="signal-icon">🔻</div>
+          <div class="signal-name">외국인 대량 매도</div>
+          <div class="signal-desc">라인야후·글로벌 리스크로 패시브 자금 이탈</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 결론 -->
+    <div class="deep-block hope" style="background:rgba(26,115,232,0.04); border-color:rgba(26,115,232,0.15);">
+      <div class="deep-label" style="color:var(--accent);">결론 — 언제 사야 하나</div>
+      <div class="deep-text">
+        솔직히 <strong>"지금 당장"의 촉매는 부족</strong>함. 두 종목 모두 2025년 역대 최대 실적에도 주가가 반응하지 않았다는 건, 시장이 <strong>"과거 실적"이 아니라 "미래 AI 경쟁력"을 보고 있다</strong>는 뜻.<br><br>
+        <strong>네이버</strong>: PER 16배는 객관적 저평가. AI 비용이 통제되기 시작하는 <strong>2026년 하반기~2027년 상반기</strong>가 리레이팅 구간이 될 가능성. 커머스 성장이 지속되는 한 하방은 제한적(18만원 지지). <strong>장기 투자자에게 현재 구간은 나쁘지 않음.</strong><br><br>
+        <strong>카카오</strong>: 김범수 항소심 결과가 나올 때까지는 <strong>이벤트 드리븐</strong> 성격이 강함. 무죄 확정 + 영업이익 1조 돌파가 동시에 오면 7만원 돌파 가능하지만, 유죄 리스크를 감수해야 함. <strong>확신 없으면 결과 확인 후 진입이 안전.</strong>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 종합 비교 -->
+<!-- ══════════════════════════════════════ -->
+<span class="anchor" id="summary"></span>
+<div class="summary-card">
+  <div class="summary-header">SUMMARY — 네이버 vs 카카오 종합</div>
+
+  <div class="summary-item">
+    <div>
+      <div class="summary-name">네이버</div>
+      <div class="summary-ticker">035420</div>
+    </div>
+    <div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~31조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">PER</div><div class="sum-stat-val green">~16배</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">ROE</div><div class="sum-stat-val amber">~4%</div></div>
+      </div>
+      <div class="summary-stats" style="margin-top:4px;">
+        <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val green">+2.2조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size: 13px; color:var(--label);">실적+AI</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div>
+      <div class="summary-name">카카오</div>
+      <div class="summary-ticker">035720</div>
+    </div>
+    <div>
+      <div class="summary-stats">
+        <div class="sum-stat"><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~20조</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">PER</div><div class="sum-stat-val red">~42배</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">ROE</div><div class="sum-stat-val red">마이너스</div></div>
+      </div>
+      <div class="summary-stats" style="margin-top:4px;">
+        <div class="sum-stat"><div class="sum-stat-label">영업이익</div><div class="sum-stat-val green">+7,320억</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐</div></div>
+        <div class="sum-stat"><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size: 13px; color:var(--label);">AI+재판</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="insight-box">
+  <strong>핵심 인사이트</strong>: 두 기업 모두 2025년 역대 최대 실적을 기록했지만 주가는 오히려 하락 중. <strong style="color:#fff;">네이버</strong>는 AI 투자 비용 부담으로 '외형 성장 vs 수익성 악화' 딜레마, <strong style="color:#fff;">카카오</strong>는 창업자 리스크와 콘텐츠 자회사 부진이 발목. 밸류에이션 기준으로 네이버(PER 16배)가 카카오(PER 42배)보다 안전마진이 크지만, 카카오는 영업이익 +48% 성장률과 AI 제휴가 박스권 탈출 트리거가 될 수 있음.
+</div>
+
+<div class="per-note">
+  <strong>박스권 탈출 조건 체크리스트</strong><br>
+  · <strong>네이버</strong>: AI 투자 비용 통제 + 커머스 30%+ 성장 유지 + 목표가 하향 멈춤 → 30만 돌파 가능<br>
+  · <strong>카카오</strong>: 김범수 항소심 무죄 확정 + 카카오엔터 흑자 전환 + AI 수익화 가시화 → 7만 돌파 가능<br>
+  · <strong>공통 리스크</strong>: 글로벌 빅테크(구글·오픈AI) AI 서비스 국내 침투 가속 시 양사 모두 추가 하락 압력
+</div>
+
+<!-- 하단 내비게이션 -->
+<nav class="bottom-nav">
+  <div class="nav-items">
+    <a class="nav-item" href="#" onclick="scrollToTop()">
+      <div class="nav-icon">⬆️</div>
+      <div class="nav-label">TOP</div>
+    </a>
+    <a class="nav-item" href="#c1"><div class="nav-icon">🟢</div><div class="nav-label">네이버</div></a>
+    <a class="nav-item" href="#c2"><div class="nav-icon">🟡</div><div class="nav-label">카카오</div></a>
+    <a class="nav-item" href="#deep"><div class="nav-icon">🔍</div><div class="nav-label">딥다이브</div></a>
+    <a class="nav-item" href="#summary"><div class="nav-icon">📊</div><div class="nav-label">종합</div></a>
+  </div>
+</nav>
+
+<!-- 토스트 -->
+<div class="toast" id="toast">복사됨 ✓</div>
+
+<script>
+// 아코디언
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  header.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+// 탭
+function switchTab(btn, cardId) {
+  const card = btn.closest('.card-body');
+  const tabs = card.querySelectorAll('.tab-btn');
+  const panes = card.querySelectorAll('.tab-pane');
+  const idx = Array.from(tabs).indexOf(btn);
+  tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
+  panes.forEach((p, i) => p.classList.toggle('active', i === idx));
+}
+
+// 태그 복사
+function copyTag(el) {
+  const text = el.textContent.trim();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => showToast());
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast();
+  }
+}
+
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+function scrollToTop(e) {
+  if (e) e.preventDefault();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 앵커 클릭 시 네비게이션 높이만큼 보정
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const id = this.getAttribute('href').slice(1);
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) {
+      e.preventDefault();
+      const offset = el.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: offset, behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>
