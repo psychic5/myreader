@@ -53,13 +53,22 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 .card:active { transform: scale(0.98); background: #f0f4ff; }
+.card .card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
 .card .tag {
   display: inline-block;
   font-size: 12px; font-weight: 700;
   letter-spacing: 1px; text-transform: uppercase;
   color: #fff; background: var(--accent);
   border-radius: 6px; padding: 3px 10px;
-  margin-bottom: 10px;
+}
+.card .date {
+  font-size: 12px; color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 .card .title {
   font-size: 18px; font-weight: 700;
@@ -77,12 +86,12 @@ body {
 
 <div class="list">
   <a href="naver_kakao_report_mobile.html" class="card">
-    <div class="tag">코스피 플랫폼</div>
+    <div class="card-top"><div class="tag">코스피 플랫폼</div><div class="date">2026.04.10</div></div>
     <div class="title">네이버 vs 카카오 박스권 탈출 분석 2026</div>
     <div class="meta">몇 년째 박스권, 탈출 조건은?</div>
   </a>
   <a href="kosdaq_bio_report_mobile.html" class="card">
-    <div class="tag">코스닥 바이오</div>
+    <div class="card-top"><div class="tag">코스닥 바이오</div><div class="date">2026.04.09</div></div>
     <div class="title">코스닥 바이오 8대 기업 분석 2026</div>
     <div class="meta">2026년 바이오 섹터 핵심 기업 리포트</div>
   </a>
