@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>네이버 vs 카카오 박스권 탈출 분석 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --bg: #e9ecef;
@@ -661,6 +662,483 @@ body {
 
 /* ── 섹션 앵커 ── */
 .anchor { display: block; position: relative; top: -80px; visibility: hidden; }
+
+/* ═══════════════════════════════════════════ */
+/* ══  v2 보강 컴포넌트  ═══════════════════ */
+/* ═══════════════════════════════════════════ */
+
+/* 기준일 경과 배지 */
+.freshness-badge {
+  margin: 12px 16px 0;
+  padding: 8px 14px;
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 8px;
+  color: var(--green);
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  text-align: center;
+}
+.freshness-badge.stale {
+  background: rgba(245,158,11,0.1);
+  border-color: rgba(245,158,11,0.3);
+  color: var(--accent3);
+}
+
+/* 섹터 진단 */
+.sector-overview {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.sector-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.diagnosis-list { list-style: none; }
+.diagnosis-list li {
+  padding: 8px 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--label);
+  border-bottom: 1px solid var(--border);
+}
+.diagnosis-list li:last-child { border-bottom: none; }
+.diagnosis-list li.good { color: var(--green); }
+.diagnosis-list li.neutral { color: var(--label); }
+.diagnosis-list li.bad { color: var(--red); }
+.diagnosis-list strong { font-weight: 700; }
+
+/* 이벤트 캘린더 */
+.event-calendar {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.cal-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.cal-item {
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.cal-item:last-child { border-bottom: none; }
+.cal-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.cal-title { font-size: 14px; color: var(--text); font-weight: 500; }
+.cal-tag {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.cal-item.high .cal-tag { background: rgba(239,68,68,0.12); color: var(--red); }
+.cal-item.mid .cal-tag { background: rgba(245,158,11,0.12); color: var(--accent3); }
+.cal-item.low .cal-tag { background: rgba(100,116,139,0.1); color: var(--muted); }
+
+/* 주가 스파크라인 */
+.price-chart-wrap {
+  margin: 8px 0 16px;
+  padding: 8px 12px;
+  background: #fafbfc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  position: relative;
+}
+.price-chart-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.price-chart { width: 100% !important; height: 60px !important; }
+
+/* 경쟁사 매핑 */
+.competitor-matrix {
+  margin-top: 14px;
+  padding: 12px;
+  background: #fafbfc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.matrix-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent2);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.comp-table th, .comp-table td {
+  padding: 7px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.comp-table th {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.comp-table td.us {
+  background: rgba(26,115,232,0.06);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* 시나리오 트리 */
+.scenario-tree {
+  margin-top: 14px;
+  padding: 14px;
+  background: rgba(26,115,232,0.03);
+  border: 1px solid rgba(26,115,232,0.15);
+  border-radius: 10px;
+}
+.sc-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+.sc-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  align-items: start;
+}
+.sc-row.bull { background: rgba(34,197,94,0.07); }
+.sc-row.base { background: rgba(245,158,11,0.07); }
+.sc-row.bear { background: rgba(239,68,68,0.07); }
+.sc-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+.sc-row.bull .sc-tag { color: var(--green); }
+.sc-row.base .sc-tag { color: var(--accent3); }
+.sc-row.bear .sc-tag { color: var(--red); }
+.sc-content { font-size: 13px; line-height: 1.5; }
+.sc-cond { color: var(--label); margin-bottom: 3px; }
+.sc-price {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 12px;
+}
+.sc-expected {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--label);
+}
+.sc-expected strong { color: var(--accent); }
+.sc-expected .positive { color: var(--green); font-weight: 700; }
+.sc-expected .negative { color: var(--red); font-weight: 700; }
+
+/* 액션존 */
+.action-zone {
+  margin-top: 14px;
+  padding: 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.az-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+.az-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 5px;
+  background: #fff;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+}
+.az-row.buy-strong { border-left: 3px solid var(--green); }
+.az-row.buy { border-left: 3px solid #a3e635; }
+.az-row.hold { border-left: 3px solid var(--muted); }
+.az-row.sell { border-left: 3px solid var(--accent3); }
+.az-row.stop { border-left: 3px solid var(--red); }
+.az-note {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* 수급 테이블 */
+.flow-section {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.flow-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 8px;
+}
+.flow-table caption {
+  text-align: left;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  padding-bottom: 8px;
+}
+.flow-table th, .flow-table td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.flow-table th {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.flow-table td:first-child {
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 600;
+  color: var(--text);
+}
+.flow-table .pos { color: var(--green); font-weight: 600; }
+.flow-table .neg { color: var(--red); font-weight: 600; }
+.flow-table .bad {
+  background: rgba(239,68,68,0.08);
+  color: var(--red);
+  font-size: 11px;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+.flow-table .good {
+  background: rgba(34,197,94,0.08);
+  color: var(--green);
+  font-size: 11px;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+.flow-table .mixed {
+  background: rgba(245,158,11,0.08);
+  color: var(--accent3);
+  font-size: 11px;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+/* 오너 리스크 */
+.owner-risk {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.or-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--red);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.or-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  align-items: center;
+}
+.or-item:last-child { border-bottom: none; }
+.or-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.or-role {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-left: 6px;
+  font-weight: 400;
+}
+.or-issue {
+  grid-column: 1;
+  font-size: 13px;
+  color: var(--label);
+  line-height: 1.5;
+}
+.or-severity {
+  grid-column: 2;
+  grid-row: 1;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.or-severity.high { background: rgba(239,68,68,0.12); color: var(--red); }
+.or-severity.mid { background: rgba(245,158,11,0.12); color: var(--accent3); }
+.or-severity.low { background: rgba(100,116,139,0.1); color: var(--muted); }
+
+/* 체크리스트 위젯 */
+.checklist {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.cl-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.checklist label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--label);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.checklist label:active { background: var(--surface2); }
+.checklist input[type=checkbox] {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+.checklist input:checked + span {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.cl-progress {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--surface2);
+  border-radius: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+.cl-progress.done { background: rgba(34,197,94,0.1); color: var(--green); }
+
+/* 참고자료 푸터 */
+.references {
+  margin: 16px 12px;
+  padding: 14px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.ref-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.references ul { list-style: none; }
+.references li {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 3px 0;
+  line-height: 1.6;
+}
+.references strong {
+  color: var(--label);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  margin-right: 6px;
+}
+
+/* 관련 리포트 */
+.related-reports {
+  margin: 16px 12px 100px;
+  padding: 14px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.rel-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+.rel-card {
+  display: block;
+  padding: 12px;
+  margin-bottom: 6px;
+  background: var(--surface2);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text);
+  transition: background 0.15s;
+}
+.rel-card:active { background: rgba(26,115,232,0.08); }
+.rel-tag {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+.rel-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.rel-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
 </style>
 </head>
 <body>
@@ -677,6 +1155,59 @@ body {
   </div>
 </div>
 
+<!-- 기준일 경과 배지 -->
+<div class="freshness-badge" id="freshnessBadge">📅 작성 기준일 확인 중...</div>
+
+<!-- 섹터 진단 -->
+<div class="sector-overview">
+  <div class="sector-label">SECTOR DIAGNOSIS — KOSPI 플랫폼 2026</div>
+  <ul class="diagnosis-list">
+    <li class="good">✅ <strong>실적 체력</strong> — 네이버·카카오 모두 2025년 역대 최대 매출/영업이익 달성</li>
+    <li class="neutral">⚖ <strong>AI 전환기</strong> — 투자 비용은 확정, 수익화는 2026 하반기~2027 상반기로 지연</li>
+    <li class="bad">⚠ <strong>구조적 위협</strong> — 구글·오픈AI의 국내 검색·커머스 직접 침투, 글로벌 자금 이탈</li>
+  </ul>
+</div>
+
+<!-- 이벤트 캘린더 -->
+<div class="event-calendar">
+  <div class="cal-label">📅 EVENT CALENDAR — 향후 12개월 핵심 이벤트</div>
+  <div class="cal-item high">
+    <div class="cal-date">2026.05</div>
+    <div class="cal-title">네이버·카카오 1Q 실적발표</div>
+    <div class="cal-tag">실적</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.05</div>
+    <div class="cal-title">카카오 '카나나 인 카카오톡' 정식 출시</div>
+    <div class="cal-tag">런칭</div>
+  </div>
+  <div class="cal-item high">
+    <div class="cal-date">2026.07</div>
+    <div class="cal-title">★ 김범수 SM엔터 시세조종 항소심 선고 (추정)</div>
+    <div class="cal-tag">재판</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.08</div>
+    <div class="cal-title">네이버·카카오 2Q 실적 — AI 수익화 첫 숫자 공개</div>
+    <div class="cal-tag">실적</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.3Q</div>
+    <div class="cal-title">네이버 쇼핑 AI 에이전트 6개월차 MAU 공개 (추정)</div>
+    <div class="cal-tag">지표</div>
+  </div>
+  <div class="cal-item low">
+    <div class="cal-date">2026.4Q</div>
+    <div class="cal-title">라인야후 지분 구조 재검토 (일본 정부 압박 대응)</div>
+    <div class="cal-tag">지배구조</div>
+  </div>
+  <div class="cal-item low">
+    <div class="cal-date">2027.1Q</div>
+    <div class="cal-title">카카오 자회사 IPO 재추진 가능성 (모빌리티·페이)</div>
+    <div class="cal-tag">자회사</div>
+  </div>
+</div>
+
 <!-- 목차 -->
 <div class="toc-wrap">
   <div class="toc-label">Contents</div>
@@ -684,7 +1215,10 @@ body {
     <a class="toc-chip" href="#c1">네이버</a>
     <a class="toc-chip" href="#c2">카카오</a>
     <a class="toc-chip" href="#deep">딥다이브</a>
+    <a class="toc-chip" href="#flow">수급</a>
+    <a class="toc-chip" href="#owner">오너리스크</a>
     <a class="toc-chip" href="#summary">종합비교</a>
+    <a class="toc-chip" href="#checklist">체크리스트</a>
   </div>
 </div>
 
@@ -719,6 +1253,12 @@ body {
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 180,000</span><span>현재 ~201,500</span><span>고 296,000</span></div>
         <div class="price-bar-track"><div class="price-bar-fill" style="width:19%"></div><div class="price-bar-dot" style="left:19%"></div></div>
+      </div>
+
+      <!-- 주가 스파크라인 (최근 12개월 월말 종가 추정) -->
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="215000,240000,260000,280000,296000,275000,250000,228000,215000,228000,245000,235000,201500"></canvas>
       </div>
 
       <div class="tab-nav">
@@ -764,6 +1304,57 @@ body {
         </div>
       </div>
 
+      <!-- 경쟁사 매핑 -->
+      <div class="competitor-matrix">
+        <div class="matrix-label">⚔ 경쟁 지형</div>
+        <table class="comp-table">
+          <tr><th></th><th>네이버</th><th>쿠팡</th><th>구글 한국</th></tr>
+          <tr><td>검색 점유율</td><td class="us">~58%</td><td>-</td><td>~35%</td></tr>
+          <tr><td>커머스 GMV</td><td class="us">연 40조+</td><td>연 50조+</td><td>-</td></tr>
+          <tr><td>핵심 무기</td><td class="us">검색+멤버십</td><td>로켓배송</td><td>AI 검색</td></tr>
+          <tr><td>최대 리스크</td><td class="us">AI 검색 이탈</td><td>적자 누적</td><td>현지 규제</td></tr>
+        </table>
+      </div>
+
+      <!-- 시나리오 트리 -->
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull">
+          <div class="sc-tag">🟢 BULL<br>30%</div>
+          <div class="sc-content">
+            <div class="sc-cond">AI 수익화 시작 + 커머스 30%+ 유지 + 자사주 소각</div>
+            <div class="sc-price">280,000 ~ 320,000 (+40~60%)</div>
+          </div>
+        </div>
+        <div class="sc-row base">
+          <div class="sc-tag">🟡 BASE<br>50%</div>
+          <div class="sc-content">
+            <div class="sc-cond">박스권 유지, 실적 견조하나 리레이팅 지연</div>
+            <div class="sc-price">190,000 ~ 230,000 (±10%)</div>
+          </div>
+        </div>
+        <div class="sc-row bear">
+          <div class="sc-tag">🔴 BEAR<br>20%</div>
+          <div class="sc-content">
+            <div class="sc-cond">구글 AI 검색 점유율 급등 + 라인야후 악재</div>
+            <div class="sc-price">150,000 ~ 175,000 (-15~25%)</div>
+          </div>
+        </div>
+        <div class="sc-expected">
+          <strong>기대값(E):</strong> 0.3×300,000 + 0.5×210,000 + 0.2×162,500 ≈ <strong>227,500원</strong> — 현재가 대비 <span class="positive">+13%</span>
+        </div>
+      </div>
+
+      <!-- 액션존 -->
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 185,000 <span class="az-note">박스권 하단 + 배당 1.5%+</span></div>
+        <div class="az-row buy">💛 분할매수 185,000 ~ 215,000</div>
+        <div class="az-row hold">⚪ 관망 215,000 ~ 270,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 280,000 <span class="az-note">박스권 상단 저항</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 175,000 <span class="az-note">18만 지지선 이탈</span></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -792,6 +1383,12 @@ body {
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 36,300</span><span>현재 ~47,000</span><span>고 71,600</span></div>
         <div class="price-bar-track"><div class="price-bar-fill" style="width:30%"></div><div class="price-bar-dot" style="left:30%"></div></div>
+      </div>
+
+      <!-- 주가 스파크라인 (최근 12개월 월말 종가 추정) -->
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="45000,52000,58000,63000,71600,68000,62000,55000,50000,58000,52000,49000,47000"></canvas>
       </div>
 
       <div class="tab-nav">
@@ -835,6 +1432,57 @@ body {
           <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">카카오 실적 발표</span><span class="tag tag-event" onclick="copyTag(this)">카카오 AI 스튜디오</span><span class="tag tag-event" onclick="copyTag(this)">카카오 오픈AI</span><span class="tag tag-event" onclick="copyTag(this)">카카오 자회사 IPO</span></div></div>
           <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">김범수 재판</span><span class="tag tag-risk" onclick="copyTag(this)">SM엔터 시세조종</span><span class="tag tag-risk" onclick="copyTag(this)">카카오엔터 적자</span><span class="tag tag-risk" onclick="copyTag(this)">카카오 목표주가 하향</span></div></div>
         </div>
+      </div>
+
+      <!-- 경쟁사 매핑 -->
+      <div class="competitor-matrix">
+        <div class="matrix-label">⚔ 경쟁 지형</div>
+        <table class="comp-table">
+          <tr><th></th><th>카카오톡</th><th>네이버</th><th>라인</th></tr>
+          <tr><td>국내 MAU</td><td class="us">4,800만</td><td>4,300만</td><td>1,800만</td></tr>
+          <tr><td>AI 파트너</td><td class="us">오픈AI</td><td>자체(클로바)</td><td>자체(한정)</td></tr>
+          <tr><td>커머스</td><td class="us">선물하기</td><td>스마트스토어</td><td>-</td></tr>
+          <tr><td>최대 리스크</td><td class="us">창업자 재판</td><td>AI 경쟁</td><td>일본 정부</td></tr>
+        </table>
+      </div>
+
+      <!-- 시나리오 트리 -->
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull">
+          <div class="sc-tag">🟢 BULL<br>25%</div>
+          <div class="sc-content">
+            <div class="sc-cond">김범수 무죄 + 영업익 1조 돌파 + AI 성과</div>
+            <div class="sc-price">70,000 ~ 85,000 (+50~80%)</div>
+          </div>
+        </div>
+        <div class="sc-row base">
+          <div class="sc-tag">🟡 BASE<br>50%</div>
+          <div class="sc-content">
+            <div class="sc-cond">재판 지연, 실적 개선 지속, AI 기대감 유지</div>
+            <div class="sc-price">45,000 ~ 58,000 (±15%)</div>
+          </div>
+        </div>
+        <div class="sc-row bear">
+          <div class="sc-tag">🔴 BEAR<br>25%</div>
+          <div class="sc-content">
+            <div class="sc-cond">김범수 유죄 확정 or 카카오엔터 추가 감손</div>
+            <div class="sc-price">30,000 ~ 38,000 (-20~35%)</div>
+          </div>
+        </div>
+        <div class="sc-expected">
+          <strong>기대값(E):</strong> 0.25×77,500 + 0.5×51,500 + 0.25×34,000 ≈ <strong>53,625원</strong> — 현재가 대비 <span class="positive">+14%</span>
+        </div>
+      </div>
+
+      <!-- 액션존 -->
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 40,000 <span class="az-note">52주 저점 근접</span></div>
+        <div class="az-row buy">💛 분할매수 40,000 ~ 48,000</div>
+        <div class="az-row hold">⚪ 관망 48,000 ~ 62,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 68,000 <span class="az-note">재판 리스크 감안</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 36,000 <span class="az-note">유죄 시 시나리오 진입</span></div>
       </div>
 
     </div>
@@ -975,6 +1623,45 @@ body {
 </div>
 
 <!-- ══════════════════════════════════════ -->
+<!-- 수급 -->
+<!-- ══════════════════════════════════════ -->
+<span class="anchor" id="flow"></span>
+<div class="flow-section">
+  <div class="cal-label" style="color:var(--accent2);">💰 수급 — 최근 1개월 순매수 (억원, 추정)</div>
+  <table class="flow-table">
+    <tr><th>종목</th><th>외국인</th><th>기관</th><th>개인</th><th>판정</th></tr>
+    <tr><td>네이버</td><td class="neg">-450</td><td class="neg">-220</td><td class="pos">+670</td><td><span class="bad">수급 악화</span></td></tr>
+    <tr><td>카카오</td><td class="pos">+120</td><td class="neg">-330</td><td class="pos">+210</td><td><span class="mixed">혼조</span></td></tr>
+  </table>
+  <div style="margin-top:10px; font-size:12px; color:var(--muted); line-height:1.6;">
+    외국인·기관 동반 매도 = 구조적 비중축소 가능성. 개인 매수만으로는 대형주 반등 어려움. 카카오는 외국인 소폭 매수 전환이 긍정 신호.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 오너 리스크 -->
+<!-- ══════════════════════════════════════ -->
+<span class="anchor" id="owner"></span>
+<div class="owner-risk">
+  <div class="or-label">👤 오너·경영진 리스크</div>
+  <div class="or-item">
+    <div class="or-name">김범수 <span class="or-role">카카오 창업자·前의장</span></div>
+    <div class="or-severity high">🔴 HIGH</div>
+    <div class="or-issue">SM엔터 시세조종 혐의. 1심 무죄 → 검찰 항소 중 (징역 15년 구형). <strong>2026년 하반기 항소심 선고 예정</strong>. 유죄 확정 시 그룹 지배구조 재편 불가피.</div>
+  </div>
+  <div class="or-item">
+    <div class="or-name">이해진 <span class="or-role">네이버 GIO</span></div>
+    <div class="or-severity mid">🟡 MID</div>
+    <div class="or-issue">라인야후 지분 문제로 일본 정부 압박 지속. 경영권 리스크는 낮으나 <strong>글로벌 확장 전략 제약</strong> 요인.</div>
+  </div>
+  <div class="or-item">
+    <div class="or-name">정신아 <span class="or-role">카카오 대표</span></div>
+    <div class="or-severity low">🟢 LOW</div>
+    <div class="or-issue">취임 후 AI 조직 통합, 오픈AI 제휴 성사. 경영 리스크는 낮으나 <strong>창업자 리스크에 간접 노출</strong>.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
 <!-- 종합 비교 -->
 <!-- ══════════════════════════════════════ -->
 <span class="anchor" id="summary"></span>
@@ -1031,6 +1718,42 @@ body {
   · <strong>공통 리스크</strong>: 글로벌 빅테크(구글·오픈AI) AI 서비스 국내 침투 가속 시 양사 모두 추가 하락 압력
 </div>
 
+<!-- 체크리스트 위젯 -->
+<span class="anchor" id="checklist"></span>
+<div class="checklist">
+  <div class="cl-label">📋 매수/보유 체크리스트 (체크 상태는 자동 저장됨)</div>
+  <label><input type="checkbox" data-id="n1"><span>네이버 1Q 영업이익 컨센서스 상회 확인</span></label>
+  <label><input type="checkbox" data-id="n2"><span>네이버 커머스 1Q 성장률 +30% 이상 유지</span></label>
+  <label><input type="checkbox" data-id="n3"><span>네이버 자사주 소각 or 배당 인상 공시</span></label>
+  <label><input type="checkbox" data-id="k1"><span>카카오 영업이익 1조 돌파 구체화</span></label>
+  <label><input type="checkbox" data-id="k2"><span>김범수 항소심 무죄 확정</span></label>
+  <label><input type="checkbox" data-id="k3"><span>카카오엔터 분기 흑자 전환 신호</span></label>
+  <label><input type="checkbox" data-id="c1"><span>구글 AI 검색 국내 점유율 변화 모니터링</span></label>
+  <div class="cl-progress" id="clProgress">0 / 7 체크됨</div>
+</div>
+
+<!-- 참고자료 -->
+<div class="references">
+  <div class="ref-label">📚 참고 자료</div>
+  <ul>
+    <li><strong>실적</strong>DART 전자공시시스템 (2025 사업보고서)</li>
+    <li><strong>컨센서스</strong>에프앤가이드 / 하나·SK·미래에셋 증권 리포트</li>
+    <li><strong>주가·시총</strong>KRX, 네이버금융 (2026.04.09 장마감)</li>
+    <li><strong>수급</strong>KRX 투자자별 매매동향 (최근 1개월 누적, 추정치 포함)</li>
+    <li><strong>재판</strong>대법원 사건검색 / 언론 보도 종합</li>
+  </ul>
+</div>
+
+<!-- 관련 리포트 -->
+<div class="related-reports">
+  <div class="rel-label">🔗 관련 리포트</div>
+  <a class="rel-card" href="kosdaq_bio_report_mobile.html">
+    <div class="rel-tag">코스닥 바이오</div>
+    <div class="rel-title">코스닥 바이오 8대 기업 분석 2026</div>
+    <div class="rel-desc">알테오젠·HLB·케어젠 등 핵심 8종목</div>
+  </a>
+</div>
+
 <!-- 하단 내비게이션 -->
 <nav class="bottom-nav">
   <div class="nav-items">
@@ -1041,7 +1764,7 @@ body {
     <a class="nav-item" href="#c1"><div class="nav-icon">🟢</div><div class="nav-label">네이버</div></a>
     <a class="nav-item" href="#c2"><div class="nav-icon">🟡</div><div class="nav-label">카카오</div></a>
     <a class="nav-item" href="#deep"><div class="nav-icon">🔍</div><div class="nav-label">딥다이브</div></a>
-    <a class="nav-item" href="#summary"><div class="nav-icon">📊</div><div class="nav-label">종합</div></a>
+    <a class="nav-item" href="#checklist"><div class="nav-icon">📋</div><div class="nav-label">체크</div></a>
   </div>
 </nav>
 
@@ -1108,6 +1831,83 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       window.scrollTo({ top: offset, behavior: 'smooth' });
     }
   });
+});
+
+// ─── v2: 기준일 경과 배지 ───
+const BASE_DATE = '2026-04-10';
+function updateFreshness() {
+  const days = Math.floor((Date.now() - new Date(BASE_DATE)) / 86400000);
+  const el = document.getElementById('freshnessBadge');
+  if (!el) return;
+  if (days <= 7) {
+    el.textContent = `📅 작성 기준 ${BASE_DATE} (${days}일 전) — 최신`;
+  } else {
+    el.textContent = `⚠ 기준일 ${BASE_DATE}로부터 ${days}일 경과 — 최신 주가 확인 권장`;
+    el.classList.add('stale');
+  }
+}
+
+// ─── v2: 주가 스파크라인 ───
+function renderPriceCharts() {
+  if (typeof Chart === 'undefined') return;
+  document.querySelectorAll('.price-chart').forEach(canvas => {
+    const prices = canvas.dataset.prices.split(',').map(Number);
+    const isUp = prices[prices.length-1] > prices[0];
+    const color = isUp ? '#188038' : '#d93025';
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: prices.map((_,i) => i),
+        datasets: [{
+          data: prices,
+          borderColor: color,
+          backgroundColor: isUp ? 'rgba(24,128,56,0.08)' : 'rgba(217,48,37,0.08)',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: {display:false}, tooltip: {enabled:false} },
+        scales: { x: {display:false}, y: {display:false} },
+        animation: { duration: 800 }
+      }
+    });
+  });
+}
+
+// ─── v2: 체크리스트 localStorage ───
+function initChecklist() {
+  const cl = document.querySelector('.checklist');
+  if (!cl) return;
+  const key = 'checklist_' + location.pathname.split('/').pop();
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  const boxes = cl.querySelectorAll('input[type=checkbox]');
+  const progress = document.getElementById('clProgress');
+  function update() {
+    const checked = [...boxes].filter(b => b.checked).length;
+    progress.textContent = `${checked} / ${boxes.length} 체크됨`;
+    progress.classList.toggle('done', checked === boxes.length);
+  }
+  boxes.forEach(cb => {
+    if (saved[cb.dataset.id]) cb.checked = true;
+    cb.addEventListener('change', () => {
+      saved[cb.dataset.id] = cb.checked;
+      localStorage.setItem(key, JSON.stringify(saved));
+      update();
+    });
+  });
+  update();
+}
+
+// 초기화
+document.addEventListener('DOMContentLoaded', () => {
+  updateFreshness();
+  renderPriceCharts();
+  initChecklist();
 });
 </script>
 </body>

@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>코스닥 바이오 8대 기업 분석 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --bg: #e9ecef;
@@ -571,6 +572,569 @@ body {
 
 /* ── 섹션 앵커 ── */
 .anchor { display: block; position: relative; top: -80px; visibility: hidden; }
+
+/* ═══════════════════════════════════════════ */
+/* ══  v2 보강 컴포넌트  ═══════════════════ */
+/* ═══════════════════════════════════════════ */
+
+.freshness-badge {
+  margin: 12px 16px 0;
+  padding: 8px 14px;
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 8px;
+  color: var(--green);
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  text-align: center;
+}
+.freshness-badge.stale {
+  background: rgba(245,158,11,0.1);
+  border-color: rgba(245,158,11,0.3);
+  color: var(--accent3);
+}
+
+.sector-overview {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.sector-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.diagnosis-list { list-style: none; }
+.diagnosis-list li {
+  padding: 8px 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--label);
+  border-bottom: 1px solid var(--border);
+}
+.diagnosis-list li:last-child { border-bottom: none; }
+.diagnosis-list li.good { color: var(--green); }
+.diagnosis-list li.neutral { color: var(--label); }
+.diagnosis-list li.bad { color: var(--red); }
+.diagnosis-list strong { font-weight: 700; }
+
+/* 4분면 지도 */
+.sector-map-wrap {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.sector-map-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.sector-map {
+  position: relative;
+  height: 320px;
+  margin: 10px 0;
+}
+.sector-map-caption {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: var(--surface2);
+  border-radius: 6px;
+}
+
+.event-calendar {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.cal-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.cal-item {
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.cal-item:last-child { border-bottom: none; }
+.cal-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.cal-title { font-size: 14px; color: var(--text); font-weight: 500; }
+.cal-tag {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.cal-item.high .cal-tag { background: rgba(239,68,68,0.12); color: var(--red); }
+.cal-item.mid .cal-tag { background: rgba(245,158,11,0.12); color: var(--accent3); }
+.cal-item.low .cal-tag { background: rgba(100,116,139,0.1); color: var(--muted); }
+
+.price-chart-wrap {
+  margin: 8px 0 16px;
+  padding: 8px 12px;
+  background: #fafbfc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.price-chart-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.price-chart { width: 100% !important; height: 60px !important; }
+
+.competitor-matrix {
+  margin-top: 14px;
+  padding: 12px;
+  background: #fafbfc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.matrix-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent2);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.comp-table th, .comp-table td {
+  padding: 7px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.comp-table th {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.comp-table td.us {
+  background: rgba(26,115,232,0.06);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.scenario-tree {
+  margin-top: 14px;
+  padding: 14px;
+  background: rgba(26,115,232,0.03);
+  border: 1px solid rgba(26,115,232,0.15);
+  border-radius: 10px;
+}
+.sc-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+.sc-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  align-items: start;
+}
+.sc-row.bull { background: rgba(34,197,94,0.07); }
+.sc-row.base { background: rgba(245,158,11,0.07); }
+.sc-row.bear { background: rgba(239,68,68,0.07); }
+.sc-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+.sc-row.bull .sc-tag { color: var(--green); }
+.sc-row.base .sc-tag { color: var(--accent3); }
+.sc-row.bear .sc-tag { color: var(--red); }
+.sc-content { font-size: 13px; line-height: 1.5; }
+.sc-cond { color: var(--label); margin-bottom: 3px; }
+.sc-price {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 12px;
+}
+.sc-expected {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--label);
+}
+.sc-expected strong { color: var(--accent); }
+.sc-expected .positive { color: var(--green); font-weight: 700; }
+.sc-expected .negative { color: var(--red); font-weight: 700; }
+
+.action-zone {
+  margin-top: 14px;
+  padding: 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.az-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+.az-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 5px;
+  background: #fff;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+}
+.az-row.buy-strong { border-left: 3px solid var(--green); }
+.az-row.buy { border-left: 3px solid #a3e635; }
+.az-row.hold { border-left: 3px solid var(--muted); }
+.az-row.sell { border-left: 3px solid var(--accent3); }
+.az-row.stop { border-left: 3px solid var(--red); }
+.az-note {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.flow-section {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.flow-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 8px;
+}
+.flow-table caption {
+  text-align: left;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  padding-bottom: 8px;
+}
+.flow-table th, .flow-table td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.flow-table th {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.flow-table td:first-child {
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 600;
+  color: var(--text);
+}
+.flow-table .pos { color: var(--green); font-weight: 600; }
+.flow-table .neg { color: var(--red); font-weight: 600; }
+.flow-table .bad {
+  background: rgba(239,68,68,0.08); color: var(--red);
+  font-size: 11px; padding: 3px 6px; border-radius: 4px;
+}
+.flow-table .good {
+  background: rgba(34,197,94,0.08); color: var(--green);
+  font-size: 11px; padding: 3px 6px; border-radius: 4px;
+}
+.flow-table .mixed {
+  background: rgba(245,158,11,0.08); color: var(--accent3);
+  font-size: 11px; padding: 3px 6px; border-radius: 4px;
+}
+
+.owner-risk {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.or-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--red);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.or-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  align-items: center;
+}
+.or-item:last-child { border-bottom: none; }
+.or-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.or-role {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-left: 6px;
+  font-weight: 400;
+}
+.or-issue {
+  grid-column: 1;
+  font-size: 13px;
+  color: var(--label);
+  line-height: 1.5;
+}
+.or-severity {
+  grid-column: 2; grid-row: 1;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.or-severity.high { background: rgba(239,68,68,0.12); color: var(--red); }
+.or-severity.mid { background: rgba(245,158,11,0.12); color: var(--accent3); }
+.or-severity.low { background: rgba(100,116,139,0.1); color: var(--muted); }
+
+/* 딥다이브 (바이오 신규) */
+.deep-section {
+  margin: 20px 12px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+.deep-header {
+  padding: 18px 18px 14px;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: #fff;
+}
+.deep-header-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 6px;
+}
+.deep-header-title { font-size: 20px; font-weight: 900; line-height: 1.3; }
+.deep-body { padding: 16px; }
+.deep-block { margin-bottom: 14px; padding: 14px; border-radius: 10px; }
+.deep-block.reason { background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.15); }
+.deep-block.hope { background: rgba(34,197,94,0.04); border: 1px solid rgba(34,197,94,0.15); }
+.deep-block.watch { background: rgba(59,130,246,0.04); border: 1px solid rgba(59,130,246,0.15); }
+.deep-block.compare { background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.15); }
+.deep-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.deep-block.reason .deep-label { color: var(--red); }
+.deep-block.hope .deep-label { color: var(--green); }
+.deep-block.watch .deep-label { color: var(--accent2); }
+.deep-block.compare .deep-label { color: var(--accent3); }
+.deep-text { font-size: 15px; color: var(--label); line-height: 1.85; }
+.deep-text strong { color: var(--text); }
+.deep-item { display: flex; gap: 10px; margin-bottom: 10px; }
+.deep-item-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 22px;
+  padding-top: 2px;
+}
+.deep-item-text { font-size: 15px; color: var(--label); line-height: 1.8; }
+.deep-item-text strong { color: var(--text); }
+
+.checklist {
+  margin: 16px 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.cl-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.checklist label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--label);
+  cursor: pointer;
+}
+.checklist label:active { background: var(--surface2); }
+.checklist input[type=checkbox] {
+  margin-top: 3px;
+  width: 18px; height: 18px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+.checklist input:checked + span {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.cl-progress {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--surface2);
+  border-radius: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+.cl-progress.done { background: rgba(34,197,94,0.1); color: var(--green); }
+
+/* 용어집 */
+.glossary {
+  margin: 16px 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.gl-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent2);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+.glossary dl {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 6px 10px;
+  font-size: 13px;
+}
+.glossary dt {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  color: var(--accent);
+}
+.glossary dd { color: var(--label); line-height: 1.5; }
+
+.references {
+  margin: 16px 12px;
+  padding: 14px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.ref-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.references ul { list-style: none; }
+.references li {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 3px 0;
+  line-height: 1.6;
+}
+.references strong {
+  color: var(--label);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  margin-right: 6px;
+}
+
+.related-reports {
+  margin: 16px 12px 100px;
+  padding: 14px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.rel-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+.rel-card {
+  display: block;
+  padding: 12px;
+  margin-bottom: 6px;
+  background: var(--surface2);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text);
+}
+.rel-card:active { background: rgba(26,115,232,0.08); }
+.rel-tag {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+.rel-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.rel-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
 </style>
 </head>
 <body>
@@ -584,6 +1148,80 @@ body {
     <div class="meta-row">실적 <strong>2025년 연간 공시 (케어젠 2024년)</strong></div>
     <div class="meta-row">주가·시총 <strong>2026.04.09 장마감</strong></div>
     <div class="meta-warn">※ 투자 참고용 — 결과 책임은 투자자 본인에게 있음</div>
+  </div>
+</div>
+
+<!-- 기준일 경과 배지 -->
+<div class="freshness-badge" id="freshnessBadge">📅 작성 기준일 확인 중...</div>
+
+<!-- 섹터 진단 -->
+<div class="sector-overview">
+  <div class="sector-label">SECTOR DIAGNOSIS — KOSDAQ 바이오 2026</div>
+  <ul class="diagnosis-list">
+    <li class="good">✅ <strong>이익 실현</strong> — 8개 중 알테오젠·케어젠 2개만 실제 흑자. 나머지는 임상 기대감</li>
+    <li class="neutral">⚖ <strong>테마 활황</strong> — ADC·GLP-1·BBB 셔틀 등 글로벌 메가트렌드 직접 수혜</li>
+    <li class="bad">⚠ <strong>고위험 구간</strong> — ⭐⭐⭐⭐⭐ 종목 임상 실패 시 시총 -70~90% 가능</li>
+  </ul>
+</div>
+
+<!-- 섹터 4분면 지도 -->
+<div class="sector-map-wrap">
+  <div class="sector-map-label">🗺 섹터 4분면 지도 — 실적 기반 vs 기대감</div>
+  <div class="sector-map">
+    <canvas id="sectorMapChart"></canvas>
+  </div>
+  <div class="sector-map-caption">
+    X축=실적 기반 강도(0~100), Y축=기대감 강도(0~100). <strong>우상단=실적+기대 이중 지지</strong>(알테오젠·케어젠), <strong>좌상단=순수 기대감</strong>(펩트론·코오롱티슈진·HLB 등).
+  </div>
+</div>
+
+<!-- 이벤트 캘린더 -->
+<div class="event-calendar">
+  <div class="cal-label">📅 EVENT CALENDAR — 향후 12개월 핵심 이벤트</div>
+  <div class="cal-item high">
+    <div class="cal-date">2026.2Q</div>
+    <div class="cal-title">알테오젠 Q2 키트루다 SC 로열티 매출 첫 인식</div>
+    <div class="cal-tag">실적★</div>
+  </div>
+  <div class="cal-item high">
+    <div class="cal-date">2026.2Q</div>
+    <div class="cal-title">키트루다 SC 특허 PGR 심결 (알테오젠 vs 할로자임)</div>
+    <div class="cal-tag">특허</div>
+  </div>
+  <div class="cal-item high">
+    <div class="cal-date">2026.3Q</div>
+    <div class="cal-title">HLB 리보세라닙 FDA 재심사 결과 (간암 1차)</div>
+    <div class="cal-tag">FDA</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.3Q</div>
+    <div class="cal-title">펩트론 PT403 임상 1상 결과 공개 추정</div>
+    <div class="cal-tag">임상</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.4Q</div>
+    <div class="cal-title">에이비엘 ABL001 FDA 가속 승인 신청</div>
+    <div class="cal-tag">FDA</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.4Q</div>
+    <div class="cal-title">삼천당제약 경구 인슐린 유럽 임상 중간 데이터</div>
+    <div class="cal-tag">임상</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.4Q</div>
+    <div class="cal-title">케어젠 코글루타이드 FDA NDI 신청 결과</div>
+    <div class="cal-tag">FDA</div>
+  </div>
+  <div class="cal-item low">
+    <div class="cal-date">2027.1Q</div>
+    <div class="cal-title">코오롱티슈진 인보사 임상 3상 톱라인</div>
+    <div class="cal-tag">임상</div>
+  </div>
+  <div class="cal-item low">
+    <div class="cal-date">2027.1Q</div>
+    <div class="cal-title">리가켐 LCB71 DLBCL 2상 완주 + 추가 빅딜 가능성</div>
+    <div class="cal-tag">임상</div>
   </div>
 </div>
 
@@ -616,6 +1254,11 @@ body {
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 315,500</span><span>현재 ~360,000</span><span>고 569,000</span></div>
         <div class="price-bar-track"><div class="price-bar-fill" style="width:17%"></div><div class="price-bar-dot" style="left:17%"></div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="420000,470000,490000,510000,518000,480000,430000,390000,345000,360000,380000,365000,360000"></canvas>
       </div>
 
       <div class="tab-nav">
@@ -655,6 +1298,57 @@ body {
           <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">키트루다 특허 분쟁</span><span class="tag tag-risk" onclick="copyTag(this)">PGR 심결</span><span class="tag tag-risk" onclick="copyTag(this)">알테오젠 로열티율</span></div></div>
         </div>
       </div>
+
+      <!-- 경쟁사 매핑 -->
+      <div class="competitor-matrix">
+        <div class="matrix-label">⚔ 경쟁 지형 (SC 제형 플랫폼)</div>
+        <table class="comp-table">
+          <tr><th></th><th>알테오젠</th><th>할로자임</th></tr>
+          <tr><td>플랫폼</td><td class="us">ALT-B4</td><td>ENHANZE</td></tr>
+          <tr><td>빅파마 계약</td><td class="us">8개사</td><td>12개사+</td></tr>
+          <tr><td>로열티율</td><td class="us">~2%</td><td>~3-5%</td></tr>
+          <tr><td>특허 상태</td><td class="us">PGR 계류</td><td>분쟁 당사자</td></tr>
+        </table>
+      </div>
+
+      <!-- 시나리오 트리 -->
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull">
+          <div class="sc-tag">🟢 BULL<br>30%</div>
+          <div class="sc-content">
+            <div class="sc-cond">PGR 승소 + 키트루다 SC 매출 급증 + 추가 빅파마 계약</div>
+            <div class="sc-price">500,000 ~ 600,000 (+40~65%)</div>
+          </div>
+        </div>
+        <div class="sc-row base">
+          <div class="sc-tag">🟡 BASE<br>50%</div>
+          <div class="sc-content">
+            <div class="sc-cond">로열티 점진 증가, PGR 미해소 상태 지속</div>
+            <div class="sc-price">340,000 ~ 420,000 (±15%)</div>
+          </div>
+        </div>
+        <div class="sc-row bear">
+          <div class="sc-tag">🔴 BEAR<br>20%</div>
+          <div class="sc-content">
+            <div class="sc-cond">PGR 패소 or 로열티율 추가 하향</div>
+            <div class="sc-price">230,000 ~ 280,000 (-22~36%)</div>
+          </div>
+        </div>
+        <div class="sc-expected">
+          <strong>기대값(E):</strong> 0.3×550,000 + 0.5×380,000 + 0.2×255,000 ≈ <strong>406,000원</strong> — 현재가 대비 <span class="positive">+13%</span>
+        </div>
+      </div>
+
+      <!-- 액션존 -->
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 320,000 <span class="az-note">52주 저점 근접</span></div>
+        <div class="az-row buy">💛 분할매수 320,000 ~ 370,000</div>
+        <div class="az-row hold">⚪ 관망 370,000 ~ 460,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 500,000 <span class="az-note">PGR 미해소 시 저항</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 290,000 <span class="az-note">PGR 패소 시나리오</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -680,6 +1374,10 @@ body {
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 ~200,000</span><span>현재 ~600,000</span><span>고 1,230,000</span></div>
         <div class="price-bar-track"><div class="price-bar-fill" style="width:38%"></div><div class="price-bar-dot" style="left:38%"></div></div>
+      </div>
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="220000,250000,280000,320000,450000,750000,1230000,980000,750000,620000,580000,620000,600000"></canvas>
       </div>
       <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(this,'삼천당')">사업분석</button>
@@ -740,6 +1438,10 @@ body {
         <div class="price-bar-label"><span>저 ~85,000</span><span>현재 ~201,500</span><span>고 ~280,000</span></div>
         <div class="price-bar-track"><div class="price-bar-fill" style="width:60%"></div><div class="price-bar-dot" style="left:60%"></div></div>
       </div>
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="95000,110000,140000,180000,220000,260000,280000,245000,220000,195000,215000,210000,201500"></canvas>
+      </div>
       <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(this,'에이비엘')">사업분석</button>
         <button class="tab-btn" onclick="switchTab(this,'에이비엘')">주가동인</button>
@@ -798,6 +1500,10 @@ body {
         <div class="price-bar-label"><span>저 ~40,000</span><span>현재 ~53,000</span><span>고 ~110,000</span></div>
         <div class="price-bar-track"><div class="price-bar-fill" style="width:19%"></div><div class="price-bar-dot" style="left:19%"></div></div>
       </div>
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="95000,105000,110000,88000,72000,65000,58000,48000,42000,50000,56000,52000,53000"></canvas>
+      </div>
       <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(this,'HLB')">사업분석</button>
         <button class="tab-btn" onclick="switchTab(this,'HLB')">주가동인</button>
@@ -830,6 +1536,57 @@ body {
           <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">HLB CRL</span><span class="tag tag-risk" onclick="copyTag(this)">리보세라닙 거절</span><span class="tag tag-risk" onclick="copyTag(this)">HLB 유상증자</span></div></div>
         </div>
       </div>
+
+      <!-- 경쟁사 매핑 -->
+      <div class="competitor-matrix">
+        <div class="matrix-label">⚔ 경쟁 지형 (간암 1차 표적치료)</div>
+        <table class="comp-table">
+          <tr><th></th><th>리보세라닙</th><th>렌비마(에자이)</th><th>아테졸리주맙</th></tr>
+          <tr><td>시장 지위</td><td class="us">FDA CRL</td><td>표준요법</td><td>표준요법</td></tr>
+          <tr><td>중국 허가</td><td class="us">✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td>미국 허가</td><td class="us">재심사</td><td>✅</td><td>✅</td></tr>
+          <tr><td>차별점</td><td class="us">병용요법</td><td>단독</td><td>면역항암</td></tr>
+        </table>
+      </div>
+
+      <!-- 시나리오 트리 -->
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull">
+          <div class="sc-tag">🟢 BULL<br>25%</div>
+          <div class="sc-content">
+            <div class="sc-cond">FDA 재허가 성공 + 미국 시장 진입</div>
+            <div class="sc-price">90,000 ~ 120,000 (+70~125%)</div>
+          </div>
+        </div>
+        <div class="sc-row base">
+          <div class="sc-tag">🟡 BASE<br>40%</div>
+          <div class="sc-content">
+            <div class="sc-cond">재심사 지연, 중국 매출만 지속</div>
+            <div class="sc-price">45,000 ~ 60,000 (±15%)</div>
+          </div>
+        </div>
+        <div class="sc-row bear">
+          <div class="sc-tag">🔴 BEAR<br>35%</div>
+          <div class="sc-content">
+            <div class="sc-cond">FDA 재거절 or 유상증자</div>
+            <div class="sc-price">25,000 ~ 38,000 (-28~53%)</div>
+          </div>
+        </div>
+        <div class="sc-expected">
+          <strong>기대값(E):</strong> 0.25×105,000 + 0.4×52,500 + 0.35×31,500 ≈ <strong>58,275원</strong> — 현재가 대비 <span class="positive">+10%</span>
+        </div>
+      </div>
+
+      <!-- 액션존 -->
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 42,000 <span class="az-note">Bear 상단 하방 안전</span></div>
+        <div class="az-row buy">💛 분할매수 42,000 ~ 52,000</div>
+        <div class="az-row hold">⚪ 관망 52,000 ~ 75,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 90,000 <span class="az-note">재허가 성공 시 매도</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 38,000 <span class="az-note">Bear 시나리오 진입</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -855,6 +1612,10 @@ body {
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 ~130,000</span><span>현재 ~191,900</span><span>고 ~280,000</span></div>
         <div class="price-bar-track"><div class="price-bar-fill" style="width:41%"></div><div class="price-bar-dot" style="left:41%"></div></div>
+      </div>
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="150000,175000,210000,240000,280000,255000,225000,200000,175000,160000,185000,195000,191900"></canvas>
       </div>
       <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(this,'리가켐')">사업분석</button>
@@ -914,6 +1675,10 @@ body {
         <div class="price-bar-label"><span>저 ~15,000</span><span>현재 ~62,000</span><span>고 ~90,000</span></div>
         <div class="price-bar-track"><div class="price-bar-fill" style="width:62%"></div><div class="price-bar-dot" style="left:62%"></div></div>
       </div>
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="18000,22000,35000,45000,72000,90000,82000,70000,58000,55000,68000,65000,62000"></canvas>
+      </div>
       <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(this,'펩트론')">사업분석</button>
         <button class="tab-btn" onclick="switchTab(this,'펩트론')">주가동인</button>
@@ -971,6 +1736,10 @@ body {
       <div class="price-bar-wrap">
         <div class="price-bar-label"><span>저 ~30,000</span><span>현재 ~106,400</span><span>고 ~170,000</span></div>
         <div class="price-bar-track"><div class="price-bar-fill" style="width:54%"></div><div class="price-bar-dot" style="left:54%"></div></div>
+      </div>
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="35000,48000,75000,110000,150000,170000,145000,125000,95000,110000,120000,115000,106400"></canvas>
       </div>
       <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(this,'코오롱')">사업분석</button>
@@ -1030,6 +1799,10 @@ body {
         <div class="price-bar-label"><span>저 ~45,000</span><span>현재 ~250,000</span><span>고 ~320,000</span></div>
         <div class="price-bar-track"><div class="price-bar-fill" style="width:74%"></div><div class="price-bar-dot" style="left:74%"></div></div>
       </div>
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="55000,68000,85000,120000,180000,280000,320000,290000,260000,235000,270000,260000,250000"></canvas>
+      </div>
       <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(this,'케어젠')">사업분석</button>
         <button class="tab-btn" onclick="switchTab(this,'케어젠')">주가동인</button>
@@ -1063,7 +1836,188 @@ body {
           <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">케어젠 FDA 거절</span><span class="tag tag-risk" onclick="copyTag(this)">GLP-1 경쟁 심화</span><span class="tag tag-risk" onclick="copyTag(this)">에스테틱 수요 둔화</span></div></div>
         </div>
       </div>
+
+      <!-- 경쟁사 매핑 -->
+      <div class="competitor-matrix">
+        <div class="matrix-label">⚔ 경쟁 지형 (경구 GLP-1)</div>
+        <table class="comp-table">
+          <tr><th></th><th>케어젠</th><th>노보(리벨서스)</th><th>화이자</th></tr>
+          <tr><td>제품</td><td class="us">코글루타이드</td><td>리벨서스</td><td>Danuglipron</td></tr>
+          <tr><td>개발 단계</td><td class="us">FDA NDI</td><td>시판 중</td><td>임상 3상</td></tr>
+          <tr><td>차별점</td><td class="us">펩타이드 기반</td><td>시장 선점</td><td>자체 개발</td></tr>
+          <tr><td>실적 안전망</td><td class="us">에스테틱 흑자</td><td>당뇨 포트폴리오</td><td>대형 제약</td></tr>
+        </table>
+      </div>
+
+      <!-- 시나리오 트리 -->
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull">
+          <div class="sc-tag">🟢 BULL<br>30%</div>
+          <div class="sc-content">
+            <div class="sc-cond">코글루타이드 FDA NDI 수락 + 에스테틱 +20% 성장</div>
+            <div class="sc-price">350,000 ~ 420,000 (+40~68%)</div>
+          </div>
+        </div>
+        <div class="sc-row base">
+          <div class="sc-tag">🟡 BASE<br>50%</div>
+          <div class="sc-content">
+            <div class="sc-cond">에스테틱 성장 지속, GLP-1 기대감 유지</div>
+            <div class="sc-price">220,000 ~ 280,000 (±12%)</div>
+          </div>
+        </div>
+        <div class="sc-row bear">
+          <div class="sc-tag">🔴 BEAR<br>20%</div>
+          <div class="sc-content">
+            <div class="sc-cond">FDA NDI 거절 + 비만테마 소멸</div>
+            <div class="sc-price">130,000 ~ 170,000 (-32~48%)</div>
+          </div>
+        </div>
+        <div class="sc-expected">
+          <strong>기대값(E):</strong> 0.3×385,000 + 0.5×250,000 + 0.2×150,000 ≈ <strong>270,500원</strong> — 현재가 대비 <span class="positive">+8%</span>
+        </div>
+      </div>
+
+      <!-- 액션존 -->
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 200,000 <span class="az-note">실적 기반 + GLP-1 옵션</span></div>
+        <div class="az-row buy">💛 분할매수 200,000 ~ 240,000</div>
+        <div class="az-row hold">⚪ 관망 240,000 ~ 300,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 320,000 <span class="az-note">52주 고점 저항</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 180,000 <span class="az-note">FDA 거절 시나리오</span></div>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 딥다이브: 섹터 전체 분석 -->
+<!-- ══════════════════════════════════════ -->
+<span class="anchor" id="deep"></span>
+<div class="deep-section">
+  <div class="deep-header">
+    <div class="deep-header-tag">Deep Dive Analysis</div>
+    <div class="deep-header-title">K-바이오 2026<br>기대감과 실적의 분기점</div>
+  </div>
+  <div class="deep-body">
+
+    <div class="deep-block reason">
+      <div class="deep-label">구조적 리스크 — 8개 중 6개가 실적 없이 기대감만</div>
+      <div class="deep-item">
+        <div class="deep-item-num">01</div>
+        <div class="deep-item-text"><strong>임상 성공률 통계</strong><br>평균 신약 임상 1상→허가 성공률은 <strong>약 10%</strong>. 본 리포트 8종 중 6종이 임상 단계에 머물러 있음. 확률적으로 대다수는 시총 대부분을 날릴 운명.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">02</div>
+        <div class="deep-item-text"><strong>시총 vs 실적 괴리</strong><br>삼천당(시총 7~9조, 영업익 85억), 펩트론(시총 7조, 적자), 코오롱티슈진(시총 4~5조, 매출 제로) — <strong>매출 없이 수조 원의 시총</strong>을 유지. 시장이 임상 성공 확률을 극단적으로 높게 보는 상태.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">03</div>
+        <div class="deep-item-text"><strong>글로벌 빅파마의 자체 개발</strong><br>노보·릴리는 비만치료제, 다이이치산쿄는 ADC를 자체 개발 중. K-바이오가 라이선스 아웃으로 돈을 벌려면 <strong>빅파마가 아직 못 만든 영역</strong>이어야 함. 코글루타이드·PT403·LCB71은 경쟁이 이미 치열.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">04</div>
+        <div class="deep-item-text"><strong>유상증자 희석 리스크</strong><br>매출 없는 바이오는 R&D 자금을 유증으로 조달. HLB·펩트론·코오롱티슈진은 과거 반복적 유증 전력. <strong>임상 장기화 = 주주 희석</strong>이라는 숨은 비용.</div>
+      </div>
+    </div>
+
+    <div class="deep-block compare">
+      <div class="deep-label">8개 종목 — 체질별 3개 그룹 분류</div>
+      <div class="deep-text">
+        <strong>A그룹 (실적+기대 이중 지지)</strong>: 알테오젠·케어젠<br>
+        → 실제 영업이익 발생 + 성장 테마 존재. 8개 중 유이하게 Bear 시나리오에서도 시총 50% 이상 유지 가능.<br><br>
+        <strong>B그룹 (빅파마 파트너 검증)</strong>: 에이비엘바이오·리가켐바이오<br>
+        → 자체 매출은 부족하나 글로벌 빅파마가 돈으로 플랫폼 가치 검증. 기술수출 딜이 반복될수록 안정성 증가.<br><br>
+        <strong>C그룹 (단일 이벤트 베팅)</strong>: 삼천당·HLB·펩트론·코오롱티슈진<br>
+        → 임상/FDA 결과 1개에 시총 대부분이 걸림. 성공 시 +100~300%, 실패 시 -70~90%. <strong>도박 성격</strong>.
+      </div>
+    </div>
+
+    <div class="deep-block hope">
+      <div class="deep-label">투자 접근 — 섹터 내 포트폴리오 구성</div>
+      <div class="deep-item">
+        <div class="deep-item-num">01</div>
+        <div class="deep-item-text"><strong>코어-새틀라이트 전략</strong><br>코어(60%): A그룹(알테오젠·케어젠) — 실적 기반 하방 안전<br>새틀라이트(30%): B그룹(에이비엘·리가켐) — 빅딜 업사이드<br>모멘텀(10%): C그룹 중 1~2개 — 임상 직전 이벤트 베팅<br><strong>C그룹에 30% 이상 배분은 도박</strong>.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">02</div>
+        <div class="deep-item-text"><strong>이벤트 드리븐 진입</strong><br>C그룹은 "이벤트 1개월 전" 진입 + "결과 발표 직전" 분할 매도가 원칙. 결과 대기하면 실패 시 -50% 한 방. HLB·코오롱티슈진 같은 종목은 <strong>결과 발표 당일 보유 금지</strong>.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">03</div>
+        <div class="deep-item-text"><strong>유상증자 리스크 모니터링</strong><br>매출 없는 종목이 현금보유 2년 분 아래로 떨어지면 유증 경고. DART 반기보고서에서 "현금및현금성자산 / 분기 영업비용" 비율 확인.</div>
+      </div>
+    </div>
+
+    <div class="deep-block watch">
+      <div class="deep-label">실전 시그널 — 이것 보이면 주목</div>
+      <div class="deep-text">
+        🟢 <strong>알테오젠 Q2 로열티 1,000억+</strong> → 포워드 PER 급락, 리레이팅<br>
+        🟢 <strong>HLB FDA 재허가</strong> → 간암 시장 즉시 진입, 10만원 복귀<br>
+        🟢 <strong>리가켐 추가 빅딜 1조+</strong> → ADC 원천플랫폼 희소성 재평가<br>
+        🟢 <strong>에이비엘 ABL001 FDA 가속승인</strong> → 담도암 첫 K-ADC 허가<br>
+        🔴 <strong>삼천당 경구인슐린 임상 중단</strong> → 황제주 100만원 버블 소멸<br>
+        🔴 <strong>노보 월1회 비만주사 허가</strong> → 펩트론 PT403 차별점 소멸<br>
+        🔴 <strong>코오롱티슈진 유증 공시</strong> → 임상 자금난 확인, 추가 희석
+      </div>
+    </div>
+
+    <div class="deep-block hope" style="background:rgba(26,115,232,0.04); border-color:rgba(26,115,232,0.15);">
+      <div class="deep-label" style="color:var(--accent);">결론 — 2026 K-바이오 한 줄 요약</div>
+      <div class="deep-text">
+        <strong>"실적 없는 바이오의 파티는 끝나가고 있다."</strong><br><br>
+        2023~2025년 K-바이오는 유동성 + GLP-1·ADC 테마 덕에 매출 없이도 수조 원 시총을 유지. 그러나 2026년부터는 <strong>실제 이익을 내는 종목과 그렇지 않은 종목의 격차</strong>가 벌어질 것. A그룹(알테오젠·케어젠)은 포워드 PER이 하락하며 리레이팅, C그룹은 임상 이벤트마다 극단적 변동성에 노출.<br><br>
+        개인 투자자에게 가장 위험한 실수: <strong>"K-바이오"라는 덩어리로 보고 C그룹 종목에 몰빵하는 것</strong>. 같은 섹터 안에서도 체질이 완전히 다르다는 점을 인지해야.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 수급 -->
+<span class="anchor" id="flow"></span>
+<div class="flow-section">
+  <div class="cal-label" style="color:var(--accent2);">💰 수급 — 최근 1개월 순매수 (억원, 추정)</div>
+  <table class="flow-table">
+    <tr><th>종목</th><th>외국인</th><th>기관</th><th>개인</th><th>판정</th></tr>
+    <tr><td>알테오젠</td><td class="neg">-180</td><td class="pos">+90</td><td class="pos">+90</td><td><span class="mixed">외인 이탈</span></td></tr>
+    <tr><td>삼천당</td><td class="neg">-320</td><td class="neg">-180</td><td class="pos">+500</td><td><span class="bad">고점 매물</span></td></tr>
+    <tr><td>에이비엘</td><td class="pos">+220</td><td class="pos">+80</td><td class="neg">-300</td><td><span class="good">외인 매수</span></td></tr>
+    <tr><td>HLB</td><td class="pos">+50</td><td class="pos">+80</td><td class="neg">-130</td><td><span class="good">기관 매수</span></td></tr>
+    <tr><td>리가켐</td><td class="neg">-150</td><td class="pos">+60</td><td class="pos">+90</td><td><span class="mixed">혼조</span></td></tr>
+    <tr><td>펩트론</td><td class="neg">-210</td><td class="neg">-90</td><td class="pos">+300</td><td><span class="bad">차익 실현</span></td></tr>
+    <tr><td>코오롱티슈진</td><td class="pos">+40</td><td class="neg">-60</td><td class="pos">+20</td><td><span class="mixed">관망</span></td></tr>
+    <tr><td>케어젠</td><td class="pos">+120</td><td class="pos">+50</td><td class="neg">-170</td><td><span class="good">외인 매수</span></td></tr>
+  </table>
+  <div style="margin-top:10px; font-size:12px; color:var(--muted); line-height:1.6;">
+    외국인이 순매수하는 종목(에이비엘·케어젠)은 단기 상승 모멘텀 존재. 반대로 개인이 몰리고 외인·기관이 빠지는 종목(삼천당·펩트론)은 고점 매물 구간 가능성.
+  </div>
+</div>
+
+<!-- 오너·경영진 리스크 -->
+<span class="anchor" id="owner"></span>
+<div class="owner-risk">
+  <div class="or-label">👤 오너·경영진 리스크</div>
+  <div class="or-item">
+    <div class="or-name">이웅열 <span class="or-role">코오롱 명예회장</span></div>
+    <div class="or-severity high">🔴 HIGH</div>
+    <div class="or-issue">인보사 성분 오류 사태(2019) 책임자. 코오롱티슈진 FDA 재심사 신뢰도에 직접 영향. 그룹 리스크 현재 진행형.</div>
+  </div>
+  <div class="or-item">
+    <div class="or-name">진양곤 <span class="or-role">HLB 회장</span></div>
+    <div class="or-severity mid">🟡 MID</div>
+    <div class="or-issue">SNS 적극 활용으로 주가 부양 발언 논란 반복. 2024년 FDA CRL 전 주주 대응 태도가 시장 신뢰도 훼손.</div>
+  </div>
+  <div class="or-item">
+    <div class="or-name">박순재 <span class="or-role">알테오젠 대표·창업자</span></div>
+    <div class="or-severity low">🟢 LOW</div>
+    <div class="or-issue">학계 출신 CEO, 플랫폼 기술 직접 개발. 창업자 의존도 높으나 현재까지 경영 리스크는 낮음.</div>
+  </div>
+  <div class="or-item">
+    <div class="or-name">정용지 <span class="or-role">케어젠 대표·창업자</span></div>
+    <div class="or-severity low">🟢 LOW</div>
+    <div class="or-issue">22년 연속 흑자 경영. 펩타이드 원천 기술 보유. 가장 안정적인 오너십 구조.</div>
   </div>
 </div>
 
@@ -1216,6 +2170,62 @@ body {
   · <strong>케어젠 ROE ~25%</strong>: 8개 중 ROE 의미 있는 유이한 종목
 </div>
 
+<!-- 체크리스트 -->
+<span class="anchor" id="checklist"></span>
+<div class="checklist">
+  <div class="cl-label">📋 매수/보유 체크리스트 (체크 상태는 자동 저장됨)</div>
+  <label><input type="checkbox" data-id="b1"><span>알테오젠 Q2 로열티 매출 첫 인식 확인</span></label>
+  <label><input type="checkbox" data-id="b2"><span>키트루다 SC 특허 PGR 심결 결과 확인</span></label>
+  <label><input type="checkbox" data-id="b3"><span>HLB 리보세라닙 FDA 재심사 결과 (승인 여부)</span></label>
+  <label><input type="checkbox" data-id="b4"><span>에이비엘 ABL001 FDA 가속승인 신청</span></label>
+  <label><input type="checkbox" data-id="b5"><span>삼천당 경구인슐린 유럽 임상 중간 결과</span></label>
+  <label><input type="checkbox" data-id="b6"><span>케어젠 코글루타이드 FDA NDI 수락 여부</span></label>
+  <label><input type="checkbox" data-id="b7"><span>펩트론 PT403 임상 1상 결과</span></label>
+  <label><input type="checkbox" data-id="b8"><span>코오롱티슈진 임상 3상 중간 데이터</span></label>
+  <label><input type="checkbox" data-id="b9"><span>C그룹 종목 유상증자 공시 모니터링</span></label>
+  <div class="cl-progress" id="clProgress">0 / 9 체크됨</div>
+</div>
+
+<!-- 용어집 -->
+<div class="glossary">
+  <div class="gl-label">📖 바이오 용어집</div>
+  <dl>
+    <dt>ADC</dt><dd>항체약물접합체 (Antibody-Drug Conjugate). 항체에 세포독성 약물을 연결해 암세포만 선택 공격</dd>
+    <dt>BBB</dt><dd>혈액뇌장벽 (Blood-Brain Barrier). 뇌로 약물 전달을 차단하는 방어막. 통과 플랫폼이 핵심 기술</dd>
+    <dt>GLP-1</dt><dd>글루카곤 유사 펩타이드-1. 위고비·젭바운드 등 비만치료제 계열</dd>
+    <dt>SC</dt><dd>피하주사 (Subcutaneous). IV(정맥주사) 대비 환자 편의성↑. 제형 전환이 핵심 기술</dd>
+    <dt>CRL</dt><dd>보완요구서 (Complete Response Letter). FDA가 허가 전 데이터 보완 요구. 재심사 가능</dd>
+    <dt>PGR</dt><dd>등록후특허무효심판. 경쟁사가 특허 무효를 주장하는 절차. 결과에 따라 로열티 구조 변경</dd>
+    <dt>ORR</dt><dd>객관적반응률 (Objective Response Rate). 임상에서 종양이 축소된 환자 비율</dd>
+    <dt>NDI</dt><dd>신규식이성분신고. 건강기능식품/의약품 전환 단계의 FDA 절차</dd>
+    <dt>DLBCL</dt><dd>미만성 거대 B세포 림프종. 가장 흔한 비호지킨 림프종</dd>
+    <dt>VEGFR2</dt><dd>혈관내피성장인자 수용체-2. 종양 혈관 생성 억제 타깃</dd>
+  </dl>
+</div>
+
+<!-- 참고자료 -->
+<div class="references">
+  <div class="ref-label">📚 참고 자료</div>
+  <ul>
+    <li><strong>실적</strong>DART 전자공시시스템 (2025 사업보고서, 케어젠은 2024)</li>
+    <li><strong>컨센서스</strong>에프앤가이드 / 하나·SK·신한 증권 리포트</li>
+    <li><strong>임상</strong>ClinicalTrials.gov / 각 사 IR 자료</li>
+    <li><strong>허가</strong>FDA Drugs Database / EMA EPAR</li>
+    <li><strong>주가·시총</strong>KRX, 네이버금융 (2026.04.09 장마감)</li>
+    <li><strong>수급</strong>KRX 투자자별 매매동향 (최근 1개월 누적, 추정치 포함)</li>
+  </ul>
+</div>
+
+<!-- 관련 리포트 -->
+<div class="related-reports">
+  <div class="rel-label">🔗 관련 리포트</div>
+  <a class="rel-card" href="naver_kakao_report_mobile.html">
+    <div class="rel-tag">KOSPI 플랫폼</div>
+    <div class="rel-title">네이버 vs 카카오 박스권 탈출 분석 2026</div>
+    <div class="rel-desc">몇 년째 박스권, 탈출 조건은?</div>
+  </a>
+</div>
+
 <!-- 하단 내비게이션 -->
 <nav class="bottom-nav">
   <div class="nav-items">
@@ -1223,10 +2233,10 @@ body {
       <div class="nav-icon">⬆️</div>
       <div class="nav-label">TOP</div>
     </a>
-    <a class="nav-item" href="#c1"><div class="nav-icon">💊</div><div class="nav-label">알테오젠</div></a>
-    <a class="nav-item" href="#c4"><div class="nav-icon">🔬</div><div class="nav-label">HLB</div></a>
-    <a class="nav-item" href="#c8"><div class="nav-icon">✨</div><div class="nav-label">케어젠</div></a>
+    <a class="nav-item" href="#c1"><div class="nav-icon">💊</div><div class="nav-label">종목</div></a>
+    <a class="nav-item" href="#deep"><div class="nav-icon">🔍</div><div class="nav-label">딥다이브</div></a>
     <a class="nav-item" href="#summary"><div class="nav-icon">📊</div><div class="nav-label">종합</div></a>
+    <a class="nav-item" href="#checklist"><div class="nav-icon">📋</div><div class="nav-label">체크</div></a>
   </div>
 </nav>
 
@@ -1293,6 +2303,148 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       window.scrollTo({ top: offset, behavior: 'smooth' });
     }
   });
+});
+
+// ─── v2: 기준일 경과 배지 ───
+const BASE_DATE = '2026-04-09';
+function updateFreshness() {
+  const days = Math.floor((Date.now() - new Date(BASE_DATE)) / 86400000);
+  const el = document.getElementById('freshnessBadge');
+  if (!el) return;
+  if (days <= 7) {
+    el.textContent = `📅 작성 기준 ${BASE_DATE} (${days}일 전) — 최신`;
+  } else {
+    el.textContent = `⚠ 기준일 ${BASE_DATE}로부터 ${days}일 경과 — 최신 주가 확인 권장`;
+    el.classList.add('stale');
+  }
+}
+
+// ─── v2: 주가 스파크라인 ───
+function renderPriceCharts() {
+  if (typeof Chart === 'undefined') return;
+  document.querySelectorAll('.price-chart').forEach(canvas => {
+    const prices = canvas.dataset.prices.split(',').map(Number);
+    const isUp = prices[prices.length-1] > prices[0];
+    const color = isUp ? '#188038' : '#d93025';
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: prices.map((_,i) => i),
+        datasets: [{
+          data: prices,
+          borderColor: color,
+          backgroundColor: isUp ? 'rgba(24,128,56,0.08)' : 'rgba(217,48,37,0.08)',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: {display:false}, tooltip: {enabled:false} },
+        scales: { x: {display:false}, y: {display:false} },
+        animation: { duration: 800 }
+      }
+    });
+  });
+}
+
+// ─── v2: 섹터 4분면 지도 ───
+function renderSectorMap() {
+  if (typeof Chart === 'undefined') return;
+  const canvas = document.getElementById('sectorMapChart');
+  if (!canvas) return;
+  // [실적기반, 기대감, 종목명]
+  const data = [
+    { x: 85, y: 70, label: '알테오젠' },
+    { x: 80, y: 60, label: '케어젠' },
+    { x: 30, y: 90, label: '에이비엘' },
+    { x: 35, y: 85, label: '리가켐' },
+    { x: 20, y: 95, label: '삼천당' },
+    { x: 15, y: 90, label: '펩트론' },
+    { x: 10, y: 85, label: 'HLB' },
+    { x: 5, y: 80, label: '코오롱티슈진' },
+  ];
+  new Chart(canvas, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        data: data,
+        backgroundColor: data.map(d => d.x > 50 ? 'rgba(24,128,56,0.7)' : 'rgba(217,48,37,0.7)'),
+        borderColor: data.map(d => d.x > 50 ? '#188038' : '#d93025'),
+        pointRadius: 9,
+        pointHoverRadius: 12,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: (ctx) => ctx.raw.label }
+        }
+      },
+      scales: {
+        x: { min: 0, max: 100, title: { display: true, text: '실적 기반 →' }, grid: { color: '#e5e7eb' } },
+        y: { min: 0, max: 100, title: { display: true, text: '기대감 →' }, grid: { color: '#e5e7eb' } }
+      },
+      layout: { padding: 10 }
+    }
+  });
+
+  // 라벨 수동 오버레이 (Chart.js 내장 라벨 플러그인 없이)
+  setTimeout(() => {
+    const parent = canvas.parentElement;
+    parent.style.position = 'relative';
+    const chart = Chart.getChart(canvas);
+    if (!chart) return;
+    data.forEach((d, i) => {
+      const pt = chart.getDatasetMeta(0).data[i];
+      if (!pt) return;
+      const label = document.createElement('div');
+      label.textContent = d.label;
+      label.style.cssText = `position:absolute; left:${pt.x}px; top:${pt.y - 18}px;
+        transform:translateX(-50%); font-size:10px; font-weight:700;
+        color:${d.x > 50 ? '#188038' : '#d93025'}; white-space:nowrap; pointer-events:none;
+        font-family:'IBM Plex Mono', monospace;`;
+      parent.appendChild(label);
+    });
+  }, 900);
+}
+
+// ─── v2: 체크리스트 localStorage ───
+function initChecklist() {
+  const cl = document.querySelector('.checklist');
+  if (!cl) return;
+  const key = 'checklist_' + location.pathname.split('/').pop();
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  const boxes = cl.querySelectorAll('input[type=checkbox]');
+  const progress = document.getElementById('clProgress');
+  function update() {
+    const checked = [...boxes].filter(b => b.checked).length;
+    progress.textContent = `${checked} / ${boxes.length} 체크됨`;
+    progress.classList.toggle('done', checked === boxes.length);
+  }
+  boxes.forEach(cb => {
+    if (saved[cb.dataset.id]) cb.checked = true;
+    cb.addEventListener('change', () => {
+      saved[cb.dataset.id] = cb.checked;
+      localStorage.setItem(key, JSON.stringify(saved));
+      update();
+    });
+  });
+  update();
+}
+
+// 초기화
+document.addEventListener('DOMContentLoaded', () => {
+  updateFreshness();
+  renderPriceCharts();
+  renderSectorMap();
+  initChecklist();
 });
 </script>
 </body>
