@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>2차전지 6대 종목 — 3년 사이클 귀환 분석 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #e9ecef;
+  --surface: #ffffff;
+  --surface2: #f1f3f5;
+  --border: #ced4da;
+  --accent: #dc2626;
+  --accent2: #ef4444;
+  --accent3: #e67e00;
+  --red: #d93025;
+  --green: #188038;
+  --text: #101828;
+  --muted: #667085;
+  --label: #344054;
+  --nav-h: 60px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+  overflow-x: hidden;
+}
+
+/* 헤더 */
+.header {
+  background: linear-gradient(160deg, #dc2626 0%, #991b1b 100%);
+  padding: 52px 20px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.header-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.header h1 {
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+.header-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+.header-meta { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; }
+.meta-row { font-size: 13px; color: rgba(255,255,255,0.6); font-family: 'IBM Plex Mono', monospace; }
+.meta-row strong { color: rgba(255,255,255,0.85); }
+.meta-warn { font-size: 13px; color: #fca5a5; margin-top: 6px; }
+
+/* 목차 */
+.toc-wrap { padding: 16px; background: var(--surface2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.toc-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.toc-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+.toc-scroll::-webkit-scrollbar { display: none; }
+.toc-chip { flex-shrink: 0; font-size: 14px; font-weight: 500; padding: 6px 14px; background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 20px; color: var(--label); cursor: pointer; text-decoration: none; white-space: nowrap; transition: all 0.2s; }
+.toc-chip:active { background: rgba(220,38,38,0.12); border-color: rgba(220,38,38,0.4); color: var(--accent); }
+
+/* 회사 카드 */
+.company-card { margin: 12px 0; border-radius: 14px; overflow: hidden; background: var(--surface); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.card-header { display: flex; align-items: center; gap: 10px; padding: 16px 18px; background: var(--surface2); cursor: pointer; user-select: none; }
+.card-header:active { background: rgba(220,38,38,0.05); }
+.company-num { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); min-width: 18px; }
+.company-name { font-size: 20px; font-weight: 700; color: #202124; flex: 1; }
+.company-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); background: rgba(0,0,0,0.04); padding: 2px 7px; border-radius: 4px; }
+.badge { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; padding: 3px 9px; border-radius: 20px; }
+.badge-profit { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.badge-loss { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.badge-mixed { background: rgba(245,158,11,0.15); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
+.chevron { width: 18px; height: 18px; color: var(--muted); transition: transform 0.3s; flex-shrink: 0; }
+.chevron svg { width:100%; height:100%; }
+.card-header.open .chevron { transform: rotate(180deg); }
+
+.card-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+.card-body.open { max-height: 19999px; }
+.card-inner { padding: 16px; }
+
+/* 스탯 */
+.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.stat-box { background: #f1f3f5; border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.stat-label { font-size: 12px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; font-family: 'IBM Plex Mono', monospace; }
+.stat-value { font-size: 18px; font-weight: 700; }
+.stat-value.accent { color: var(--accent); }
+.stat-value.positive { color: var(--green); }
+.stat-value.negative { color: var(--red); }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* 52주 바 */
+.price-bar-wrap { margin-bottom: 16px; }
+.price-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-family: 'IBM Plex Mono', monospace; }
+.price-bar-track { height: 4px; background: var(--border); border-radius: 2px; position: relative; }
+.price-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 2px; }
+.price-bar-dot { position: absolute; top: -4px; width: 12px; height: 12px; background: #fff; border-radius: 50%; transform: translateX(-50%); border: 2px solid var(--accent); }
+
+/* 스파크라인 */
+.price-chart-wrap { margin: 8px 0 16px; padding: 8px 12px; background: #fafbfc; border: 1px solid var(--border); border-radius: 8px; position: relative; }
+.price-chart-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.price-chart { width: 100% !important; height: 60px !important; }
+
+/* 탭 */
+.tab-nav { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 14px; overflow-x: auto; scrollbar-width: none; }
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn { flex-shrink: 0; font-size: 14px; font-weight: 500; padding: 8px 14px; color: var(--muted); border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; background: none; }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* 섹션 콘텐츠 */
+.section-block { background: #f1f3f5; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 10px; }
+.section-title { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); font-family: 'IBM Plex Mono', monospace; margin-bottom: 8px; }
+.section-content { font-size: 16px; color: var(--label); line-height: 1.8; }
+.section-content strong { color: var(--text); }
+
+.highlight-box { background: rgba(220,38,38,0.05); border: 1px solid rgba(220,38,38,0.2); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+.highlight-title { font-size: 13px; font-weight: 700; color: var(--accent); font-family: 'IBM Plex Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.highlight-content { font-size: 16px; color: var(--label); line-height: 1.8; }
+.highlight-content strong { color: var(--accent); }
+
+/* 확률 바 */
+.probability { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.prob-label { font-size: 13px; color: var(--muted); flex: 1; }
+.prob-bar-track { width: 80px; height: 4px; background: var(--border); border-radius: 2px; }
+.prob-bar-fill { height: 100%; border-radius: 2px; }
+.prob-high { background: var(--green); }
+.prob-mid { background: var(--accent3); }
+.prob-low { background: var(--red); }
+.prob-pct { font-size: 13px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 32px; text-align: right; }
+.prob-pct.high { color: var(--green); }
+.prob-pct.mid { color: var(--accent3); }
+.prob-pct.low { color: var(--red); }
+
+/* 강점/약점 */
+.sw-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.sw-box { border-radius: 8px; padding: 12px; }
+.sw-box.strength { background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); }
+.sw-box.weakness { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); }
+.sw-title { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-family: 'IBM Plex Mono', monospace; }
+.sw-box.strength .sw-title { color: var(--green); }
+.sw-box.weakness .sw-title { color: var(--red); }
+.sw-list { list-style: none; }
+.sw-list li { font-size: 14px; color: var(--label); padding: 3px 0 3px 14px; position: relative; line-height: 1.6; }
+.sw-box.strength .sw-list li::before { content:'+'; position:absolute; left:0; color:var(--green); font-weight:700; }
+.sw-box.weakness .sw-list li::before { content:'−'; position:absolute; left:0; color:var(--red); font-weight:700; }
+
+/* 키워드 */
+.keyword-box { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); border-radius: 10px; padding: 14px; }
+.keyword-title { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); margin-bottom: 6px; }
+.keyword-desc { font-size: 13px; color: var(--muted); margin-bottom: 12px; line-height: 1.6; }
+.tag-group { margin-bottom: 10px; }
+.tag-group-label { font-size: 12px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-bottom: 6px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 5px 11px; border-radius: 20px; cursor: pointer; transition: opacity 0.15s; user-select: all; }
+.tag:active { opacity: 0.6; }
+.tag-core { background: #ffffff; color: #1e40af; border: 2px solid #1e40af; }
+.tag-product { background: #ffffff; color: #854d0e; border: 2px solid #854d0e; }
+.tag-event { background: #ffffff; color: #9a3412; border: 2px solid #9a3412; }
+.tag-risk { background: #ffffff; color: #dc2626; border: 2px solid #dc2626; }
+
+/* 태그 범례 */
+.tag-legend { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 16px 0; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* 경쟁사 매트릭스 */
+.competitor-matrix { margin-top: 14px; padding: 12px; background: #fafbfc; border: 1px solid var(--border); border-radius: 10px; }
+.matrix-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent2); letter-spacing: 1.5px; margin-bottom: 10px; }
+.comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.comp-table th, .comp-table td { padding: 7px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+.comp-table th { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+.comp-table td.us { background: rgba(220,38,38,0.06); color: var(--accent); font-weight: 700; }
+
+/* 시나리오 */
+.scenario-tree { margin-top: 14px; padding: 14px; background: rgba(220,38,38,0.03); border: 1px solid rgba(220,38,38,0.15); border-radius: 10px; }
+.sc-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1.5px; margin-bottom: 10px; }
+.sc-row { display: grid; grid-template-columns: 90px 1fr; gap: 10px; padding: 10px; margin-bottom: 6px; border-radius: 8px; align-items: start; }
+.sc-row.bull { background: rgba(34,197,94,0.07); }
+.sc-row.base { background: rgba(245,158,11,0.07); }
+.sc-row.bear { background: rgba(239,68,68,0.07); }
+.sc-tag { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 700; }
+.sc-row.bull .sc-tag { color: var(--green); }
+.sc-row.base .sc-tag { color: var(--accent3); }
+.sc-row.bear .sc-tag { color: var(--red); }
+.sc-content { font-size: 13px; line-height: 1.5; }
+.sc-cond { color: var(--label); margin-bottom: 3px; }
+.sc-price { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--text); font-size: 12px; }
+.sc-expected { margin-top: 10px; padding: 8px 10px; background: var(--surface); border-radius: 8px; font-size: 13px; color: var(--label); }
+.sc-expected strong { color: var(--accent); }
+.sc-expected .positive { color: var(--green); font-weight: 700; }
+.sc-expected .negative { color: var(--red); font-weight: 700; }
+
+/* 액션존 */
+.action-zone { margin-top: 14px; padding: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
+.az-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1.5px; margin-bottom: 10px; }
+.az-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-bottom: 5px; background: #fff; border-radius: 6px; font-size: 13px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; flex-wrap: wrap; }
+.az-row.buy-strong { border-left: 3px solid var(--green); }
+.az-row.buy { border-left: 3px solid #a3e635; }
+.az-row.hold { border-left: 3px solid var(--muted); }
+.az-row.sell { border-left: 3px solid var(--accent3); }
+.az-row.stop { border-left: 3px solid var(--red); }
+.az-note { font-size: 11px; color: var(--muted); font-family: 'Noto Sans KR', sans-serif; font-weight: 400; }
+
+/* 종합 테이블 */
+.summary-card { margin: 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.summary-header { padding: 16px 18px; border-bottom: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
+.summary-item { padding: 14px 18px; border-bottom: 1px solid rgba(30,45,69,0.2); display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+.summary-item:last-child { border-bottom: none; }
+.summary-name { font-size: 18px; font-weight: 700; color: #202124; }
+.summary-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); }
+.summary-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; }
+.sum-stat-label { font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; }
+.sum-stat-val { font-size: 14px; font-weight: 600; }
+.sum-stat-val.green { color: var(--green); }
+.sum-stat-val.red { color: var(--red); }
+.sum-stat-val.amber { color: var(--accent3); }
+.sum-stat-val.blue { color: var(--accent); }
+.sum-stat-val.muted { color: var(--muted); }
+.risk-stars { font-size: 16px; }
+
+.insight-box { margin: 0 16px 16px; padding: 14px 16px; background: rgba(220,38,38,0.05); border: 1px solid rgba(220,38,38,0.15); border-radius: 10px; font-size: 14px; color: var(--label); line-height: 1.8; }
+.insight-box strong { color: var(--accent); }
+.per-note { margin: 0 16px 80px; padding: 12px 14px; background: rgba(100,116,139,0.08); border: 1px solid rgba(100,116,139,0.2); border-radius: 10px; font-size: 13px; color: var(--muted); line-height: 1.8; }
+.per-note strong { color: var(--label); }
+
+/* 하단 네비 */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: calc(var(--nav-h) + var(--safe-bottom)); background: rgba(10,14,23,0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--border); display: flex; align-items: flex-start; padding-top: 8px; z-index: 200; }
+.nav-items { display: flex; width: 100%; justify-content: space-around; }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 8px; border-radius: 8px; min-width: 52px; text-decoration: none; color: var(--muted); }
+.nav-item:active { color: var(--accent); }
+.nav-icon { font-size: 22px; line-height: 1; }
+.nav-label { font-size: 12px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; }
+
+/* 토스트 */
+.toast { position: fixed; bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(220,38,38,0.9); color: #fff; font-size: 14px; font-weight: 700; padding: 8px 18px; border-radius: 20px; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; z-index: 300; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* 딥다이브 */
+.deep-section { margin: 20px 12px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); overflow: hidden; }
+.deep-header { padding: 18px 18px 14px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; }
+.deep-header-tag { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+.deep-header-title { font-size: 20px; font-weight: 900; line-height: 1.3; }
+.deep-body { padding: 16px; }
+.deep-block { margin-bottom: 14px; padding: 14px; border-radius: 10px; }
+.deep-block.reason { background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.15); }
+.deep-block.hope { background: rgba(34,197,94,0.04); border: 1px solid rgba(34,197,94,0.15); }
+.deep-block.watch { background: rgba(59,130,246,0.04); border: 1px solid rgba(59,130,246,0.15); }
+.deep-block.compare { background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.15); }
+.deep-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+.deep-block.reason .deep-label { color: var(--red); }
+.deep-block.hope .deep-label { color: var(--green); }
+.deep-block.watch .deep-label { color: #3b82f6; }
+.deep-block.compare .deep-label { color: var(--accent3); }
+.deep-text { font-size: 15px; color: var(--label); line-height: 1.85; }
+.deep-text strong { color: var(--text); }
+.deep-item { display: flex; gap: 10px; margin-bottom: 10px; }
+.deep-item-num { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 700; color: var(--muted); min-width: 22px; padding-top: 2px; }
+.deep-item-text { font-size: 15px; color: var(--label); line-height: 1.8; }
+.deep-item-text strong { color: var(--text); }
+.signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.signal-card { padding: 10px 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; }
+.signal-card.bullish { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: var(--green); }
+.signal-card.bearish { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: var(--red); }
+.signal-card .signal-icon { font-size: 18px; margin-bottom: 4px; }
+.signal-card .signal-name { font-weight: 700; }
+.signal-card .signal-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.anchor { display: block; position: relative; top: -80px; visibility: hidden; }
+
+/* v2 컴포넌트 */
+.freshness-badge { margin: 12px 16px 0; padding: 8px 14px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25); border-radius: 8px; color: var(--green); font-size: 13px; font-family: 'IBM Plex Mono', monospace; text-align: center; }
+.freshness-badge.stale { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: var(--accent3); }
+
+.sector-overview { margin: 16px 12px; padding: 16px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.sector-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+.diagnosis-list { list-style: none; }
+.diagnosis-list li { padding: 8px 0; font-size: 15px; line-height: 1.6; color: var(--label); border-bottom: 1px solid var(--border); }
+.diagnosis-list li:last-child { border-bottom: none; }
+.diagnosis-list li.good { color: var(--green); }
+.diagnosis-list li.neutral { color: var(--label); }
+.diagnosis-list li.bad { color: var(--red); }
+.diagnosis-list strong { font-weight: 700; }
+
+.event-calendar { margin: 16px 12px; padding: 16px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.cal-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--accent); margin-bottom: 12px; }
+.cal-item { display: grid; grid-template-columns: 70px 1fr auto; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; }
+.cal-item:last-child { border-bottom: none; }
+.cal-date { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); font-weight: 600; }
+.cal-title { font-size: 14px; color: var(--text); font-weight: 500; }
+.cal-tag { font-size: 11px; padding: 3px 8px; border-radius: 10px; font-family: 'IBM Plex Mono', monospace; }
+.cal-item.high .cal-tag { background: rgba(239,68,68,0.12); color: var(--red); }
+.cal-item.mid .cal-tag { background: rgba(245,158,11,0.12); color: var(--accent3); }
+.cal-item.low .cal-tag { background: rgba(100,116,139,0.1); color: var(--muted); }
+
+/* 수급 */
+.flow-section { margin: 16px 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.flow-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+.flow-table th, .flow-table td { padding: 7px 6px; text-align: center; border-bottom: 1px solid var(--border); }
+.flow-table th { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+.flow-table td.pos { color: var(--green); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+.flow-table td.neg { color: var(--red); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+.flow-table .bad { color: var(--red); font-weight: 600; font-size: 12px; }
+.flow-table .good { color: var(--green); font-weight: 600; font-size: 12px; }
+.flow-table .mixed { color: var(--accent3); font-weight: 600; font-size: 12px; }
+
+/* 체크리스트 */
+.checklist { margin: 16px 12px; padding: 16px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.cl-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; margin-bottom: 12px; }
+.checklist label { display: flex; align-items: flex-start; gap: 10px; padding: 8px; margin-bottom: 4px; border-radius: 6px; font-size: 14px; line-height: 1.5; color: var(--label); cursor: pointer; }
+.checklist label:active { background: var(--surface2); }
+.checklist input[type=checkbox] { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--accent); flex-shrink: 0; }
+.checklist input:checked + span { text-decoration: line-through; color: var(--muted); }
+.cl-progress { margin-top: 10px; padding: 8px 10px; background: var(--surface2); border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); text-align: center; }
+.cl-progress.done { background: rgba(34,197,94,0.1); color: var(--green); }
+
+/* 참고자료 */
+.references { margin: 16px 12px; padding: 14px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
+.ref-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-bottom: 8px; }
+.references ul { list-style: none; }
+.references li { font-size: 12px; color: var(--muted); padding: 3px 0; line-height: 1.6; }
+.references strong { color: var(--label); font-family: 'IBM Plex Mono', monospace; font-size: 11px; margin-right: 6px; }
+
+/* 관련 리포트 */
+.related-reports { margin: 16px 12px 100px; padding: 14px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.rel-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; margin-bottom: 10px; }
+.rel-card { display: block; padding: 12px; margin-bottom: 6px; background: var(--surface2); border-radius: 8px; text-decoration: none; color: var(--text); }
+.rel-card:active { background: rgba(220,38,38,0.08); }
+.rel-tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 2px 8px; background: var(--accent); color: #fff; border-radius: 10px; margin-bottom: 4px; }
+.rel-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.rel-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+/* 사이클 히스토리 */
+.cycle-chart-wrap { margin: 8px 0 14px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
+.cycle-chart-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 8px; }
+.cycle-chart { width: 100% !important; height: 180px !important; }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="header">
+  <div class="header-tag">KR EV Battery Research</div>
+  <h1>2차전지 6대 종목<br>3년 사이클 귀환 분석</h1>
+  <div class="header-date">2026년 4월 22일 (수) 기준</div>
+  <div class="header-meta">
+    <div class="meta-row">실적 <strong>2025년 연간 공시 + 1Q26 프리뷰 기준</strong></div>
+    <div class="meta-row">주가 <strong>2026.04.22 장중/전일 종가 기준</strong></div>
+    <div class="meta-warn">※ 투자 참고용 — 결과 책임은 투자자 본인에게 있음</div>
+  </div>
+</div>
+
+<!-- 기준일 경과 배지 -->
+<div class="freshness-badge" id="freshnessBadge">📅 작성 기준일 확인 중...</div>
+
+<!-- 섹터 진단 -->
+<div class="sector-overview">
+  <div class="sector-label">SECTOR DIAGNOSIS — K-배터리 2026</div>
+  <ul class="diagnosis-list">
+    <li class="good">✅ <strong>ESS/AI發 재평가</strong> — 유가 급등 + 데이터센터 전력폭증으로 배터리 수요 축이 EV → ESS로 이동</li>
+    <li class="neutral">⚖ <strong>EV 캐즘 진행형</strong> — 전기차 성장률은 여전히 한 자릿수, 2026 하반기 회복 기대</li>
+    <li class="bad">⚠ <strong>중국 LFP 공세 + IRA 불확실성</strong> — 한국 셀·양극재 가격 경쟁력 훼손, 미국 대선 이후 정책 변수</li>
+  </ul>
+</div>
+
+<!-- 이벤트 캘린더 -->
+<div class="event-calendar">
+  <div class="cal-label">📅 EVENT CALENDAR — 향후 12개월 핵심 이벤트</div>
+  <div class="cal-item high">
+    <div class="cal-date">2026.05</div>
+    <div class="cal-title">★ 1Q26 실적 시즌 — 엘앤에프·에코프로비엠 OPM 서프라이즈 여부</div>
+    <div class="cal-tag">실적</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.06</div>
+    <div class="cal-title">미국 상무부 중국산 흑연 AD/CVD 관세 최종 확정</div>
+    <div class="cal-tag">규제</div>
+  </div>
+  <div class="cal-item high">
+    <div class="cal-date">2026.2Q</div>
+    <div class="cal-title">삼성SDI 벤츠 NCM 각형 초도 공급 개시 (추정)</div>
+    <div class="cal-tag">수주</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.08</div>
+    <div class="cal-title">2Q 실적 — 북미 ESS 수주잔고 공개</div>
+    <div class="cal-tag">실적</div>
+  </div>
+  <div class="cal-item high">
+    <div class="cal-date">2026.3Q</div>
+    <div class="cal-title">LG엔솔 북미 ESS 50GWh+ 가동 개시 (추정)</div>
+    <div class="cal-tag">가동</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.4Q</div>
+    <div class="cal-title">인터배터리 2026 (전시회) — 전고체·LFP 로드맵 공개</div>
+    <div class="cal-tag">전시</div>
+  </div>
+  <div class="cal-item low">
+    <div class="cal-date">2027.1Q</div>
+    <div class="cal-title">삼성SDI 벤츠 NCMA 각형 본격 양산 (2027하~2028)</div>
+    <div class="cal-tag">양산</div>
+  </div>
+  <div class="cal-item low">
+    <div class="cal-date">2027</div>
+    <div class="cal-title">전고체 파일럿 라인 가동 (삼성SDI·LG엔솔)</div>
+    <div class="cal-tag">기술</div>
+  </div>
+</div>
+
+<!-- 목차 -->
+<div class="toc-wrap">
+  <div class="toc-label">Contents</div>
+  <div class="toc-scroll">
+    <a class="toc-chip" href="#c1">에코프로비엠</a>
+    <a class="toc-chip" href="#c2">에코프로</a>
+    <a class="toc-chip" href="#c3">LG엔솔</a>
+    <a class="toc-chip" href="#c4">삼성SDI</a>
+    <a class="toc-chip" href="#c5">엘앤에프</a>
+    <a class="toc-chip" href="#c6">포스코퓨처엠</a>
+    <a class="toc-chip" href="#deep">딥다이브</a>
+    <a class="toc-chip" href="#flow">수급</a>
+    <a class="toc-chip" href="#summary">종합비교</a>
+    <a class="toc-chip" href="#checklist">체크리스트</a>
+  </div>
+</div>
+
+<div class="tag-legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#1e40af"></div>핵심기술</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#854d0e"></div>사업/서비스</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9a3412"></div>이벤트신호</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div>적신호</div>
+</div>
+
+<!-- ══ 01 에코프로비엠 ══ -->
+<span class="anchor" id="c1"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">01</div>
+    <div class="company-name">에코프로비엠</div>
+    <div class="company-ticker">247540</div>
+    <span class="badge badge-mixed">흑전</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~19조</div><div class="stat-sub">코스닥 3위</div></div>
+        <div class="stat-box"><div class="stat-label">YTD 상승률</div><div class="stat-value positive">+55.6%</div><div class="stat-sub">양극재 대장</div></div>
+        <div class="stat-box"><div class="stat-label">1Q26 매출(E)</div><div class="stat-value">5,446억<sup style="font-size:9px;">컨센</sup></div><div class="stat-sub">판매량 +7% 추정</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:14px;">210,000/85,000</div><div class="stat-sub">현재 ~200,000</div></div>
+      </div>
+
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 85,000</span><span>현재 ~200,000</span><span>고 210,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:92%"></div><div class="price-bar-dot" style="left:92%"></div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="135000,120000,100000,95000,105000,120000,115000,108000,110000,130000,155000,180000,200000"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>NCM 하이니켈 양극재</strong> 단일 품목 집중. 주요 고객: 삼성SDI(70%+), SK온. 2025년 매출 <strong>~2.3조</strong>(전년比 -15%), 영업적자 구간 탈출 진행 중. 2026년 LFP·ESS 전용 양극재 라인 본격 가동.</div></div>
+        <div class="highlight-box"><div class="highlight-title">핵심 성장 동력</div><div class="highlight-content"><strong>ESS 양극재 수요 폭발</strong>: 삼성SDI 벤츠 NCM 수주 + 북미 ESS 수요로 1Q26 판매량 +7% 예상. <strong>40억 재고평가손실 환입</strong>으로 컨센 상회 전망. KB 목표가 <strong>250,000원<sup style="font-size:9px;">KB證</sup></strong>. 코스닥 활성화 정책·휴머노이드 로봇 신규 수요가 상승 탄력.</div>
+          <div class="probability"><span class="prob-label">1Q 컨센 상회</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:70%"></div></div><span class="prob-pct high">70%</span></div>
+          <div class="probability"><span class="prob-label">영업이익 흑전 안착</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:55%"></div></div><span class="prob-pct mid">55%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">증권사 목표가 평균 <strong>~225,000원</strong> (KB 25만, 삼성 18만, 한투 24만). 1Q26 매출 <strong>5,446억 / 영업이익 56억</strong> 컨센 상회 전망(근거: 판매량 반등 + 재고충당금 환입). 다만 양극재 판가는 리튬가에 연동되어 단가 상승 제한적, <strong>볼륨 회복이 관건</strong>.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">광풍·붕괴·귀환 3막</div><div class="section-content">2023년 4월 <strong>고점 58만원</strong> → 2024년 10만원대(-83%) → 2025년 85,000원 52주 저점 → <strong>2026년 4월 20만원 돌파(YTD +55.6%)</strong>. 2023년 광풍의 상징 → 캐즘의 상징 → 반등의 상징. 현재 52주 고점권 근접.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>3중 반등 동인</strong>: ① 1Q26 판매량 회복(+7%) + 재고평가손실 환입으로 이익 정상화 가시화 ② 삼성SDI 벤츠 NCM 수주로 직접 수혜(삼성SDI 매출의 70% 비중) ③ ESS·휴머노이드 등 신규 응용처 확장 기대. PER은 여전히 고평가 구간이나, 2027~28년 추정이익 기준 <strong>포워드 PER 30배</strong>로 정상 범위 진입.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>코스닥 양극재 대장 — 거래대금 최상위</li><li>삼성SDI 핵심 공급사 지위</li><li>NCM 하이니켈 기술 선도</li><li>1Q 재고손실 환입 + 판매량 반등</li><li>ESS·휴머노이드 신규 수요</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>단일 품목 의존(NCM) + 중국 LFP 공세</li><li>고객사 편중(삼성SDI 70%+)</li><li>PER 여전히 높은 수준</li><li>리튬가 하락 시 판가 압박</li><li>2023년 고점 58만 대비 여전히 -65%</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">에코프로비엠 NCM</span><span class="tag tag-core" onclick="copyTag(this)">하이니켈 양극재</span><span class="tag tag-core" onclick="copyTag(this)">에코프로비엠 LFP</span><span class="tag tag-core" onclick="copyTag(this)">단결정 양극재</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">에코프로비엠 삼성SDI</span><span class="tag tag-product" onclick="copyTag(this)">에코프로비엠 헝가리</span><span class="tag tag-product" onclick="copyTag(this)">ESS 양극재</span><span class="tag tag-product" onclick="copyTag(this)">휴머노이드 배터리</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">에코프로비엠 실적</span><span class="tag tag-event" onclick="copyTag(this)">에코프로비엠 수주</span><span class="tag tag-event" onclick="copyTag(this)">에코프로비엠 목표가</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">에코프로비엠 매도</span><span class="tag tag-risk" onclick="copyTag(this)">리튬 가격 하락</span><span class="tag tag-risk" onclick="copyTag(this)">중국 LFP 덤핑</span></div></div>
+        </div>
+      </div>
+
+      <div class="competitor-matrix">
+        <div class="matrix-label">⚔ 경쟁 지형 (국내 양극재)</div>
+        <table class="comp-table">
+          <tr><th></th><th>에코프로비엠</th><th>엘앤에프</th><th>포스코퓨처엠</th></tr>
+          <tr><td>주력</td><td class="us">NCM</td><td>NCMA+LFP</td><td>NCM+음극재</td></tr>
+          <tr><td>주 고객</td><td class="us">삼성SDI</td><td>LG엔솔/SDI</td><td>LG엔솔/GM</td></tr>
+          <tr><td>CAPA</td><td class="us">연 25만톤+</td><td>연 24만톤</td><td>연 9.5만톤</td></tr>
+          <tr><td>리스크</td><td class="us">단일품목</td><td>높은 변동성</td><td>지주사 부담</td></tr>
+        </table>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>30%</div><div class="sc-content"><div class="sc-cond">ESS·벤츠 효과 + 리튬가 회복 + 2Q 흑전</div><div class="sc-price">280,000 ~ 350,000 (+40~75%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>45%</div><div class="sc-content"><div class="sc-cond">판매량 +10% 회복, 이익 소폭 흑전</div><div class="sc-price">180,000 ~ 230,000 (±15%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>25%</div><div class="sc-content"><div class="sc-cond">리튬가 추가 하락 + 중국 LFP 추가 덤핑</div><div class="sc-price">120,000 ~ 150,000 (-25~40%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.3×315,000 + 0.45×205,000 + 0.25×135,000 ≈ <strong>220,500원</strong> — 현재가 대비 <span class="positive">+10%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 150,000 <span class="az-note">52주 중앙값 이하</span></div>
+        <div class="az-row buy">💛 분할매수 150,000 ~ 180,000</div>
+        <div class="az-row hold">⚪ 관망 180,000 ~ 230,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 250,000 <span class="az-note">KB 목표가 도달</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 130,000 <span class="az-note">반등 추세 붕괴</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 02 에코프로 ══ -->
+<span class="anchor" id="c2"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">02</div>
+    <div class="company-name">에코프로</div>
+    <div class="company-ticker">086520</div>
+    <span class="badge badge-mixed">지주사</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~15조</div><div class="stat-sub">그룹 합산 50조</div></div>
+        <div class="stat-box"><div class="stat-label">YTD 상승률</div><div class="stat-value positive">+85.4%</div><div class="stat-sub">섹터 주도주</div></div>
+        <div class="stat-box"><div class="stat-label">주요 지분</div><div class="stat-value">에코프로비엠</div><div class="stat-sub">45.55% 보유</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:14px;">119,600/37,750</div><div class="stat-sub">현재 ~114,600</div></div>
+      </div>
+
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 37,750</span><span>현재 ~114,600</span><span>고 119,600</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:94%"></div><div class="price-bar-dot" style="left:94%"></div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="50000,45000,42000,40000,38000,42000,55000,65000,75000,85000,95000,105000,114600"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">지주사 구조</div><div class="section-content"><strong>에코프로(086520) = 지주사</strong>. 주요 자회사: <strong>에코프로비엠(45.55%)</strong> 양극재·<strong>에코프로머티(52.8%)</strong> 전구체·<strong>에코프로이노베이션</strong> 수산화리튬·<strong>에코프로에이치엔</strong> 친환경솔루션·<strong>에코프로씨엔지</strong> 폐배터리 재활용. 국내 2차전지 밸류체인 유일한 <strong>'수직계열화'</strong> 그룹.</div></div>
+        <div class="highlight-box"><div class="highlight-title">핵심 성장 동력</div><div class="highlight-content"><strong>그룹 시총 50조 회복</strong>: 4월 21일 기준 국내 그룹사 <strong>시총 9위 재진입</strong> (LS·셀트리온 추월). 자회사 에코프로비엠·머티·에이치엔 동시 급등의 종합 수혜. 지주사 할인을 오히려 <strong>'레버리지'로 활용</strong> 중 — 반등 국면에서 베타가 가장 높음.</div>
+          <div class="probability"><span class="prob-label">그룹시총 60조 돌파</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:45%"></div></div><span class="prob-pct mid">45%</span></div>
+          <div class="probability"><span class="prob-label">에코프로비엠 목표가 상향</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:65%"></div></div><span class="prob-pct high">65%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">지주사 자체 실적보다 <strong>자회사 실적·주가 연동성</strong>이 핵심. 에코프로비엠 반등 베타 1.5배, 에코프로머티 1.8배. 수산화리튬(이노베이션) 자회사는 리튬가 회복 시 추가 레버리지. 다만 <strong>지주사 할인율 30~40%</strong>가 구조적 약점.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">광풍·붕괴·귀환의 상징</div><div class="section-content">2023년 고점 <strong>153만원(액면분할 전)</strong> → 액분 후 30,600원 → 2024~25년 4만원대 지속 하락 → <strong>2026년 4월 114,600원(YTD +85.4%)</strong>. 2차전지 섹터의 <strong>"광풍의 얼굴"</strong>이자 <strong>"귀환의 얼굴"</strong>. 개인 투자자 유입이 가장 먼저, 가장 격렬하게 일어나는 종목.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content">본질은 <strong>"자회사 에코프로비엠의 2.2배 레버리지 베팅"</strong>. 에코프로비엠이 20만원이면 에코프로는 11.5만원 근처가 균형점. 개인 수급 집중 + <strong>공매도 부담 완화</strong>로 탄력성 배가. 단, 상승 구간의 베타 1.5배는 하락 구간에서도 동일하게 작동 — <strong>양날의 검</strong>.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>2차전지 유일 수직계열화</li><li>에코프로비엠+머티+H&N 동시 수혜</li><li>반등 국면 베타 최상위(1.5~2배)</li><li>개인 수급 집중·거래대금 상위</li><li>YTD +85.4% 섹터 주도주</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>지주사 할인율 30~40% 상존</li><li>자체 영업이익 미미</li><li>하락 시에도 베타 1.5~2배</li><li>이동채 의장 과거 이슈(내부자거래)</li><li>"추가 상승 여력" 논쟁 심화</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">에코프로 수직계열화</span><span class="tag tag-core" onclick="copyTag(this)">에코프로 수산화리튬</span><span class="tag tag-core" onclick="copyTag(this)">에코프로 폐배터리</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">에코프로머티</span><span class="tag tag-product" onclick="copyTag(this)">에코프로이노베이션</span><span class="tag tag-product" onclick="copyTag(this)">에코프로씨엔지</span><span class="tag tag-product" onclick="copyTag(this)">에코프로에이치엔</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">에코프로 그룹시총</span><span class="tag tag-event" onclick="copyTag(this)">에코프로 배당</span><span class="tag tag-event" onclick="copyTag(this)">에코프로 자사주</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">에코프로 공매도</span><span class="tag tag-risk" onclick="copyTag(this)">이동채 의장</span><span class="tag tag-risk" onclick="copyTag(this)">지주사 할인</span></div></div>
+        </div>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>30%</div><div class="sc-content"><div class="sc-cond">에코프로비엠 30만↑ 도달 + 머티·이노베 동반</div><div class="sc-price">170,000 ~ 220,000 (+50~90%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>40%</div><div class="sc-content"><div class="sc-cond">횡보권 유지, 자회사 실적 소폭 개선</div><div class="sc-price">95,000 ~ 130,000 (±15%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>30%</div><div class="sc-content"><div class="sc-cond">리튬 급락 + 공매도 재개 + 개인 이탈</div><div class="sc-price">55,000 ~ 75,000 (-35~50%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.3×195,000 + 0.4×112,500 + 0.3×65,000 ≈ <strong>123,000원</strong> — 현재가 대비 <span class="positive">+7%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 75,000 <span class="az-note">지주사 할인 최대</span></div>
+        <div class="az-row buy">💛 분할매수 75,000 ~ 95,000</div>
+        <div class="az-row hold">⚪ 관망 95,000 ~ 130,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 150,000 <span class="az-note">베타 과열 구간</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 70,000 <span class="az-note">반등 추세 붕괴</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 03 LG에너지솔루션 ══ -->
+<span class="anchor" id="c3"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">03</div>
+    <div class="company-name">LG에너지솔루션</div>
+    <div class="company-ticker">373220</div>
+    <span class="badge badge-profit">흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~98조</div><div class="stat-sub">배터리 시총 1위</div></div>
+        <div class="stat-box"><div class="stat-label">2026 매출(E)</div><div class="stat-value">26.1조</div><div class="stat-sub">+10% YoY</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익(E)</div><div class="stat-value positive">1.2조<sup style="font-size:9px;">컨센</sup></div><div class="stat-sub">−11% YoY</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:14px;">527,000/266,000</div><div class="stat-sub">현재 ~420,000</div></div>
+      </div>
+
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 266,000</span><span>현재 ~420,000</span><span>고 527,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:59%"></div><div class="price-bar-dot" style="left:59%"></div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="290000,310000,340000,380000,420000,450000,527000,480000,400000,370000,340000,380000,420000"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>전기차용 배터리 셀</strong> + <strong>ESS 배터리</strong> 양대축. 고객: GM·현대차·테슬라·르노·스텔란티스. 2025년 수주잔고 <strong>약 140GWh</strong>(4Q 기준). 2026년 핵심 성장축은 <strong>북미 ESS — 연말 50GWh+ CAPA</strong>. AMPC(미국 세액공제) 반영 후 영업이익 1조+ 유지.</div></div>
+        <div class="highlight-box"><div class="highlight-title">핵심 성장 동력</div><div class="highlight-content"><strong>북미 ESS 폭풍 성장</strong>: AI 데이터센터 전력수요로 <strong>ESS 수주잔고 3Q25 120GWh → 4Q25 140GWh (+17%)</strong>. 2026 북미 CAPA 50GWh+. 평균 목표가 <strong>488,500원<sup style="font-size:9px;">컨센</sup></strong>. 상단 60만, 하단 30만. 24명 매수 vs 2명 매도 — <strong>강력한 매수 컨센</strong>.</div>
+          <div class="probability"><span class="prob-label">ESS 수주잔고 200GWh 돌파</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:65%"></div></div><span class="prob-pct high">65%</span></div>
+          <div class="probability"><span class="prob-label">2026 영업이익 1.2조↑</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:70%"></div></div><span class="prob-pct high">70%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">매출 26.1조(+10%), 영업이익 1.2조(−11%) — EV 출하 부진과 AMPC 세액공제 축소 가능성 반영. 다만 <strong>북미 ESS가 EV 공백 메우는 구조</strong>로 하반기 실적 개선 가속. <strong>4/21 +11.42% 급등</strong> — 벤츠 공급 계약(삼성SDI)發 섹터 훈풍.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">주가 히스토리</div><div class="section-content">2022년 1월 IPO <strong>따상 30만 → 고점 60만</strong>(2022년 11월) → 2024년 2차전지 캐즘으로 30만선 붕괴 → 2025년 3Q 266,000원 <strong>IPO 공모가 근처</strong> → <strong>2026년 4월 420,000원 회복</strong>. 시총 100조 복귀.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>"EV 캐즘 프리미엄 소멸 → ESS 프리미엄 재주입"</strong> 전환기. 과거엔 EV 셀 대장 프리미엄으로 PBR 6배를 받았으나 현재 3배로 조정. <strong>북미 ESS 50GWh 가동·AI 데이터센터 수요</strong>가 새 내러티브로 자리잡으며 리레이팅 진행 중. 단, IRA 후퇴 시 북미 CAPA 투자 회수 지연 리스크.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>국내 배터리 시총 1위(~98조)</li><li>북미 ESS 수주잔고 140GWh+</li><li>GM·테슬라·현대차 메이저 공급</li><li>AMPC 세액공제 구조적 수혜</li><li>평균 목표가 48.8만 — 매수 강세</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>영업이익 YoY −11% 후퇴</li><li>EV 캐즘 지속 시 가동률 하락</li><li>AMPC 정책 의존도 높음</li><li>GM 리콜 리스크(과거 불량)</li><li>중국 CATL·BYD 가격 공세</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">LG엔솔 ESS</span><span class="tag tag-core" onclick="copyTag(this)">LG엔솔 46파이</span><span class="tag tag-core" onclick="copyTag(this)">LG엔솔 전고체</span><span class="tag tag-core" onclick="copyTag(this)">LG엔솔 LFP</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">LG엔솔 북미공장</span><span class="tag tag-product" onclick="copyTag(this)">LG엔솔 GM</span><span class="tag tag-product" onclick="copyTag(this)">LG엔솔 테슬라</span><span class="tag tag-product" onclick="copyTag(this)">AMPC 세액공제</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">LG엔솔 수주잔고</span><span class="tag tag-event" onclick="copyTag(this)">LG엔솔 실적</span><span class="tag tag-event" onclick="copyTag(this)">LG엔솔 ESS 가동</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">IRA 축소</span><span class="tag tag-risk" onclick="copyTag(this)">LG엔솔 리콜</span><span class="tag tag-risk" onclick="copyTag(this)">EV 캐즘</span><span class="tag tag-risk" onclick="copyTag(this)">CATL 공세</span></div></div>
+        </div>
+      </div>
+
+      <div class="competitor-matrix">
+        <div class="matrix-label">⚔ 경쟁 지형 (글로벌 셀)</div>
+        <table class="comp-table">
+          <tr><th></th><th>LG엔솔</th><th>CATL(中)</th><th>삼성SDI</th></tr>
+          <tr><td>글로벌 점유율</td><td class="us">~14%</td><td>~37%</td><td>~8%</td></tr>
+          <tr><td>핵심 주력</td><td class="us">NCM파우치/ESS</td><td>LFP/셀투팩</td><td>NCM각형</td></tr>
+          <tr><td>북미 CAPA</td><td class="us">최대</td><td>제한적</td><td>중간</td></tr>
+          <tr><td>핵심 리스크</td><td class="us">AMPC 축소</td><td>서방 규제</td><td>EV 캐즘</td></tr>
+        </table>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>35%</div><div class="sc-content"><div class="sc-cond">ESS 200GWh 돌파 + EV 회복 + AMPC 유지</div><div class="sc-price">550,000 ~ 620,000 (+30~48%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>45%</div><div class="sc-content"><div class="sc-cond">ESS 강세 + EV 완만 회복, 영업이익 1.2조</div><div class="sc-price">400,000 ~ 480,000 (±10%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>20%</div><div class="sc-content"><div class="sc-cond">IRA 후퇴 + GM 재리콜 + AMPC 대폭 축소</div><div class="sc-price">280,000 ~ 330,000 (-20~33%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.35×585,000 + 0.45×440,000 + 0.2×305,000 ≈ <strong>464,750원</strong> — 현재가 대비 <span class="positive">+11%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 330,000 <span class="az-note">하단 목표가</span></div>
+        <div class="az-row buy">💛 분할매수 330,000 ~ 400,000</div>
+        <div class="az-row hold">⚪ 관망 400,000 ~ 480,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 530,000 <span class="az-note">52주 고점권</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 300,000 <span class="az-note">공모가 하회</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 04 삼성SDI ══ -->
+<span class="anchor" id="c4"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">04</div>
+    <div class="company-name">삼성SDI</div>
+    <div class="company-ticker">006400</div>
+    <span class="badge badge-mixed">흑전</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~40조</div><div class="stat-sub">벤츠 수주 후 신고가</div></div>
+        <div class="stat-box"><div class="stat-label">4/21 상승</div><div class="stat-value positive">+19.89%</div><div class="stat-sub">벤츠 NCM 공급 공시</div></div>
+        <div class="stat-box"><div class="stat-label">목표가 상단</div><div class="stat-value">880,000<sup style="font-size:9px;">NH</sup></div><div class="stat-sub">NH 대폭 상향</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:14px;">580,000/280,000</div><div class="stat-sub">현재 ~562,000</div></div>
+      </div>
+
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 280,000</span><span>현재 ~562,000</span><span>고 580,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:94%"></div><div class="price-bar-dot" style="left:94%"></div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="340000,320000,300000,280000,310000,350000,390000,420000,440000,430000,450000,470000,562000"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>NCM 각형 배터리</strong>(EV+ESS) + <strong>전자재료</strong>(반도체·디스플레이) 양대 축. 고객: BMW(전통적 핵심), Stellantis, <strong>벤츠(신규 2026)</strong>, 리비안. 전자재료는 캐시카우 역할로 배터리 적자 시기 버팀목. 2026 유럽 공장 가동률 <strong>56% → 2028년 95%</strong> 정상화 경로.</div></div>
+        <div class="highlight-box"><div class="highlight-title">★ 핵심 모멘텀 — 벤츠 NCM 첫 공급</div><div class="highlight-content"><strong>2026년 4월 20일</strong> 벤츠와 <strong>다년 하이니켈 NCM 각형</strong> 공급 계약 체결 (사상 첫 공급). 2027년 하반기~2028년 매출화 전망. <strong>이재용 회장 5개월 공들인 결실 — "수조원 규모"</strong> 추정. NH증권 목표가 <strong>49만 → 88만원 대폭 상향</strong>, 28년 매출 전망 +22% 상향.</div>
+          <div class="probability"><span class="prob-label">2H26 흑자전환</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:70%"></div></div><span class="prob-pct high">70%</span></div>
+          <div class="probability"><span class="prob-label">2028 벤츠 매출 본격 기여</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:75%"></div></div><span class="prob-pct high">75%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">증권사 목표가 스펙트럼 넓음: <strong>하나 46.9만 / NH 49만 / KB 53만 / 유안타 62만 / NH(상향) 88만</strong>. 상반기 영업적자 지속 가능성 있으나 하반기 흑자전환 컨센서스. <strong>전자재료 영업이익 +20%대 성장</strong>으로 배터리 부문 적자 완충. 주요 변수: 유럽 EV 수요·LFP 각형 양산 시점.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">주가 히스토리</div><div class="section-content">2022년 고점 <strong>82만원</strong> → 2024년 <strong>28만원(-66%)</strong> → 2026년 4월 <strong>56만원(+100%)</strong>. 벤츠 공급 계약 단일 공시로 4/21 하루 <strong>+19.89% 신고가</strong>. 셀 3사 중 가장 극적인 반등 패턴.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>"구조적 턴어라운드 + 삼성 프리미엄"</strong> 이중 주입. ① 벤츠 신규 수주는 <strong>고객 포트폴리오 다각화 = 디스카운트 해소</strong>의 상징 ② 전자재료 실적 견조 ③ 삼성그룹 전체 투자 의지 재확인(이재용 회장 직접 관여). 다만 <strong>4/21 단일 호재 19.89% 폭등은 과열 우려</strong>, 단기 차익실현 압력 존재.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>벤츠 첫 NCM 수주 — 수조원대</li><li>BMW·스텔란티스 안정적 고객</li><li>전자재료 캐시카우 보유</li><li>각형 셀 기술 선도</li><li>NH 목표가 88만원까지 상향</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>상반기 영업적자 지속</li><li>4/21 +19.89% 과열 우려</li><li>리비안 리콜 이슈 잔존</li><li>LFP 양산 경쟁 뒤쳐짐</li><li>목표가 편차 큼(47만~88만)</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">삼성SDI NCM</span><span class="tag tag-core" onclick="copyTag(this)">삼성SDI 전고체</span><span class="tag tag-core" onclick="copyTag(this)">삼성SDI 46파이</span><span class="tag tag-core" onclick="copyTag(this)">삼성SDI LFP</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">삼성SDI 벤츠</span><span class="tag tag-product" onclick="copyTag(this)">삼성SDI BMW</span><span class="tag tag-product" onclick="copyTag(this)">삼성SDI 전자재료</span><span class="tag tag-product" onclick="copyTag(this)">삼성SDI 헝가리</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">삼성SDI 수주</span><span class="tag tag-event" onclick="copyTag(this)">삼성SDI 목표가</span><span class="tag tag-event" onclick="copyTag(this)">삼성SDI 실적</span><span class="tag tag-event" onclick="copyTag(this)">이재용 배터리</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">삼성SDI 적자</span><span class="tag tag-risk" onclick="copyTag(this)">리비안 리콜</span><span class="tag tag-risk" onclick="copyTag(this)">EV 캐즘</span></div></div>
+        </div>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>30%</div><div class="sc-content"><div class="sc-cond">벤츠 추가 수주 + 전고체 성과 + NH 목표가 도달</div><div class="sc-price">750,000 ~ 880,000 (+33~57%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>50%</div><div class="sc-content"><div class="sc-cond">하반기 흑전 + 전자재료 견조, 컨센 유지</div><div class="sc-price">500,000 ~ 620,000 (±10%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>20%</div><div class="sc-content"><div class="sc-cond">단일 호재 되돌림 + 상반기 적자 확대</div><div class="sc-price">350,000 ~ 420,000 (-25~38%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.3×815,000 + 0.5×560,000 + 0.2×385,000 ≈ <strong>601,500원</strong> — 현재가 대비 <span class="positive">+7%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 400,000 <span class="az-note">낙폭 조정 대기</span></div>
+        <div class="az-row buy">💛 분할매수 400,000 ~ 490,000</div>
+        <div class="az-row hold">⚪ 관망 490,000 ~ 620,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 700,000 <span class="az-note">과열권 진입</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 380,000 <span class="az-note">벤츠 효과 소멸 신호</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 05 엘앤에프 ══ -->
+<span class="anchor" id="c5"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">05</div>
+    <div class="company-name">엘앤에프</div>
+    <div class="company-ticker">066970</div>
+    <span class="badge badge-profit">흑전</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~7조</div><div class="stat-sub">양극재 2위</div></div>
+        <div class="stat-box"><div class="stat-label">1Q26 영업이익(E)</div><div class="stat-value positive">808억</div><div class="stat-sub">컨센 542억 +49% 상회</div></div>
+        <div class="stat-box"><div class="stat-label">1Q26 OPM(E)</div><div class="stat-value positive">12%</div><div class="stat-sub">역대 최고 수준</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:14px;">210,000/70,000</div><div class="stat-sub">현재 ~195,000</div></div>
+      </div>
+
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 70,000</span><span>현재 ~195,000</span><span>고 210,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:89%"></div><div class="price-bar-dot" style="left:89%"></div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="90000,85000,70000,75000,80000,90000,110000,130000,140000,155000,170000,180000,195000"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>NCMA 하이니켈 + LFP 양극재</strong> 이원 생산. 고객: LG엔솔(테슬라 간접)·삼성SDI·SK온. 2026년 LFP 3만톤 추가로 <strong>CAPA 24만톤 (YoY +14%)</strong>. 3월 삼성SDI와 <strong>2026~29년 장기 공급계약(연 평균 3.9만톤)</strong> 체결로 매출 가시성 확보.</div></div>
+        <div class="highlight-box"><div class="highlight-title">★ 1Q26 컨센 대폭 상회 + LFP 확장</div><div class="highlight-content">1Q26 <strong>매출 6,734억 / 영업이익 808억(OPM 12%) — 컨센 542억 +49% 상회</strong> 전망(삼성증권·교보증권). 테슬라 유럽 판매 회복 + ESS LFP 수요 폭발 + 삼성SDI 장기공급 3대 축. 목표가 상향 러시: <strong>KB 260K / 교보 280K / 삼성 230K / 신한 240K</strong>.</div>
+          <div class="probability"><span class="prob-label">1Q 컨센 대폭 상회</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:80%"></div></div><span class="prob-pct high">80%</span></div>
+          <div class="probability"><span class="prob-label">LFP 상업화 성공</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:70%"></div></div><span class="prob-pct high">70%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">매출 ~3조(+30%), 영업이익 ~3,500억 추정(근거: 1Q OPM 12% 유지 시). LFP 양극재 상업화로 <strong>중국 LFP 기업 직접 경쟁 구도</strong>. 삼성SDI 외 추가 고객 확보 가시화(KB 리포트 명시). <strong>2차전지 섹터 내 가장 강력한 어닝 서프라이즈 가능성</strong>.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">광풍·붕괴·귀환</div><div class="section-content">2023년 <strong>고점 58만원</strong> → 2024~25년 <strong>7만원대(-88%)</strong> → 2026년 4월 <strong>19.5만원(YTD +40%)</strong>. 양극재 종목 중 하락·회복 폭이 가장 극적. 3월 이후 KB·교보·삼성·신한 <strong>4대 증권사 동시 목표가 상향</strong> 러시가 주가 견인.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content">본질은 <strong>"업계 첫 OPM 두 자릿수 회복"</strong>. 1Q OPM 12%가 사실로 확인되면 2차전지 밸류체인 전체에서 가장 먼저 '캐즘 종료'를 증명하는 종목. <strong>삼성SDI 장기공급(3.9만톤/년)</strong>은 KRX 상장사 중 가장 큰 규모 양극재 단일 계약. LFP 확장 성공 시 중국 의존도 <strong>구조적 감소</strong>.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>1Q OPM 12% — 업계 최고</li><li>LFP 양극재 선도 상업화</li><li>삼성SDI 장기계약 3.9만톤/년</li><li>4대 증권사 목표가 동시 상향</li><li>테슬라 간접 공급(LG엔솔 경유)</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>시총 7조 — 상대적 소형주</li><li>변동성 극심(연 -88%→+180%)</li><li>양극재 판가 리튬 연동 리스크</li><li>LFP 중국과 직접 경쟁</li><li>52주 고점권 근접</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">엘앤에프 NCMA</span><span class="tag tag-core" onclick="copyTag(this)">엘앤에프 LFP</span><span class="tag tag-core" onclick="copyTag(this)">엘앤에프 단결정</span><span class="tag tag-core" onclick="copyTag(this)">ESS 양극재</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">엘앤에프 삼성SDI</span><span class="tag tag-product" onclick="copyTag(this)">엘앤에프 LG엔솔</span><span class="tag tag-product" onclick="copyTag(this)">엘앤에프 테슬라</span><span class="tag tag-product" onclick="copyTag(this)">엘앤에프 미국공장</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">엘앤에프 실적</span><span class="tag tag-event" onclick="copyTag(this)">엘앤에프 수주</span><span class="tag tag-event" onclick="copyTag(this)">엘앤에프 목표가</span><span class="tag tag-event" onclick="copyTag(this)">LFP 상업화</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">엘앤에프 재고</span><span class="tag tag-risk" onclick="copyTag(this)">리튬 덤핑</span><span class="tag tag-risk" onclick="copyTag(this)">중국 LFP</span></div></div>
+        </div>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>35%</div><div class="sc-content"><div class="sc-cond">2Q·3Q OPM 12%+ 유지, 추가 고객 확보 공시</div><div class="sc-price">260,000 ~ 320,000 (+33~64%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>45%</div><div class="sc-content"><div class="sc-cond">1Q 서프라이즈 선반영, OPM 8~10% 안착</div><div class="sc-price">180,000 ~ 230,000 (±10%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>20%</div><div class="sc-content"><div class="sc-cond">리튬 급락 재현 + LFP 중국 덤핑 심화</div><div class="sc-price">110,000 ~ 140,000 (-30~45%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.35×290,000 + 0.45×205,000 + 0.2×125,000 ≈ <strong>218,750원</strong> — 현재가 대비 <span class="positive">+12%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 130,000 <span class="az-note">실적 서프 전 저점</span></div>
+        <div class="az-row buy">💛 분할매수 130,000 ~ 170,000</div>
+        <div class="az-row hold">⚪ 관망 170,000 ~ 220,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 260,000 <span class="az-note">KB 목표가 도달</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 115,000 <span class="az-note">반등 추세 붕괴</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 06 포스코퓨처엠 ══ -->
+<span class="anchor" id="c6"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">06</div>
+    <div class="company-name">포스코퓨처엠</div>
+    <div class="company-ticker">003670</div>
+    <span class="badge badge-mixed">흑전중</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~19조</div><div class="stat-sub">양극+음극 통합</div></div>
+        <div class="stat-box"><div class="stat-label">2026 매출(E)</div><div class="stat-value">~3.1조</div><div class="stat-sub">+2~10% YoY</div></div>
+        <div class="stat-box"><div class="stat-label">영업이익(E)</div><div class="stat-value positive">~830억</div><div class="stat-sub">+120~185% YoY</div></div>
+        <div class="stat-box"><div class="stat-label">52주 고/저</div><div class="stat-value" style="font-size:14px;">280,000/150,000</div><div class="stat-sub">현재 ~250,000</div></div>
+      </div>
+
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>저 150,000</span><span>현재 ~250,000</span><span>고 280,000</span></div>
+        <div class="price-bar-track"><div class="price-bar-fill" style="width:77%"></div><div class="price-bar-dot" style="left:77%"></div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="180000,160000,150000,165000,180000,200000,220000,210000,195000,205000,220000,240000,250000"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>양극재(NCM) + 음극재(인조·천연흑연) + 내화물</strong> 3대 축. 국내 유일 양·음극재 동시 생산. 고객: <strong>LG엔솔·GM·얼티엄셀즈</strong>. 2026년 양극재 출하 <strong>4.7만톤(+11%)</strong>, 2H26 본격 재가동 예정. <strong>POSCO홀딩스 자회사</strong>로 리튬·니켈 직접 조달 체인 보유.</div></div>
+        <div class="highlight-box"><div class="highlight-title">핵심 성장 동력</div><div class="highlight-content"><strong>음극재 수혜 부각</strong>: 미국 상무부 <strong>중국산 흑연 AD/CVD 관세</strong> 부과(2026.06 최종). 중국 의존도 낮은 동사 음극재 수요 급증 + 가동률 개선 요인. 2026 영업이익 <strong>+121~185% YoY 급증</strong>(KB 727억 / 키움 938억). 목표가 KB 28만 / 키움 27만 / IBK 23.6만.</div>
+          <div class="probability"><span class="prob-label">2H26 양극재 재가동</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:70%"></div></div><span class="prob-pct high">70%</span></div>
+          <div class="probability"><span class="prob-label">음극재 AD/CVD 수혜 가시화</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:60%"></div></div><span class="prob-pct mid">60%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">상반기까진 실적 부진 불가피(KB 명시), 2Q26부터 출하량 회복. 음극재는 AD/CVD 관세 확정 시 하반기부터 가동률 구조적 개선. <strong>POSCO그룹 수직계열화</strong>(리튬·니켈 직접 조달)는 중장기 가격경쟁력 무기.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">주가 히스토리</div><div class="section-content">2022년 고점 <strong>69만원</strong> → 2024년 15만원(-78%) → 2026년 4월 <strong>25만원 회복</strong>. 에코프로비엠·엘앤에프 대비 반등 폭은 상대적으로 완만 — <strong>양극재 외 사업(내화물·음극재)</strong>이 변동성 완충 역할. 대형주 특성상 수급도 안정적.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content">본질은 <strong>"양·음극재 이원 구조의 밸런스"</strong>. ① 양극재는 캐즘에 구조적으로 취약하나 ② <strong>음극재는 미국 관세發 구조적 수혜</strong>가 반대 방향으로 작동. ③ POSCO그룹 리튬 직접 조달로 판가 하락기에 원가 경쟁력 유지. 변동성은 적으나 탄력도 낮음 — <strong>"캐즘 방어주"</strong> 성격.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>양극재+음극재 이원 사업</li><li>POSCO그룹 리튬·니켈 수직계열</li><li>미국 AD/CVD 음극재 수혜</li><li>LG엔솔·GM 메이저 고객</li><li>내화물 캐시카우 보유</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>상반기 실적 부진 불가피</li><li>반등 탄력 동종업체 대비 낮음</li><li>POSCO그룹 지배구조 부담</li><li>양극재 영업이익률 3% 미만</li><li>목표가 하향 이력(36만→28만)</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">포스코퓨처엠 NCM</span><span class="tag tag-core" onclick="copyTag(this)">포스코퓨처엠 음극재</span><span class="tag tag-core" onclick="copyTag(this)">인조흑연</span><span class="tag tag-core" onclick="copyTag(this)">실리콘 음극재</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">포스코퓨처엠 LG엔솔</span><span class="tag tag-product" onclick="copyTag(this)">포스코퓨처엠 GM</span><span class="tag tag-product" onclick="copyTag(this)">포스코그룹 리튬</span><span class="tag tag-product" onclick="copyTag(this)">얼티엄셀즈</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">중국 흑연 관세</span><span class="tag tag-event" onclick="copyTag(this)">AD/CVD 관세</span><span class="tag tag-event" onclick="copyTag(this)">포스코퓨처엠 가동률</span><span class="tag tag-event" onclick="copyTag(this)">포스코퓨처엠 실적</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">포스코퓨처엠 영업이익 부진</span><span class="tag tag-risk" onclick="copyTag(this)">양극재 판가 하락</span><span class="tag tag-risk" onclick="copyTag(this)">POSCO 홀딩스</span></div></div>
+        </div>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>30%</div><div class="sc-content"><div class="sc-cond">음극재 관세 수혜 본격 + 양극재 가동률 90%</div><div class="sc-price">330,000 ~ 400,000 (+32~60%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>50%</div><div class="sc-content"><div class="sc-cond">2H 출하 회복 + 영업이익 +120% 달성</div><div class="sc-price">240,000 ~ 290,000 (±8%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>20%</div><div class="sc-content"><div class="sc-cond">양극재 재가동 지연 + 관세 유예</div><div class="sc-price">170,000 ~ 200,000 (-20~33%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.3×365,000 + 0.5×265,000 + 0.2×185,000 ≈ <strong>279,000원</strong> — 현재가 대비 <span class="positive">+12%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 180,000 <span class="az-note">52주 중앙값</span></div>
+        <div class="az-row buy">💛 분할매수 180,000 ~ 220,000</div>
+        <div class="az-row hold">⚪ 관망 220,000 ~ 270,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 290,000 <span class="az-note">KB 목표가 근접</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 165,000 <span class="az-note">재가동 지연 시</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 딥다이브 ══ -->
+<span class="anchor" id="deep"></span>
+<div class="deep-section">
+  <div class="deep-header">
+    <div class="deep-header-tag">Deep Dive Analysis</div>
+    <div class="deep-header-title">3년 사이클의 귀환 —<br>광풍→캐즘→반등, 이번엔 진짜인가</div>
+  </div>
+  <div class="deep-body">
+
+    <div class="deep-block compare">
+      <div class="deep-label">3막 구조 — 2차전지 3년 사이클 해부</div>
+      <div class="deep-text">
+        <strong>1막 (2020~2022): 광풍</strong> — 전기차 시장 폭발적 성장 기대감. LG엔솔 IPO 따상 30만→60만. 에코프로비엠 5배, 에코프로 <strong>최대 40배 상승</strong>. 코스닥 시총 상위 10위 중 절반이 2차전지.<br><br>
+        <strong>2막 (2023~2025): 캐즘</strong> — 전기차 성장 둔화 + 중국 LFP 공세 + 리튬가 폭락. 에코프로 <strong>-85%</strong>, 에코프로비엠 <strong>-83%</strong>, 엘앤에프 <strong>-88%</strong>, LG엔솔 공모가(30만) 하회. 테슬라 유럽 판매도 전년 동기 대비 역성장. 시장은 "K-배터리 끝났다" 선언.<br><br>
+        <strong>3막 (2026~): 귀환</strong> — ESS/AI發 재평가. 유가 급등 + 데이터센터 전력 폭증이 촉매. 에코프로 <strong>YTD +85.4%</strong>, 삼성SDI <strong>벤츠 수주로 신고가</strong>. 그러나 <strong>2020년 광풍과는 다른 구조</strong> — 주도는 EV가 아닌 ESS.
+      </div>
+    </div>
+
+    <div class="deep-block hope">
+      <div class="deep-label">반등의 3대 동인 — 무엇이 다른가</div>
+      <div class="deep-item">
+        <div class="deep-item-num">01</div>
+        <div class="deep-item-text"><strong>ESS 수요의 구조적 폭발</strong><br>AI 데이터센터 전력 수요로 ESS 수주잔고 급증. <strong>LG엔솔 140GWh(4Q25), 북미 50GWh+ CAPA 연말 가동</strong>. 1GW GPU팜당 ESS 2GWh, 피지컬 AI 시대엔 <strong>4GWh</strong>까지 확대. OpenAI·xAI의 2030~33년 데이터센터 투자 계획이 반영되기 시작.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">02</div>
+        <div class="deep-item-text"><strong>중동發 유가 급등 — 신재생 재평가</strong><br>유가 상승 → 내연기관 운송비·전력비 상승 → <strong>신재생에너지·ESS 채산성 급개선</strong>. 2020~22 광풍이 EV 성장 기대였다면, 2026 반등은 <strong>에너지 인프라 재편</strong>이 핵심 동인. 더 구조적이고 지속성 있음.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">03</div>
+        <div class="deep-item-text"><strong>미국 AD/CVD 관세 = 한국 기업 구조적 수혜</strong><br>미국 상무부 <strong>중국산 흑연(음극재) AD/CVD 관세 2026.06 최종 예정</strong>. 포스코퓨처엠·대주전자재료 직접 수혜. 양극재도 "FEOC(해외우려기관)" 규제로 중국 배제 가속. <strong>한국 배터리 밸류체인 전체가 정책 울타리 안에서 재평가</strong>.</div>
+      </div>
+    </div>
+
+    <div class="deep-block reason">
+      <div class="deep-label">여전히 남은 구조적 리스크</div>
+      <div class="deep-item">
+        <div class="deep-item-num">01</div>
+        <div class="deep-item-text"><strong>EV 캐즘은 아직 진행형</strong><br>테슬라 1Q26 유럽 판매는 전분기 대비 완만 회복 수준. 폭스바겐·포드·GM <strong>신규 EV 모델 출시 지연</strong> 지속. 2차전지 반등의 "본류"인 EV가 살아나지 않으면 ESS만으로 지속 성장 어려움. 2026 하반기 회복 컨센서스지만 <strong>리스크는 여전히 높음</strong>.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">02</div>
+        <div class="deep-item-text"><strong>중국 LFP 가격 덤핑 + 점유율 공세</strong><br>CATL·BYD의 LFP 원가가 한국 NCM 대비 <strong>30~40% 낮음</strong>. 유럽 OEM(폭스바겐·스텔란티스)이 LFP 채택 확대 중. 한국 업체들(LG엔솔·삼성SDI·엘앤에프)이 LFP 양산을 서두르지만 <strong>양산 시점은 2027년 이후</strong>. 1~2년간은 점유율 추가 잠식 우려.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">03</div>
+        <div class="deep-item-text"><strong>AMPC·IRA 정책 불확실성</strong><br>미국 대선 이후 AMPC 세액공제 축소·폐지 시나리오가 시장에 잠재. LG엔솔·삼성SDI 등 북미 CAPA 투자한 기업의 <strong>투자회수기간 대폭 증가</strong> 가능. <strong>2026 하반기 정치 스케줄이 최대 변수</strong>.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">04</div>
+        <div class="deep-item-text"><strong>밸류에이션 이미 반등 상당 부분 선반영</strong><br>에코프로 YTD +85.4%, 엘앤에프 +40%. 평균 12M 포워드 PER이 다시 <strong>30~40배로 복귀</strong>. 이는 <strong>2027년 추정이익 기준</strong>인 경우가 많아, 2026년 실제 실적이 컨센 미달 시 되돌림 가능. <strong>"이미 많이 올랐다"</strong>는 단순하지만 강력한 리스크.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">05</div>
+        <div class="deep-item-text"><strong>개인 수급 쏠림 — 되돌림 시 낙폭 확대</strong><br>에코프로·에코프로비엠·엘앤에프 <strong>개인 순매수 주도</strong> 반등. 외국인 매수는 삼성SDI·LG엔솔 등 대형주에 집중. <strong>개인 수급이 이탈하는 순간</strong> 코스닥 양극재 종목 중심으로 베타 1.5~2배의 낙폭 가능.</div>
+      </div>
+    </div>
+
+    <div class="deep-block watch">
+      <div class="deep-label">실전 시그널 — 이 신호가 오면 주목</div>
+      <div class="deep-text" style="margin-bottom:12px;">아래 신호 중 <strong>2~3개가 동시에</strong> 나타나면 2차전지 랠리 지속 확률이 크게 높아짐.</div>
+      <div class="signal-grid">
+        <div class="signal-card bullish">
+          <div class="signal-icon">⚡</div>
+          <div class="signal-name">ESS 신규 수주 공시 연쇄</div>
+          <div class="signal-desc">테슬라·오라클·MS 등 빅테크 발 ESS 대형 수주</div>
+        </div>
+        <div class="signal-card bullish">
+          <div class="signal-icon">📊</div>
+          <div class="signal-name">1Q26 실적 컨센 대폭 상회</div>
+          <div class="signal-desc">엘앤에프·에코프로비엠 5월 실적서 OPM 두 자릿수 확인</div>
+        </div>
+        <div class="signal-card bullish">
+          <div class="signal-icon">🛢</div>
+          <div class="signal-name">유가 배럴당 100달러 재돌파</div>
+          <div class="signal-desc">신재생·ESS 채산성 재평가 가속</div>
+        </div>
+        <div class="signal-card bullish">
+          <div class="signal-icon">🏭</div>
+          <div class="signal-name">미국 AD/CVD 관세 최종 확정</div>
+          <div class="signal-desc">음극재 중국 배제, 포스코퓨처엠 구조적 수혜</div>
+        </div>
+        <div class="signal-card bearish">
+          <div class="signal-icon">🚗</div>
+          <div class="signal-name">테슬라·BYD 대규모 가격 인하</div>
+          <div class="signal-desc">EV 가격 전쟁 재연 → 셀·양극재 판가 압박</div>
+        </div>
+        <div class="signal-card bearish">
+          <div class="signal-icon">🇺🇸</div>
+          <div class="signal-name">AMPC 축소·폐지 정책 발표</div>
+          <div class="signal-desc">북미 CAPA 투자 회수 지연 → LG엔솔·삼성SDI 직격</div>
+        </div>
+        <div class="signal-card bearish">
+          <div class="signal-icon">🔻</div>
+          <div class="signal-name">리튬 kg당 60위안 하회</div>
+          <div class="signal-desc">양극재 판가 추가 하락 → 엘앤에프·에코프로비엠 압박</div>
+        </div>
+        <div class="signal-card bearish">
+          <div class="signal-icon">💸</div>
+          <div class="signal-name">개인 순매도 전환 + 공매도 재개</div>
+          <div class="signal-desc">에코프로·비엠 베타 역방향 작동 → 낙폭 확대</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="deep-block hope" style="background:rgba(220,38,38,0.04); border-color:rgba(220,38,38,0.15);">
+      <div class="deep-label" style="color:var(--accent);">결론 — 이번 반등, 어떻게 대응할까</div>
+      <div class="deep-text">
+        <strong>이번 반등은 2020~22 광풍과 다르다.</strong> 그때는 "EV가 모든 걸 다 먹을 것"이라는 단일 내러티브였지만, 이번은 <strong>ESS·AI·음극재 관세·벤츠 수주·LFP 상업화</strong>까지 다중 트리거. 구조적으로 더 건강하다.<br><br>
+        그러나 <strong>에코프로·에코프로비엠은 이미 52주 고점권</strong>, 엘앤에프도 +40% 달려왔다. <strong>"지금 진입하면 늦나"</strong>는 합리적 질문. 답은 종목별로 다름:<br><br>
+        <strong>추격매수 가능(상대적)</strong>: LG엔솔·삼성SDI·포스코퓨처엠 — 대형주 + 구조적 동인 뚜렷 + 52주 고점까지 여유.<br>
+        <strong>조정 대기 권장</strong>: 에코프로·에코프로비엠·엘앤에프 — 이미 100%+ 랠리, 1Q 실적 발표 후 단기 차익실현 가능성.<br><br>
+        <strong>가장 중요한 건 "분산"</strong>. 스펙상 "섹터 리포트"가 6종목 구성인 이유. 양극재(에코프로비엠·엘앤에프) + 셀(LG엔솔·삼성SDI) + 통합(포스코퓨처엠) + 지주사(에코프로)로 리스크를 분산하면 <strong>개별 종목 악재에 덜 흔들리며 섹터 상승 베타는 확보</strong>할 수 있다.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ 수급 ══ -->
+<span class="anchor" id="flow"></span>
+<div class="flow-section">
+  <div class="cal-label" style="color:#3b82f6;">💰 수급 — 최근 1개월 순매수 (억원, 추정)</div>
+  <table class="flow-table">
+    <tr><th>종목</th><th>외국인</th><th>기관</th><th>개인</th><th>판정</th></tr>
+    <tr><td>에코프로비엠</td><td class="neg">-180</td><td class="neg">-90</td><td class="pos">+290</td><td><span class="mixed">개인 주도</span></td></tr>
+    <tr><td>에코프로</td><td class="neg">-120</td><td class="neg">-70</td><td class="pos">+210</td><td><span class="mixed">개인 주도</span></td></tr>
+    <tr><td>LG엔솔</td><td class="pos">+1,250</td><td class="pos">+380</td><td class="neg">-1,580</td><td><span class="good">외인 매수</span></td></tr>
+    <tr><td>삼성SDI</td><td class="pos">+980</td><td class="pos">+220</td><td class="neg">-1,150</td><td><span class="good">외인 매수</span></td></tr>
+    <tr><td>엘앤에프</td><td class="pos">+140</td><td class="neg">-50</td><td class="pos">+80</td><td><span class="good">동반 매수</span></td></tr>
+    <tr><td>포스코퓨처엠</td><td class="pos">+320</td><td class="pos">+110</td><td class="neg">-410</td><td><span class="good">외인 매수</span></td></tr>
+  </table>
+  <div style="margin-top:10px; font-size:12px; color:var(--muted); line-height:1.6;">
+    <strong>양분된 수급 구조</strong>: 대형주(LG엔솔·삼성SDI·포스코퓨처엠)는 <strong>외국인·기관 매수</strong>, 코스닥 양극재(에코프로·비엠)는 <strong>개인 주도</strong>. 엘앤에프만 외인·개인 동반 매수로 <strong>가장 건강한 수급</strong>. 코스닥 기관 4월 순매수 2.6조, 외국인 6,231억 — 섹터 전체 매수세 유입 중. <em>※ 수치는 KRX 언론보도 종합 추정치</em>
+  </div>
+</div>
+
+<!-- ══ 종합비교 ══ -->
+<span class="anchor" id="summary"></span>
+<div class="summary-card">
+  <div class="summary-header">SUMMARY — 2차전지 6대 종목 종합</div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">에코프로비엠</div><div class="summary-ticker">247540</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~19조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val red">~50배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val amber">~5%</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">YTD</div><div class="sum-stat-val green">+55.6%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">실적+벤츠</div></div></div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">에코프로</div><div class="summary-ticker">086520</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~15조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val red">~60배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val muted">지주사</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">YTD</div><div class="sum-stat-val green">+85.4%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">자회사 베타</div></div></div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">LG에너지솔루션</div><div class="summary-ticker">373220</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~98조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val amber">~80배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val amber">~3%</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">영업익</div><div class="sum-stat-val green">+1.2조</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">ESS+수주</div></div></div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">삼성SDI</div><div class="summary-ticker">006400</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~40조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val red">적자</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val red">마이너스</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">4/21</div><div class="sum-stat-val green">+19.89%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">벤츠+흑전</div></div></div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">엘앤에프</div><div class="summary-ticker">066970</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~7조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val amber">~25배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val green">~8%</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">1Q OPM</div><div class="sum-stat-val green">12%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">LFP+어닝서프</div></div></div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">포스코퓨처엠</div><div class="summary-ticker">003670</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~19조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val red">~90배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val amber">~2%</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">영업익YoY</div><div class="sum-stat-val green">+121%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">음극재+AD/CVD</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="insight-box">
+  <strong>핵심 인사이트</strong>: 이번 반등은 2020~22년 광풍과 다르게 <strong style="color:#fff;">ESS·AI·관세·벤츠 수주</strong>라는 다중 트리거가 작동한다. 수급은 양분되어 있어 대형주(LG엔솔·삼성SDI·포스코퓨처엠)는 외국인 매수 주도, 코스닥 양극재(에코프로·비엠)는 개인 주도. 가장 건강한 수급은 <strong>엘앤에프</strong>(외인·기관·개인 동반)이며, 가장 탄력 강한 건 <strong>에코프로</strong>(YTD +85%), 가장 구조적 수혜는 <strong>포스코퓨처엠</strong>(음극재 AD/CVD). 종목별 리스크-리워드가 다르므로 <strong>섹터 분산 포트폴리오</strong>가 정답.
+</div>
+
+<div class="per-note">
+  <strong>PER 해석 주의</strong><br>
+  · 2차전지 종목들의 PER은 2026년 이익 기준으로 여전히 50~90배 수준 — 이는 <strong>2027~28년 실적 회복을 선반영</strong>한 수치. 컨센 미달 시 되돌림 위험.<br>
+  · 엘앤에프(PER 25배)는 상대적 저평가, 포스코퓨처엠(PER 90배)은 2H 턴어라운드 가정.<br>
+  · 삼성SDI는 상반기 적자로 PER 산출 불가 — 2H26 흑전 타이밍이 핵심 체크포인트.
+</div>
+
+<!-- ══ 체크리스트 ══ -->
+<span class="anchor" id="checklist"></span>
+<div class="checklist">
+  <div class="cl-label">📋 매수/보유 체크리스트 (체크 상태는 자동 저장됨)</div>
+  <label><input type="checkbox" data-id="b1"><span>엘앤에프 1Q26 영업이익 800억+ 확인 (5월 공시)</span></label>
+  <label><input type="checkbox" data-id="b2"><span>에코프로비엠 1Q26 판매량 +7% 달성 확인</span></label>
+  <label><input type="checkbox" data-id="b3"><span>LG엔솔 2Q26 ESS 수주잔고 200GWh 돌파 확인</span></label>
+  <label><input type="checkbox" data-id="b4"><span>삼성SDI 벤츠 NCM 초도 공급 개시 (2Q26)</span></label>
+  <label><input type="checkbox" data-id="b5"><span>포스코퓨처엠 음극재 AD/CVD 관세 최종 확정 (6월)</span></label>
+  <label><input type="checkbox" data-id="b6"><span>국제 유가 WTI 90달러 이상 유지 모니터링</span></label>
+  <label><input type="checkbox" data-id="b7"><span>리튬 가격(탄산리튬) 반등 여부 주간 체크</span></label>
+  <label><input type="checkbox" data-id="b8"><span>개인 수급 → 외국인 수급 전환 신호 확인</span></label>
+  <label><input type="checkbox" data-id="b9"><span>미국 AMPC·IRA 정책 변경 리스크 점검</span></label>
+  <div class="cl-progress" id="clProgress">0 / 9 체크됨</div>
+</div>
+
+<!-- 참고자료 -->
+<div class="references">
+  <div class="ref-label">📚 참고 자료</div>
+  <ul>
+    <li><strong>실적</strong>DART 전자공시시스템 (2025 사업보고서 + 1Q26 프리뷰)</li>
+    <li><strong>컨센서스</strong>KB·삼성·교보·신한·NH·하나·키움·IBK·유안타 리서치</li>
+    <li><strong>주가·시총</strong>KRX, 네이버금융, Investing.com (2026.04.22 기준)</li>
+    <li><strong>수급</strong>KRX 투자자별 매매동향 (최근 1개월 누적, 추정 포함)</li>
+    <li><strong>뉴스</strong>서울경제·파이낸셜뉴스·머니투데이·이데일리·뉴스1 (4월 20~22일 보도 종합)</li>
+    <li><strong>정책</strong>미국 상무부 AD/CVD 조사 일정, IRA/AMPC 정책 동향</li>
+  </ul>
+</div>
+
+<!-- 관련 리포트 -->
+<div class="related-reports">
+  <div class="rel-label">🔗 관련 리포트</div>
+  <a class="rel-card" href="naver_kakao_report_mobile.html">
+    <div class="rel-tag">KOSPI 플랫폼</div>
+    <div class="rel-title">네이버 vs 카카오 박스권 탈출 분석 2026</div>
+    <div class="rel-desc">AI 전환기의 K-플랫폼 2대장 비교</div>
+  </a>
+  <a class="rel-card" href="kosdaq_bio_report_mobile.html">
+    <div class="rel-tag">코스닥 바이오</div>
+    <div class="rel-title">코스닥 바이오 8대 기업 분석 2026</div>
+    <div class="rel-desc">알테오젠·HLB·케어젠 등 핵심 8종목</div>
+  </a>
+</div>
+
+<!-- 하단 네비 -->
+<nav class="bottom-nav">
+  <div class="nav-items">
+    <a class="nav-item" href="#" onclick="scrollToTop(event)"><div class="nav-icon">⬆️</div><div class="nav-label">TOP</div></a>
+    <a class="nav-item" href="#c1"><div class="nav-icon">🔋</div><div class="nav-label">종목</div></a>
+    <a class="nav-item" href="#deep"><div class="nav-icon">🔍</div><div class="nav-label">딥다이브</div></a>
+    <a class="nav-item" href="#summary"><div class="nav-icon">📊</div><div class="nav-label">종합</div></a>
+    <a class="nav-item" href="#checklist"><div class="nav-icon">📋</div><div class="nav-label">체크</div></a>
+  </div>
+</nav>
+
+<!-- 토스트 -->
+<div class="toast" id="toast">복사됨 ✓</div>
+
+<script>
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  header.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+function switchTab(btn) {
+  const card = btn.closest('.card-body');
+  const tabs = card.querySelectorAll('.tab-btn');
+  const panes = card.querySelectorAll('.tab-pane');
+  const idx = Array.from(tabs).indexOf(btn);
+  tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
+  panes.forEach((p, i) => p.classList.toggle('active', i === idx));
+}
+
+function copyTag(el) {
+  const text = el.textContent.trim();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => showToast());
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast();
+  }
+}
+
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+function scrollToTop(e) {
+  if (e) e.preventDefault();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const id = this.getAttribute('href').slice(1);
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) {
+      e.preventDefault();
+      const offset = el.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: offset, behavior: 'smooth' });
+    }
+  });
+});
+
+// 기준일 경과 배지
+const BASE_DATE = '2026-04-22';
+function updateFreshness() {
+  const days = Math.floor((Date.now() - new Date(BASE_DATE)) / 86400000);
+  const el = document.getElementById('freshnessBadge');
+  if (!el) return;
+  if (days <= 7) {
+    el.textContent = `📅 작성 기준 ${BASE_DATE} (${days}일 전) — 최신`;
+  } else {
+    el.textContent = `⚠ 기준일 ${BASE_DATE}로부터 ${days}일 경과 — 최신 주가 확인 권장`;
+    el.classList.add('stale');
+  }
+}
+
+// 스파크라인
+function renderPriceCharts() {
+  if (typeof Chart === 'undefined') return;
+  document.querySelectorAll('.price-chart').forEach(canvas => {
+    const prices = canvas.dataset.prices.split(',').map(Number);
+    const isUp = prices[prices.length-1] > prices[0];
+    const color = isUp ? '#188038' : '#d93025';
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: prices.map((_,i) => i),
+        datasets: [{
+          data: prices,
+          borderColor: color,
+          backgroundColor: isUp ? 'rgba(24,128,56,0.08)' : 'rgba(217,48,37,0.08)',
+          borderWidth: 2, pointRadius: 0, tension: 0.3, fill: true
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: {display:false}, tooltip: {enabled:false} },
+        scales: { x: {display:false}, y: {display:false} },
+        animation: { duration: 800 }
+      }
+    });
+  });
+}
+
+// 체크리스트 localStorage
+function initChecklist() {
+  const cl = document.querySelector('.checklist');
+  if (!cl) return;
+  const key = 'checklist_' + location.pathname.split('/').pop();
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  const boxes = cl.querySelectorAll('input[type=checkbox]');
+  const progress = document.getElementById('clProgress');
+  function update() {
+    const checked = [...boxes].filter(b => b.checked).length;
+    progress.textContent = `${checked} / ${boxes.length} 체크됨`;
+    progress.classList.toggle('done', checked === boxes.length);
+  }
+  boxes.forEach(cb => {
+    if (saved[cb.dataset.id]) cb.checked = true;
+    cb.addEventListener('change', () => {
+      saved[cb.dataset.id] = cb.checked;
+      localStorage.setItem(key, JSON.stringify(saved));
+      update();
+    });
+  });
+  update();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateFreshness();
+  renderPriceCharts();
+  initChecklist();
+});
+</script>
+</body>
+</html>
