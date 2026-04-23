@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>금융주 6대 종목 — 코스피 6400 시대의 수혜주 지도 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #e9ecef;
+  --surface: #ffffff;
+  --surface2: #f1f3f5;
+  --border: #ced4da;
+  --accent: #0891b2;
+  --accent2: #06b6d4;
+  --accent3: #e67e00;
+  --red: #d93025;
+  --green: #188038;
+  --text: #101828;
+  --muted: #667085;
+  --label: #344054;
+  --nav-h: 60px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 17px; line-height: 1.7;
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+  overflow-x: hidden;
+}
+
+/* 헤더 */
+.header { background: linear-gradient(160deg, #0891b2 0%, #0e7490 100%); padding: 52px 20px 24px; position: relative; overflow: hidden; }
+.header-tag { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.7); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+.header h1 { font-size: 26px; font-weight: 900; color: #ffffff; line-height: 1.25; margin-bottom: 8px; }
+.header-date { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 4px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #ffffff; margin-bottom: 8px; }
+.header-meta { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; }
+.meta-row { font-size: 13px; color: rgba(255,255,255,0.6); font-family: 'IBM Plex Mono', monospace; }
+.meta-row strong { color: rgba(255,255,255,0.85); }
+.meta-warn { font-size: 13px; color: #fca5a5; margin-top: 6px; }
+
+/* 목차 */
+.toc-wrap { padding: 16px; background: var(--surface2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.toc-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.toc-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+.toc-scroll::-webkit-scrollbar { display: none; }
+.toc-chip { flex-shrink: 0; font-size: 14px; font-weight: 500; padding: 6px 14px; background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 20px; color: var(--label); text-decoration: none; white-space: nowrap; }
+.toc-chip:active { background: rgba(8,145,178,0.12); border-color: rgba(8,145,178,0.4); color: var(--accent); }
+
+/* 회사 카드 */
+.company-card { margin: 12px 0; border-radius: 14px; overflow: hidden; background: var(--surface); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.card-header { display: flex; align-items: center; gap: 10px; padding: 16px 18px; background: var(--surface2); cursor: pointer; user-select: none; }
+.card-header:active { background: rgba(8,145,178,0.05); }
+.company-num { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); min-width: 18px; }
+.company-name { font-size: 20px; font-weight: 700; color: #202124; flex: 1; }
+.company-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); background: rgba(0,0,0,0.04); padding: 2px 7px; border-radius: 4px; }
+.badge { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; padding: 3px 9px; border-radius: 20px; }
+.badge-profit { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.badge-loss { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.badge-mixed { background: rgba(245,158,11,0.15); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
+.chevron { width: 18px; height: 18px; color: var(--muted); transition: transform 0.3s; flex-shrink: 0; }
+.chevron svg { width:100%; height:100%; }
+.card-header.open .chevron { transform: rotate(180deg); }
+.card-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+.card-body.open { max-height: 19999px; }
+.card-inner { padding: 16px; }
+
+.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.stat-box { background: #f1f3f5; border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.stat-label { font-size: 12px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; font-family: 'IBM Plex Mono', monospace; }
+.stat-value { font-size: 18px; font-weight: 700; }
+.stat-value.accent { color: var(--accent); }
+.stat-value.positive { color: var(--green); }
+.stat-value.negative { color: var(--red); }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.price-bar-wrap { margin-bottom: 16px; }
+.price-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-family: 'IBM Plex Mono', monospace; }
+.price-bar-track { height: 4px; background: var(--border); border-radius: 2px; position: relative; }
+.price-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 2px; }
+.price-bar-dot { position: absolute; top: -4px; width: 12px; height: 12px; background: #fff; border-radius: 50%; transform: translateX(-50%); border: 2px solid var(--accent); }
+
+.price-chart-wrap { margin: 8px 0 16px; padding: 8px 12px; background: #fafbfc; border: 1px solid var(--border); border-radius: 8px; }
+.price-chart-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.price-chart { width: 100% !important; height: 60px !important; }
+
+.tab-nav { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 14px; overflow-x: auto; scrollbar-width: none; }
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn { flex-shrink: 0; font-size: 14px; font-weight: 500; padding: 8px 14px; color: var(--muted); border: none; border-bottom: 2px solid transparent; background: none; cursor: pointer; white-space: nowrap; }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+.section-block { background: #f1f3f5; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 10px; }
+.section-title { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); font-family: 'IBM Plex Mono', monospace; margin-bottom: 8px; }
+.section-content { font-size: 16px; color: var(--label); line-height: 1.8; }
+.section-content strong { color: var(--text); }
+
+.highlight-box { background: rgba(8,145,178,0.05); border: 1px solid rgba(8,145,178,0.2); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+.highlight-title { font-size: 13px; font-weight: 700; color: var(--accent); font-family: 'IBM Plex Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.highlight-content { font-size: 16px; color: var(--label); line-height: 1.8; }
+.highlight-content strong { color: var(--accent); }
+
+.probability { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.prob-label { font-size: 13px; color: var(--muted); flex: 1; }
+.prob-bar-track { width: 80px; height: 4px; background: var(--border); border-radius: 2px; }
+.prob-bar-fill { height: 100%; border-radius: 2px; }
+.prob-high { background: var(--green); }
+.prob-mid { background: var(--accent3); }
+.prob-low { background: var(--red); }
+.prob-pct { font-size: 13px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 32px; text-align: right; }
+.prob-pct.high { color: var(--green); }
+.prob-pct.mid { color: var(--accent3); }
+.prob-pct.low { color: var(--red); }
+
+.sw-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.sw-box { border-radius: 8px; padding: 12px; }
+.sw-box.strength { background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.2); }
+.sw-box.weakness { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); }
+.sw-title { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-family: 'IBM Plex Mono', monospace; }
+.sw-box.strength .sw-title { color: var(--green); }
+.sw-box.weakness .sw-title { color: var(--red); }
+.sw-list { list-style: none; }
+.sw-list li { font-size: 14px; color: var(--label); padding: 3px 0 3px 14px; position: relative; line-height: 1.6; }
+.sw-box.strength .sw-list li::before { content:'+'; position:absolute; left:0; color:var(--green); font-weight:700; }
+.sw-box.weakness .sw-list li::before { content:'−'; position:absolute; left:0; color:var(--red); font-weight:700; }
+
+.keyword-box { background: rgba(8,145,178,0.05); border: 1px solid rgba(8,145,178,0.2); border-radius: 10px; padding: 14px; }
+.keyword-title { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); margin-bottom: 6px; }
+.keyword-desc { font-size: 13px; color: var(--muted); margin-bottom: 12px; line-height: 1.6; }
+.tag-group { margin-bottom: 10px; }
+.tag-group-label { font-size: 12px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-bottom: 6px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 5px 11px; border-radius: 20px; cursor: pointer; user-select: all; }
+.tag:active { opacity: 0.6; }
+.tag-core { background: #ffffff; color: #1e40af; border: 2px solid #1e40af; }
+.tag-product { background: #ffffff; color: #854d0e; border: 2px solid #854d0e; }
+.tag-event { background: #ffffff; color: #9a3412; border: 2px solid #9a3412; }
+.tag-risk { background: #ffffff; color: #dc2626; border: 2px solid #dc2626; }
+
+.tag-legend { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 16px 0; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.competitor-matrix { margin-top: 14px; padding: 12px; background: #fafbfc; border: 1px solid var(--border); border-radius: 10px; }
+.matrix-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent2); letter-spacing: 1.5px; margin-bottom: 10px; }
+.comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.comp-table th, .comp-table td { padding: 7px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+.comp-table th { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+.comp-table td.us { background: rgba(8,145,178,0.06); color: var(--accent); font-weight: 700; }
+
+.scenario-tree { margin-top: 14px; padding: 14px; background: rgba(8,145,178,0.03); border: 1px solid rgba(8,145,178,0.15); border-radius: 10px; }
+.sc-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1.5px; margin-bottom: 10px; }
+.sc-row { display: grid; grid-template-columns: 90px 1fr; gap: 10px; padding: 10px; margin-bottom: 6px; border-radius: 8px; align-items: start; }
+.sc-row.bull { background: rgba(34,197,94,0.07); }
+.sc-row.base { background: rgba(245,158,11,0.07); }
+.sc-row.bear { background: rgba(239,68,68,0.07); }
+.sc-tag { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 700; }
+.sc-row.bull .sc-tag { color: var(--green); }
+.sc-row.base .sc-tag { color: var(--accent3); }
+.sc-row.bear .sc-tag { color: var(--red); }
+.sc-content { font-size: 13px; line-height: 1.5; }
+.sc-cond { color: var(--label); margin-bottom: 3px; }
+.sc-price { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--text); font-size: 12px; }
+.sc-expected { margin-top: 10px; padding: 8px 10px; background: var(--surface); border-radius: 8px; font-size: 13px; color: var(--label); }
+.sc-expected strong { color: var(--accent); }
+.sc-expected .positive { color: var(--green); font-weight: 700; }
+.sc-expected .negative { color: var(--red); font-weight: 700; }
+
+.action-zone { margin-top: 14px; padding: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
+.az-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1.5px; margin-bottom: 10px; }
+.az-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-bottom: 5px; background: #fff; border-radius: 6px; font-size: 13px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; flex-wrap: wrap; }
+.az-row.buy-strong { border-left: 3px solid var(--green); }
+.az-row.buy { border-left: 3px solid #a3e635; }
+.az-row.hold { border-left: 3px solid var(--muted); }
+.az-row.sell { border-left: 3px solid var(--accent3); }
+.az-row.stop { border-left: 3px solid var(--red); }
+.az-note { font-size: 11px; color: var(--muted); font-family: 'Noto Sans KR', sans-serif; font-weight: 400; }
+
+.summary-card { margin: 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.summary-header { padding: 16px 18px; border-bottom: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
+.summary-item { padding: 14px 18px; border-bottom: 1px solid rgba(30,45,69,0.2); display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+.summary-item:last-child { border-bottom: none; }
+.summary-name { font-size: 18px; font-weight: 700; color: #202124; }
+.summary-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); }
+.summary-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; }
+.sum-stat-label { font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; }
+.sum-stat-val { font-size: 14px; font-weight: 600; }
+.sum-stat-val.green { color: var(--green); }
+.sum-stat-val.red { color: var(--red); }
+.sum-stat-val.amber { color: var(--accent3); }
+.sum-stat-val.blue { color: var(--accent); }
+.sum-stat-val.muted { color: var(--muted); }
+.risk-stars { font-size: 16px; }
+
+.insight-box { margin: 0 16px 16px; padding: 14px 16px; background: rgba(8,145,178,0.05); border: 1px solid rgba(8,145,178,0.15); border-radius: 10px; font-size: 14px; color: var(--label); line-height: 1.8; }
+.insight-box strong { color: var(--accent); }
+.per-note { margin: 0 16px 80px; padding: 12px 14px; background: rgba(100,116,139,0.08); border: 1px solid rgba(100,116,139,0.2); border-radius: 10px; font-size: 13px; color: var(--muted); line-height: 1.8; }
+.per-note strong { color: var(--label); }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: calc(var(--nav-h) + var(--safe-bottom)); background: rgba(10,14,23,0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--border); display: flex; align-items: flex-start; padding-top: 8px; z-index: 200; }
+.nav-items { display: flex; width: 100%; justify-content: space-around; }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 8px; border-radius: 8px; min-width: 52px; text-decoration: none; color: var(--muted); }
+.nav-item:active { color: var(--accent); }
+.nav-icon { font-size: 22px; line-height: 1; }
+.nav-label { font-size: 12px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; }
+
+.toast { position: fixed; bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(8,145,178,0.9); color: #fff; font-size: 14px; font-weight: 700; padding: 8px 18px; border-radius: 20px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 300; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.deep-section { margin: 20px 12px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); overflow: hidden; }
+.deep-header { padding: 18px 18px 14px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; }
+.deep-header-tag { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+.deep-header-title { font-size: 20px; font-weight: 900; line-height: 1.3; }
+.deep-body { padding: 16px; }
+.deep-block { margin-bottom: 14px; padding: 14px; border-radius: 10px; }
+.deep-block.reason { background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.15); }
+.deep-block.hope { background: rgba(34,197,94,0.04); border: 1px solid rgba(34,197,94,0.15); }
+.deep-block.watch { background: rgba(59,130,246,0.04); border: 1px solid rgba(59,130,246,0.15); }
+.deep-block.compare { background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.15); }
+.deep-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+.deep-block.reason .deep-label { color: var(--red); }
+.deep-block.hope .deep-label { color: var(--green); }
+.deep-block.watch .deep-label { color: #3b82f6; }
+.deep-block.compare .deep-label { color: var(--accent3); }
+.deep-text { font-size: 15px; color: var(--label); line-height: 1.85; }
+.deep-text strong { color: var(--text); }
+.deep-item { display: flex; gap: 10px; margin-bottom: 10px; }
+.deep-item-num { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 700; color: var(--muted); min-width: 22px; padding-top: 2px; }
+.deep-item-text { font-size: 15px; color: var(--label); line-height: 1.8; }
+.deep-item-text strong { color: var(--text); }
+.signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.signal-card { padding: 10px 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; }
+.signal-card.bullish { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: var(--green); }
+.signal-card.bearish { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: var(--red); }
+.signal-card .signal-icon { font-size: 18px; margin-bottom: 4px; }
+.signal-card .signal-name { font-weight: 700; }
+.signal-card .signal-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.anchor { display: block; position: relative; top: -80px; visibility: hidden; }
+
+.freshness-badge { margin: 12px 16px 0; padding: 8px 14px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25); border-radius: 8px; color: var(--green); font-size: 13px; font-family: 'IBM Plex Mono', monospace; text-align: center; }
+.freshness-badge.stale { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: var(--accent3); }
+
+.sector-overview { margin: 16px 12px; padding: 16px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.sector-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+.diagnosis-list { list-style: none; }
+.diagnosis-list li { padding: 8px 0; font-size: 15px; line-height: 1.6; color: var(--label); border-bottom: 1px solid var(--border); }
+.diagnosis-list li:last-child { border-bottom: none; }
+.diagnosis-list li.good { color: var(--green); }
+.diagnosis-list li.neutral { color: var(--label); }
+.diagnosis-list li.bad { color: var(--red); }
+.diagnosis-list strong { font-weight: 700; }
+
+.event-calendar { margin: 16px 12px; padding: 16px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.cal-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--accent); margin-bottom: 12px; }
+.cal-item { display: grid; grid-template-columns: 70px 1fr auto; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; }
+.cal-item:last-child { border-bottom: none; }
+.cal-date { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); font-weight: 600; }
+.cal-title { font-size: 14px; color: var(--text); font-weight: 500; }
+.cal-tag { font-size: 11px; padding: 3px 8px; border-radius: 10px; font-family: 'IBM Plex Mono', monospace; }
+.cal-item.high .cal-tag { background: rgba(239,68,68,0.12); color: var(--red); }
+.cal-item.mid .cal-tag { background: rgba(245,158,11,0.12); color: var(--accent3); }
+.cal-item.low .cal-tag { background: rgba(100,116,139,0.1); color: var(--muted); }
+
+.flow-section { margin: 16px 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.flow-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+.flow-table th, .flow-table td { padding: 7px 6px; text-align: center; border-bottom: 1px solid var(--border); }
+.flow-table th { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+.flow-table td.pos { color: var(--green); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+.flow-table td.neg { color: var(--red); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+.flow-table .bad { color: var(--red); font-weight: 600; font-size: 12px; }
+.flow-table .good { color: var(--green); font-weight: 600; font-size: 12px; }
+.flow-table .mixed { color: var(--accent3); font-weight: 600; font-size: 12px; }
+
+.checklist { margin: 16px 12px; padding: 16px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.cl-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; margin-bottom: 12px; }
+.checklist label { display: flex; align-items: flex-start; gap: 10px; padding: 8px; margin-bottom: 4px; border-radius: 6px; font-size: 14px; line-height: 1.5; color: var(--label); cursor: pointer; }
+.checklist label:active { background: var(--surface2); }
+.checklist input[type=checkbox] { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--accent); flex-shrink: 0; }
+.checklist input:checked + span { text-decoration: line-through; color: var(--muted); }
+.cl-progress { margin-top: 10px; padding: 8px 10px; background: var(--surface2); border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); text-align: center; }
+.cl-progress.done { background: rgba(34,197,94,0.1); color: var(--green); }
+
+.references { margin: 16px 12px; padding: 14px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
+.ref-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-bottom: 8px; }
+.references ul { list-style: none; }
+.references li { font-size: 12px; color: var(--muted); padding: 3px 0; line-height: 1.6; }
+.references strong { color: var(--label); font-family: 'IBM Plex Mono', monospace; font-size: 11px; margin-right: 6px; }
+
+.related-reports { margin: 16px 12px 100px; padding: 14px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.rel-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; margin-bottom: 10px; }
+.rel-card { display: block; padding: 12px; margin-bottom: 6px; background: var(--surface2); border-radius: 8px; text-decoration: none; color: var(--text); }
+.rel-card:active { background: rgba(8,145,178,0.08); }
+.rel-tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 2px 8px; background: var(--accent); color: #fff; border-radius: 10px; margin-bottom: 4px; }
+.rel-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.rel-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+/* ── 🆕 상관관계·베타 분석 섹션 ── */
+.correlation-section { margin: 20px 12px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); overflow: hidden; }
+.corr-header { padding: 18px 18px 14px; background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%); color: #fff; }
+.corr-header-tag { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+.corr-header-title { font-size: 18px; font-weight: 900; line-height: 1.3; }
+.corr-header-sub { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 6px; font-family: 'IBM Plex Mono', monospace; }
+.corr-body { padding: 16px; }
+.corr-chart-wrap { margin-bottom: 16px; padding: 12px; background: #fafbfc; border: 1px solid var(--border); border-radius: 10px; }
+.corr-chart-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 8px; text-align: center; }
+.corr-chart { width: 100% !important; height: 320px !important; }
+
+.beta-table-wrap { margin-bottom: 16px; overflow-x: auto; }
+.beta-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
+.beta-table th { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; padding: 8px 6px; text-align: center; border-bottom: 2px solid var(--border); background: var(--surface2); }
+.beta-table td { padding: 10px 6px; text-align: center; border-bottom: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; }
+.beta-table td.name { text-align: left; font-family: 'Noto Sans KR', sans-serif; font-weight: 600; color: var(--text); }
+.beta-table .ret { color: var(--green); font-weight: 600; }
+.beta-table .beta-high { background: rgba(239,68,68,0.08); color: var(--red); font-weight: 700; }
+.beta-table .beta-mid { background: rgba(245,158,11,0.08); color: var(--accent3); font-weight: 700; }
+.beta-table .beta-low { background: rgba(34,197,94,0.08); color: var(--green); font-weight: 700; }
+
+.scenario-matrix { margin-top: 16px; padding: 14px; background: rgba(8,145,178,0.04); border: 1px solid rgba(8,145,178,0.2); border-radius: 10px; }
+.scenario-matrix-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1.5px; margin-bottom: 10px; }
+.scenario-matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.scenario-matrix-table th { padding: 6px 4px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+.scenario-matrix-table td { padding: 7px 4px; text-align: center; border-bottom: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; }
+.scenario-matrix-table td.name { text-align: left; font-family: 'Noto Sans KR', sans-serif; font-weight: 600; }
+.scenario-matrix-table .up { color: var(--green); font-weight: 600; }
+.scenario-matrix-table .down { color: var(--red); font-weight: 600; }
+
+.corr-note { margin-top: 12px; padding: 10px 12px; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; font-size: 12px; color: var(--label); line-height: 1.7; }
+.corr-note strong { color: var(--accent3); }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="header">
+  <div class="header-tag">KOSPI Financial Research</div>
+  <h1>금융주 6대 종목<br>코스피 6400 시대의 수혜주 지도</h1>
+  <div class="header-date">2026년 4월 23일 (목) 기준</div>
+  <div class="header-meta">
+    <div class="meta-row">실적 <strong>2025년 연간 공시 + 1Q26 프리뷰 기준</strong></div>
+    <div class="meta-row">주가 <strong>2026.04.22 장마감 기준</strong></div>
+    <div class="meta-row">지수 <strong>코스피 6,388.03 (4/21 사상 최고)</strong></div>
+    <div class="meta-warn">※ 투자 참고용 — 결과 책임은 투자자 본인에게 있음</div>
+  </div>
+</div>
+
+<div class="freshness-badge" id="freshnessBadge">📅 작성 기준일 확인 중...</div>
+
+<!-- 섹터 진단 -->
+<div class="sector-overview">
+  <div class="sector-label">SECTOR DIAGNOSIS — KOSPI 금융 2026</div>
+  <ul class="diagnosis-list">
+    <li class="good">✅ <strong>역대급 이익 구간</strong> — 2026 증권업 순이익 +42% (9.6조), 4대 금융지주 합산 18조 돌파</li>
+    <li class="neutral">⚖ <strong>지수 선반영 논쟁</strong> — 코스피 1년 +150%, 금융주도 60~190% 상승으로 일부 선반영</li>
+    <li class="bad">⚠ <strong>지수 조정 시 베타 역작용</strong> — 증권주는 거래대금 감소 시 실적도 즉시 하락, 변동성 확대</li>
+  </ul>
+</div>
+
+<!-- 이벤트 캘린더 -->
+<div class="event-calendar">
+  <div class="cal-label">📅 EVENT CALENDAR — 향후 12개월 핵심 이벤트</div>
+  <div class="cal-item high"><div class="cal-date">2026.05</div><div class="cal-title">★ 4대 금융지주 1Q26 실적발표 — 순이익 5조+ 예상</div><div class="cal-tag">실적</div></div>
+  <div class="cal-item high"><div class="cal-date">2026.05</div><div class="cal-title">★ 키움·미래에셋 1Q 실적 — 거래대금 레벨업 효과 확인</div><div class="cal-tag">실적</div></div>
+  <div class="cal-item mid"><div class="cal-date">2026.06</div><div class="cal-title">한국은행 금통위 — 기준금리 결정 (인하 사이클)</div><div class="cal-tag">금리</div></div>
+  <div class="cal-item mid"><div class="cal-date">2026.07</div><div class="cal-title">금융지주 중간배당 공시 — 주주환원율 55% 돌파 여부</div><div class="cal-tag">배당</div></div>
+  <div class="cal-item mid"><div class="cal-date">2026.08</div><div class="cal-title">2Q 실적 — 거래대금 지속 여부 + 밸류업 지속성</div><div class="cal-tag">실적</div></div>
+  <div class="cal-item low"><div class="cal-date">2026.3Q</div><div class="cal-title">삼성생명 중간배당 (DPS 6,200원 전망)</div><div class="cal-tag">배당</div></div>
+  <div class="cal-item low"><div class="cal-date">2026.4Q</div><div class="cal-title">금융지주 자사주 소각 공시 라운드 — 총주주환원 55%↑</div><div class="cal-tag">환원</div></div>
+  <div class="cal-item low"><div class="cal-date">2027.1Q</div><div class="cal-title">증권업 3년 연속 사상 최대 실적 기록 여부</div><div class="cal-tag">기록</div></div>
+</div>
+
+<!-- 목차 -->
+<div class="toc-wrap">
+  <div class="toc-label">Contents</div>
+  <div class="toc-scroll">
+    <a class="toc-chip" href="#corr">코스피 상관관계</a>
+    <a class="toc-chip" href="#c1">키움증권</a>
+    <a class="toc-chip" href="#c2">미래에셋증권</a>
+    <a class="toc-chip" href="#c3">KB금융</a>
+    <a class="toc-chip" href="#c4">하나금융</a>
+    <a class="toc-chip" href="#c5">우리금융</a>
+    <a class="toc-chip" href="#c6">삼성생명</a>
+    <a class="toc-chip" href="#deep">딥다이브</a>
+    <a class="toc-chip" href="#flow">수급</a>
+    <a class="toc-chip" href="#summary">종합비교</a>
+    <a class="toc-chip" href="#checklist">체크리스트</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 🆕 상관관계·베타 분석 섹션 -->
+<!-- ══════════════════════════════════════ -->
+<span class="anchor" id="corr"></span>
+<div class="correlation-section">
+  <div class="corr-header">
+    <div class="corr-header-tag">Correlation · Beta Analysis</div>
+    <div class="corr-header-title">1년 코스피 vs 6종목 — 누가 얼마나 따라왔나</div>
+    <div class="corr-header-sub">기준일 100 정규화 · 2025.04 → 2026.04</div>
+  </div>
+  <div class="corr-body">
+
+    <!-- 멀티라인 차트 -->
+    <div class="corr-chart-wrap">
+      <div class="corr-chart-label">📈 1년 누적 수익률 비교 (2025.04.22 = 100 기준)</div>
+      <canvas id="corrChart" class="corr-chart"></canvas>
+    </div>
+
+    <!-- 베타 테이블 -->
+    <div class="beta-table-wrap">
+      <table class="beta-table">
+        <thead>
+          <tr><th>종목</th><th>1년 상승률</th><th>베타<sup>*</sup></th><th>성격</th><th>지수연동</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="name">코스피 (벤치마크)</td><td class="ret">+150.5%</td><td>1.00</td><td>—</td><td>—</td></tr>
+          <tr><td class="name">키움증권</td><td class="ret">+169%</td><td class="beta-high">1.12</td><td>거래대금 직결</td><td>즉각</td></tr>
+          <tr><td class="name">미래에셋증권</td><td class="ret">+190%</td><td class="beta-high">1.26</td><td>IB+스페이스X</td><td>즉각</td></tr>
+          <tr><td class="name">삼성생명</td><td class="ret">+146%</td><td class="beta-mid">0.97</td><td>삼성전자 지분</td><td>강</td></tr>
+          <tr><td class="name">하나금융지주</td><td class="ret">+83%</td><td class="beta-low">0.55</td><td>외인 매수·배당</td><td>중</td></tr>
+          <tr><td class="name">KB금융</td><td class="ret">+83%</td><td class="beta-low">0.55</td><td>밸류업 리딩</td><td>중</td></tr>
+          <tr><td class="name">우리금융지주</td><td class="ret">+66%</td><td class="beta-low">0.44</td><td>저PBR 디스카운트</td><td>약</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 시나리오 매트릭스 -->
+    <div class="scenario-matrix">
+      <div class="scenario-matrix-label">🎯 지수 변동 시나리오 — 예상 주가 변동 (베타 기반 추정)</div>
+      <table class="scenario-matrix-table">
+        <thead>
+          <tr>
+            <th>종목</th>
+            <th>현재가</th>
+            <th>코스피<br>+10%</th>
+            <th>코스피<br>+20%</th>
+            <th>코스피<br>-10%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="name">키움증권</td><td>350,000</td><td class="up">+11.2%<br>389,200</td><td class="up">+22.4%<br>428,400</td><td class="down">-11.2%<br>310,800</td></tr>
+          <tr><td class="name">미래에셋증권</td><td>72,500</td><td class="up">+12.6%<br>81,635</td><td class="up">+25.2%<br>90,770</td><td class="down">-12.6%<br>63,365</td></tr>
+          <tr><td class="name">삼성생명</td><td>246,000</td><td class="up">+9.7%<br>269,862</td><td class="up">+19.4%<br>293,724</td><td class="down">-9.7%<br>222,138</td></tr>
+          <tr><td class="name">하나금융</td><td>110,000</td><td class="up">+5.5%<br>116,050</td><td class="up">+11.0%<br>122,100</td><td class="down">-5.5%<br>103,950</td></tr>
+          <tr><td class="name">KB금융</td><td>110,000</td><td class="up">+5.5%<br>116,050</td><td class="up">+11.0%<br>122,100</td><td class="down">-5.5%<br>103,950</td></tr>
+          <tr><td class="name">우리금융</td><td>26,500</td><td class="up">+4.4%<br>27,666</td><td class="up">+8.8%<br>28,832</td><td class="down">-4.4%<br>25,334</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="corr-note">
+      <strong>⚠ 베타 활용 주의사항</strong><br>
+      ① 베타는 <strong>과거 1년 데이터 기반 근사치</strong>. 지수가 계속 최고치를 갱신하는 국면에서는 금융주 리레이팅 속도가 둔화될 수 있음.<br>
+      ② <strong>삼성생명</strong>은 삼성전자 지분 때문에 베타 높지만, 한화투자증권 "중립" 의견처럼 <strong>이미 선반영</strong> 우려 존재.<br>
+      ③ <strong>증권주(키움·미래에셋)</strong>는 양방향 베타 — 지수 상승 시 폭발력 최강이나 <strong>조정 시 가장 크게 하락</strong>.<br>
+      ④ <strong>4대 지주</strong>는 상승 베타는 낮지만 <strong>하락 방어력도 높음</strong>. 배당수익률 4~5%가 하방 쿠션.<br>
+      * 베타 = (종목 1년 상승률) ÷ (코스피 1년 상승률 150.5%). 변동성 기반 정식 CAPM 베타와는 차이 있음.
+    </div>
+
+  </div>
+</div>
+
+<div class="tag-legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#1e40af"></div>핵심기술</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#854d0e"></div>사업/서비스</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9a3412"></div>이벤트신호</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div>적신호</div>
+</div>
+
+<!-- ══ 01 키움증권 ══ -->
+<span class="anchor" id="c1"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">01</div>
+    <div class="company-name">키움증권</div>
+    <div class="company-ticker">039490</div>
+    <span class="badge badge-profit">흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~9조</div><div class="stat-sub">증권 대장주</div></div>
+        <div class="stat-box"><div class="stat-label">1년 상승률</div><div class="stat-value positive">+169%</div><div class="stat-sub">베타 1.12</div></div>
+        <div class="stat-box"><div class="stat-label">목표가</div><div class="stat-value">540,000<sup style="font-size:9px;">하나</sup></div><div class="stat-sub">2026.02 기준</div></div>
+        <div class="stat-box"><div class="stat-label">현재가 추정</div><div class="stat-value" style="font-size:14px;">~350,000</div><div class="stat-sub">목표가 대비 -35%</div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="130000,140000,155000,170000,185000,200000,220000,250000,280000,310000,335000,345000,350000"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>개인 브로커리지 독점적 1위</strong>. 국내 개인 주식 거래대금 점유율 <strong>~40%</strong>. 비대면·저수수료로 리테일 레버리지 최강. 2025년 연간 브로커리지 수수료수익 ~9,000억 → <strong>2026년 1조원 돌파 전망</strong>(하나증권). IB·자기매매는 상대적 약점이나 변동성 국면에서 트레이딩 손익도 큰 기여.</div></div>
+        <div class="highlight-box"><div class="highlight-title">★ 거래대금 레벨업 수혜 최강</div><div class="highlight-content"><strong>2026.01 국내 거래대금 62조원 (+89% MoM)</strong>. 키움 약정 거래대금 2025 연간 11.4조 → 1월 평균 20조, 월말 <strong>30조</strong> 돌파. <strong>KB증권 2026 KOSPI 타깃 5,000pt 전제</strong>(이미 달성)로 일평균거래대금 전망 32.8조로 상향, 2026 이익 전망치도 +17.4% 상향. <strong>하나증권 목표가 54만원</strong>.</div>
+          <div class="probability"><span class="prob-label">2026 순이익 사상 최대</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:75%"></div></div><span class="prob-pct high">75%</span></div>
+          <div class="probability"><span class="prob-label">브로커리지 수수료 1조 돌파</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:70%"></div></div><span class="prob-pct high">70%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">컨센 <strong>영업이익 ~1.8조, 순이익 ~1.3조 (+45% YoY)</strong>. 1Q26 단독 분기 순이익 4천억대 예상. 지수 6000pt → 6400pt로 이미 KB 타깃 돌파 → <strong>일평균 거래대금 35조 가능성</strong>. 하나증권 목표가 상향 여력 큼.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">주가 히스토리</div><div class="section-content">2024년 말 ~11만원 → 2025년 4월 ~13만원 → 2025년 하반기 20만원대 → 2026년 1월 30만원 돌파 → 2026년 4월 <strong>~35만원(+169% 1년)</strong>. 베타 1.12로 코스피 대비 1.5배 변동성 (정규화 기준). 증권주 중 가장 깨끗한 "거래대금 비례 모델".</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content">본질은 <strong>"거래대금 레벨업의 순수 플레이"</strong>. IB 의존도 낮고 자산운용도 작아 <strong>거래대금 숫자가 실적 80%를 결정</strong>. 지수 최고치 국면에서 가장 단기 폭발력 강한 종목. 다만 <strong>거래대금 꺾이는 순간 실적도 즉각 둔화</strong>되므로 <strong>지수 조정 국면 취약성도 최대</strong>.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>개인 거래대금 점유율 40% 독점</li><li>비대면·저수수료 리테일 최강</li><li>거래대금 1조 브로커리지 예상</li><li>2026 순이익 +45% 컨센</li><li>하나증권 목표가 54만원</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>IB·자산운용 비중 작음</li><li>지수 조정 시 실적 즉각 둔화</li><li>1년 +169% — 선반영 논쟁</li><li>개인 순매도 전환 시 취약</li><li>2024년 불건전 약정 이슈 잔존</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">키움증권 MTS</span><span class="tag tag-core" onclick="copyTag(this)">키움 영웅문</span><span class="tag tag-core" onclick="copyTag(this)">키움 AI 투자</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">키움 해외주식</span><span class="tag tag-product" onclick="copyTag(this)">키움 퇴직연금</span><span class="tag tag-product" onclick="copyTag(this)">키움증권 IB</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">키움증권 실적</span><span class="tag tag-event" onclick="copyTag(this)">거래대금 레벨업</span><span class="tag tag-event" onclick="copyTag(this)">키움증권 배당</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">키움 불건전 약정</span><span class="tag tag-risk" onclick="copyTag(this)">거래대금 둔화</span><span class="tag tag-risk" onclick="copyTag(this)">증권업 밸류에이션</span></div></div>
+        </div>
+      </div>
+
+      <div class="competitor-matrix">
+        <div class="matrix-label">⚔ 경쟁 지형 (국내 증권)</div>
+        <table class="comp-table">
+          <tr><th></th><th>키움</th><th>미래에셋</th><th>한국금융</th></tr>
+          <tr><td>주력</td><td class="us">리테일</td><td>IB+해외</td><td>종합</td></tr>
+          <tr><td>점유율</td><td class="us">40%(개인)</td><td>20%(해외)</td><td>15%(IB)</td></tr>
+          <tr><td>시총</td><td class="us">~9조</td><td>~5조</td><td>~7조</td></tr>
+          <tr><td>지수 베타</td><td class="us">1.12</td><td>1.26</td><td>0.95</td></tr>
+        </table>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>35%</div><div class="sc-content"><div class="sc-cond">코스피 7000+ 돌파 + 거래대금 35조 유지</div><div class="sc-price">500,000 ~ 550,000 (+43~57%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>45%</div><div class="sc-content"><div class="sc-cond">코스피 6000~6500 박스 + 거래대금 30조</div><div class="sc-price">350,000 ~ 420,000 (±10%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>20%</div><div class="sc-content"><div class="sc-cond">코스피 -15% 조정 + 거래대금 20조 하회</div><div class="sc-price">230,000 ~ 280,000 (-20~35%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.35×525,000 + 0.45×385,000 + 0.2×255,000 ≈ <strong>408,000원</strong> — 현재가 대비 <span class="positive">+17%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 280,000 <span class="az-note">조정 대기</span></div>
+        <div class="az-row buy">💛 분할매수 280,000 ~ 330,000</div>
+        <div class="az-row hold">⚪ 관망 330,000 ~ 420,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 500,000 <span class="az-note">목표가 근접</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 260,000 <span class="az-note">거래대금 둔화 신호</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 02 미래에셋증권 ══ -->
+<span class="anchor" id="c2"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">02</div>
+    <div class="company-name">미래에셋증권</div>
+    <div class="company-ticker">006800</div>
+    <span class="badge badge-profit">흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~5조</div><div class="stat-sub">IB+해외 대장</div></div>
+        <div class="stat-box"><div class="stat-label">1년 상승률</div><div class="stat-value positive">+190%</div><div class="stat-sub">베타 1.26 (최고)</div></div>
+        <div class="stat-box"><div class="stat-label">1Q26 순이익(E)</div><div class="stat-value positive">1.32조</div><div class="stat-sub">스페이스X 1조 포함</div></div>
+        <div class="stat-box"><div class="stat-label">현재 주가</div><div class="stat-value">72,500</div><div class="stat-sub">목표가 83,000 유안타</div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="25000,28000,32000,36000,42000,48000,55000,60000,63000,67000,70000,71500,72500"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>국내 최대 자산관리·글로벌 IB</strong>. <strong>14개국 해외법인</strong>, 해외주식·ETF 순자산 국내 1위. <strong>스페이스X 등 글로벌 대체투자 포트폴리오</strong> 보유. 2025년 영업이익 <strong>1조 9,150억(+61%)</strong>, 순이익 <strong>1조 5,936억(+72%)</strong>. PI자산 평가이익만 6,450억. 혁신기업 투자 성과 1조+.</div></div>
+        <div class="highlight-box"><div class="highlight-title">★ 스페이스X 평가이익 + 밸류업 콤보</div><div class="highlight-content"><strong>2026.1Q 순이익 ~1.32조 — 스페이스X 평가이익 약 1조원 포함</strong>. 일회성 성격이지만 <strong>본업 +3,000억대</strong>로도 분기 사상 최대. 해외주식 거래대금·IB 딜 모두 호조. <strong>유안타 83,000원·하나 81,000원 목표가</strong> (현재가 대비 +12~15%).</div>
+          <div class="probability"><span class="prob-label">연간 순이익 2조 돌파</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:65%"></div></div><span class="prob-pct high">65%</span></div>
+          <div class="probability"><span class="prob-label">스페이스X IPO 연내 가능성</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:45%"></div></div><span class="prob-pct mid">45%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">영업이익 <strong>~2.3조, 순이익 ~1.9조 (+19% YoY)</strong> 컨센. 스페이스X 일회성 제외 시 본업만 <strong>1.5조+ 순이익</strong>. 증권업 중 가장 이익 구성 다각화. 다만 PI자산(비상장 평가익) 비중 큼 — <strong>평가손실 반전 리스크</strong> 존재.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">주가 히스토리</div><div class="section-content">2025년 4월 <strong>~25,000원</strong> → 2025년 하반기 5만원대 → 2026년 4월 <strong>72,500원 (+190% 1년)</strong>. 베타 1.26으로 6종목 중 <strong>최고 베타</strong>. 증권주 중에서도 '기대감 프리미엄'이 가장 큼 — 스페이스X·해외주식 서사가 추가 상승 촉매.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>3중 촉매</strong>: ① 증권업 거래대금 레벨업 ② 스페이스X·비상장 평가이익 서사 ③ 밸류업 프로그램 동참. 목표가 81~83,000원으로 <strong>남은 여력 12~15%</strong>에 그쳐 — 단기 밸류에이션 피로 구간. 2Q 본업 실적이 결정적.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>국내 최대 자산관리·글로벌 IB</li><li>해외주식 순자산 1위</li><li>스페이스X 등 비상장 포트폴리오</li><li>14개국 해외법인 네트워크</li><li>이익 구성 가장 다각화</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>PI자산 평가익 비중 큼</li><li>1Q 1.32조 일회성 포함</li><li>1년 +190% 선반영 강함</li><li>목표가 대비 여력 +12%뿐</li><li>박현주 회장 리스크(오너 리스크)</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">미래에셋 해외주식</span><span class="tag tag-core" onclick="copyTag(this)">미래에셋 ETF</span><span class="tag tag-core" onclick="copyTag(this)">미래에셋 WM</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">미래에셋 IB</span><span class="tag tag-product" onclick="copyTag(this)">스페이스X 지분</span><span class="tag tag-product" onclick="copyTag(this)">미래에셋 글로벌</span><span class="tag tag-product" onclick="copyTag(this)">미래에셋 자산운용</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">미래에셋증권 실적</span><span class="tag tag-event" onclick="copyTag(this)">스페이스X IPO</span><span class="tag tag-event" onclick="copyTag(this)">미래에셋 배당</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">박현주 리스크</span><span class="tag tag-risk" onclick="copyTag(this)">PI자산 평가손실</span><span class="tag tag-risk" onclick="copyTag(this)">증권업 조정</span></div></div>
+        </div>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>30%</div><div class="sc-content"><div class="sc-cond">스페이스X IPO + 본업 1.5조 + 해외주식 +50%</div><div class="sc-price">95,000 ~ 110,000 (+31~52%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>50%</div><div class="sc-content"><div class="sc-cond">본업 견조 + 일부 스페이스X 반영, 목표가 도달</div><div class="sc-price">72,000 ~ 85,000 (±10%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>20%</div><div class="sc-content"><div class="sc-cond">PI자산 평가손실 + 지수 조정 + 해외주식 둔화</div><div class="sc-price">45,000 ~ 55,000 (-25~38%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.3×102,500 + 0.5×78,500 + 0.2×50,000 ≈ <strong>80,000원</strong> — 현재가 대비 <span class="positive">+10%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 55,000 <span class="az-note">조정 대기</span></div>
+        <div class="az-row buy">💛 분할매수 55,000 ~ 67,000</div>
+        <div class="az-row hold">⚪ 관망 67,000 ~ 83,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 95,000 <span class="az-note">과열권</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 50,000 <span class="az-note">PI자산 이슈 발생 시</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 03 KB금융 ══ -->
+<span class="anchor" id="c3"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">03</div>
+    <div class="company-name">KB금융</div>
+    <div class="company-ticker">105560</div>
+    <span class="badge badge-profit">흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~44조</div><div class="stat-sub">금융 시총 1위</div></div>
+        <div class="stat-box"><div class="stat-label">1년 상승률</div><div class="stat-value positive">+83%</div><div class="stat-sub">베타 0.55</div></div>
+        <div class="stat-box"><div class="stat-label">2025 주주환원</div><div class="stat-value positive">52.4%</div><div class="stat-sub">조기 달성</div></div>
+        <div class="stat-box"><div class="stat-label">목표가</div><div class="stat-value">216,000<sup style="font-size:9px;">미래</sup></div><div class="stat-sub">현재 +96%</div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="60000,63000,66000,72000,78000,85000,92000,99000,104000,108000,110000,111000,110000"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>국민은행(80%) + 증권·카드·보험(20%)</strong>. 2025년 <strong>순이익 5.2조+</strong> 금융지주 1위. 자회사 고른 성장 — KB증권 (거래대금 수혜), KB손해보험 (GA 채널 강세), KB카드 (회복). <strong>CET1 비율 13% 후반</strong>으로 자본적정성 최상위 → 주주환원 여력 최대.</div></div>
+        <div class="highlight-box"><div class="highlight-title">★ 밸류업 프로그램 '모범생'</div><div class="highlight-content"><strong>2025 주주환원율 52.4% 조기 달성</strong> (자사주 소각 + 배당). <strong>2026 53~55% 전망</strong>. 국내 금융지주 중 가장 공격적·일관된 환원 정책. 미래에셋증권 목표가 <strong>216,000원</strong>(현재 대비 +96%), 하나증권·KB증권·NH 등 모두 매수 의견.</div>
+          <div class="probability"><span class="prob-label">주주환원율 55% 돌파</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:70%"></div></div><span class="prob-pct high">70%</span></div>
+          <div class="probability"><span class="prob-label">순이익 5.5조 돌파</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:65%"></div></div><span class="prob-pct high">65%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">컨센 <strong>순이익 5.4조~5.6조 (+5% YoY)</strong>. 금리 인하에도 <strong>예대마진 방어 + 수수료수익 +15%</strong>로 실적 유지. 외인 지분 77% — 밸류업 프로그램 지속 시 PBR 0.6 → 0.8 리레이팅 여력.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">주가 히스토리</div><div class="section-content">2024년 초 <strong>6만원대</strong> → 2024년 하반기 밸류업 발표 후 8만원대 → 2025년 4월 <strong>~6만원</strong>(조정) → 2026년 4월 <strong>~11만원 (+83% 1년)</strong>. 베타 0.55로 코스피 상승률의 절반 수준 — <strong>느리지만 꾸준한 계단식 상승</strong>. 배당수익률 4.5%가 하방 쿠션.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>"밸류업 + 외인 매수 + 배당"</strong> 3중 동인. 지수 상승 자체보다 <strong>외국인이 저PBR+고배당 금융주를 우선 매수</strong>하는 구조가 본질. 단기 폭발력은 증권주에 밀리지만 <strong>지수 조정 시 방어력은 최강</strong>. PBR 0.6배로 여전히 리레이팅 여력 남음.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>금융 시총 1위 ~44조</li><li>주주환원율 52.4% 업계 최고</li><li>CET1 13%+ 자본 여력 최대</li><li>자회사 고른 성장</li><li>배당수익률 ~4.5%</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>단기 베타 0.55 — 폭발력 약함</li><li>NIM 금리 인하에 점진 압박</li><li>부동산 PF 잔존 리스크</li><li>외인 지분 77% — 이탈 시 충격</li><li>ROE 9%대 — 글로벌 대비 낮음</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">KB금융 CET1</span><span class="tag tag-core" onclick="copyTag(this)">KB 스타뱅킹</span><span class="tag tag-core" onclick="copyTag(this)">KB AI</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">국민은행</span><span class="tag tag-product" onclick="copyTag(this)">KB증권</span><span class="tag tag-product" onclick="copyTag(this)">KB손해보험</span><span class="tag tag-product" onclick="copyTag(this)">KB카드</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">KB금융 자사주 소각</span><span class="tag tag-event" onclick="copyTag(this)">KB금융 배당</span><span class="tag tag-event" onclick="copyTag(this)">KB금융 실적</span><span class="tag tag-event" onclick="copyTag(this)">밸류업 프로그램</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">부동산 PF</span><span class="tag tag-risk" onclick="copyTag(this)">금리 인하 NIM</span><span class="tag tag-risk" onclick="copyTag(this)">외국인 매도</span></div></div>
+        </div>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>35%</div><div class="sc-content"><div class="sc-cond">지수 7000+ + 주주환원 55%+ + 외인 추가 매수</div><div class="sc-price">145,000 ~ 170,000 (+32~55%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>50%</div><div class="sc-content"><div class="sc-cond">지수 6000~6500 유지 + 환원율 53%, 점진 상승</div><div class="sc-price">110,000 ~ 130,000 (±10%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>15%</div><div class="sc-content"><div class="sc-cond">지수 -15% 조정 + 부동산 PF 부실</div><div class="sc-price">85,000 ~ 95,000 (-15~25%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.35×157,500 + 0.5×120,000 + 0.15×90,000 ≈ <strong>128,625원</strong> — 현재가 대비 <span class="positive">+17%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 95,000 <span class="az-note">배당수익률 5% 구간</span></div>
+        <div class="az-row buy">💛 분할매수 95,000 ~ 110,000</div>
+        <div class="az-row hold">⚪ 관망 110,000 ~ 130,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 150,000 <span class="az-note">PBR 0.9 진입</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 90,000 <span class="az-note">PF 부실 확대 시</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 04 하나금융지주 ══ -->
+<span class="anchor" id="c4"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">04</div>
+    <div class="company-name">하나금융지주</div>
+    <div class="company-ticker">086790</div>
+    <span class="badge badge-profit">흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~30조</div><div class="stat-sub">금융 2위권</div></div>
+        <div class="stat-box"><div class="stat-label">1년 상승률</div><div class="stat-value positive">+83%</div><div class="stat-sub">베타 0.55</div></div>
+        <div class="stat-box"><div class="stat-label">외국인 지분</div><div class="stat-value positive">~72%</div><div class="stat-sub">금융지주 최고</div></div>
+        <div class="stat-box"><div class="stat-label">목표가</div><div class="stat-value">157,000<sup style="font-size:9px;">하나</sup></div><div class="stat-sub">현재 +43%</div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="60000,63000,66000,72000,78000,85000,93000,102000,107000,110000,112000,111000,110000"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>하나은행(85%) + 비은행(15%)</strong>. 대기업·외환 전문성 최강. 2025년 순이익 <strong>~3.8조</strong>. 비은행은 상대적 약점이나 외환·IB·기업 자산관리에서 차별화. <strong>외국인 지분 72%</strong> — 4대 지주 중 최고. 글로벌 투자자 신뢰의 증거이자 동시에 취약점.</div></div>
+        <div class="highlight-box"><div class="highlight-title">★ 외국인 매수 포커스</div><div class="highlight-content">코스피 지수 상승 국면의 <strong>외국인 자금 유입 1차 수혜주</strong>. PBR 0.55배·배당수익률 ~5%라는 <strong>글로벌 대비 극심한 저평가</strong>가 매수 근거. 하나증권 자체 리포트 목표가 <strong>157,000원</strong>(현재 대비 +43%). 환원율도 KB·신한과 경쟁 중.</div>
+          <div class="probability"><span class="prob-label">주주환원율 50% 조기 달성</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:70%"></div></div><span class="prob-pct high">70%</span></div>
+          <div class="probability"><span class="prob-label">외인 지분 80% 돌파</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:50%"></div></div><span class="prob-pct mid">50%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">순이익 <strong>~4.0조 (+5% YoY)</strong> 컨센. 외환·글로벌 사업 비중 큰 하나 특성상 <strong>원/달러 환율 안정 시 이익 증가</strong>. 비은행 확대 숙제는 여전 — 하나증권·하나카드 이익 기여 확대가 관건.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">주가 히스토리</div><div class="section-content">2024년 초 ~5만원 → 2025년 4월 ~6만원 → 2026년 4월 <strong>~11만원 (+83%)</strong>. KB금융과 거의 동행하는 움직임 — 4대 지주 내부에서는 <strong>KB-하나 쌍두마차</strong> 구도. 외인 지분 72%가 랠리 견인 동력.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>"외인 = 하나금융 = 코스피 저평가 대표 바스켓"</strong> 등식이 성립. 외국인이 코스피 비중 늘릴 때 가장 먼저 매수하는 종목 중 하나. 반대로 <strong>외인 대량 매도 시 낙폭도 크므로</strong> 환율·미국 금리·지정학 리스크 체크 필수.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>외국인 지분 72% 금융지주 최고</li><li>외환·글로벌 IB 전문성</li><li>PBR 0.55 저평가</li><li>배당수익률 ~5%</li><li>목표가 15.7만 — 여력 +43%</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>비은행 비중 15% — 다각화 부족</li><li>외인 지분 편중 리스크</li><li>환율 변동성 노출</li><li>베타 0.55 — 폭발력 낮음</li><li>하나증권 이익 기여 미미</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">하나금융 외환</span><span class="tag tag-core" onclick="copyTag(this)">하나은행 글로벌</span><span class="tag tag-core" onclick="copyTag(this)">하나 디지털</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">하나은행</span><span class="tag tag-product" onclick="copyTag(this)">하나증권</span><span class="tag tag-product" onclick="copyTag(this)">하나카드</span><span class="tag tag-product" onclick="copyTag(this)">하나생명</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">하나금융 배당</span><span class="tag tag-event" onclick="copyTag(this)">하나금융 자사주</span><span class="tag tag-event" onclick="copyTag(this)">하나금융 외국인</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">외국인 매도</span><span class="tag tag-risk" onclick="copyTag(this)">원달러 환율</span><span class="tag tag-risk" onclick="copyTag(this)">비은행 부진</span></div></div>
+        </div>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>35%</div><div class="sc-content"><div class="sc-cond">외인 추가 +5조 매수 + 주주환원 50%+ + 지수 7000</div><div class="sc-price">145,000 ~ 165,000 (+32~50%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>50%</div><div class="sc-content"><div class="sc-cond">지수 유지 + 환원율 48~50% + 순이익 +5%</div><div class="sc-price">108,000 ~ 125,000 (±8%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>15%</div><div class="sc-content"><div class="sc-cond">외인 대량 매도 + 원달러 1450+ + 지수 조정</div><div class="sc-price">80,000 ~ 92,000 (-15~27%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.35×155,000 + 0.5×116,500 + 0.15×86,000 ≈ <strong>125,900원</strong> — 현재가 대비 <span class="positive">+14%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 92,000 <span class="az-note">배당수익률 5.5%+ 구간</span></div>
+        <div class="az-row buy">💛 분할매수 92,000 ~ 108,000</div>
+        <div class="az-row hold">⚪ 관망 108,000 ~ 130,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 150,000 <span class="az-note">목표가 근접</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 88,000 <span class="az-note">외인 대량 이탈 시</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 05 우리금융지주 ══ -->
+<span class="anchor" id="c5"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">05</div>
+    <div class="company-name">우리금융지주</div>
+    <div class="company-ticker">316140</div>
+    <span class="badge badge-profit">흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~19조</div><div class="stat-sub">4대 지주 4위</div></div>
+        <div class="stat-box"><div class="stat-label">1년 상승률</div><div class="stat-value positive">+66%</div><div class="stat-sub">베타 0.44 (방어)</div></div>
+        <div class="stat-box"><div class="stat-label">PBR</div><div class="stat-value positive">~0.45배</div><div class="stat-sub">4대 지주 최저</div></div>
+        <div class="stat-box"><div class="stat-label">목표가</div><div class="stat-value">43,000<sup style="font-size:9px;">하나</sup></div><div class="stat-sub">현재 +62%</div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="16000,17000,18000,19000,20500,22000,23500,25000,26000,26500,26800,26800,26500"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>우리은행 ~90% 집중</strong>. 비은행 자회사(우리카드·우리금융캐피탈) 기여 작음. 2025년 순이익 <strong>~2.8조</strong>. 증권사 인수 재추진 중(우리투자증권 설립 검토). <strong>4대 지주 중 유일하게 증권사 없음</strong>이 최대 구조적 약점.</div></div>
+        <div class="highlight-box"><div class="highlight-title">★ 저PBR 리레이팅 대장</div><div class="highlight-content">PBR <strong>0.45배</strong>는 4대 지주 중 최저 — 전형적 <strong>"밸류업 리레이팅 가장 남은 여력"</strong>. 하나증권 목표가 <strong>43,000원</strong>(현재 대비 +62%). 다만 비은행 부재 + 과거 손태승 前회장 사모펀드 이슈 + <strong>ELS 사태로 손실 인식</strong>이 할인 요인.</div>
+          <div class="probability"><span class="prob-label">우리투자증권 설립 가시화</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:55%"></div></div><span class="prob-pct mid">55%</span></div>
+          <div class="probability"><span class="prob-label">PBR 0.6 리레이팅</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:60%"></div></div><span class="prob-pct high">60%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">순이익 <strong>~3.0조 (+7% YoY)</strong> 컨센. 증권사 설립·비은행 M&A가 가장 큰 변수. 주주환원 확대 여지 크나 <strong>자본비율이 타 지주 대비 낮아</strong> 공격적 환원은 제약.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">주가 히스토리</div><div class="section-content">2024년 초 <strong>1.3만원</strong> → 2025년 4월 <strong>~1.6만원</strong> → 2026년 4월 <strong>~2.65만원 (+66%)</strong>. 베타 0.44로 6종목 중 최저 — 지수 상승률의 1/3 수준. <strong>가장 느린 종목</strong>이지만 하락장에서도 가장 방어적. 상승은 더디나 <strong>밸류업 공간은 가장 많이 남음</strong>.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content">본질은 <strong>"리레이팅 여력 vs 구조적 약점의 줄다리기"</strong>. PBR 0.45는 분명 싸지만 비은행 부재가 계속 발목. <strong>우리투자증권 정식 설립·인가</strong>가 가장 큰 재평가 트리거. 이벤트 드리븐 성격 강함.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>PBR 0.45 — 4대 지주 최저</li><li>하락장 방어력 최강</li><li>배당수익률 ~6%</li><li>목표가 4.3만 — 여력 +62%</li><li>지수 추가 상승 시 리레이팅 여지</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>비은행 자회사 부재 (증권 없음)</li><li>자본비율 타 지주 대비 낮음</li><li>ELS 손실 인식 이슈</li><li>베타 0.44 — 폭발력 최약</li><li>손태승 前회장 사모펀드 여진</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">우리금융 디지털</span><span class="tag tag-core" onclick="copyTag(this)">우리WON뱅킹</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">우리은행</span><span class="tag tag-product" onclick="copyTag(this)">우리카드</span><span class="tag tag-product" onclick="copyTag(this)">우리투자증권</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">우리금융 증권사</span><span class="tag tag-event" onclick="copyTag(this)">우리금융 배당</span><span class="tag tag-event" onclick="copyTag(this)">우리금융 M&A</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">우리 ELS</span><span class="tag tag-risk" onclick="copyTag(this)">손태승 사모펀드</span><span class="tag tag-risk" onclick="copyTag(this)">자본비율 하락</span></div></div>
+        </div>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>30%</div><div class="sc-content"><div class="sc-cond">우리투자증권 인가 + PBR 0.6 리레이팅 + 지수 7000</div><div class="sc-price">38,000 ~ 45,000 (+43~70%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>55%</div><div class="sc-content"><div class="sc-cond">지수 유지 + 배당 6%, 점진적 PBR 개선</div><div class="sc-price">26,000 ~ 31,000 (±8%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>15%</div><div class="sc-content"><div class="sc-cond">추가 ELS 손실 + 증권사 설립 실패</div><div class="sc-price">20,000 ~ 23,000 (-15~25%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.3×41,500 + 0.55×28,500 + 0.15×21,500 ≈ <strong>31,350원</strong> — 현재가 대비 <span class="positive">+18%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 22,000 <span class="az-note">배당 7%+ 구간</span></div>
+        <div class="az-row buy">💛 분할매수 22,000 ~ 26,000</div>
+        <div class="az-row hold">⚪ 관망 26,000 ~ 31,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 40,000 <span class="az-note">목표가 근접</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 20,000 <span class="az-note">ELS 추가 이슈 시</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 06 삼성생명 ══ -->
+<span class="anchor" id="c6"></span>
+<div class="company-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">06</div>
+    <div class="company-name">삼성생명</div>
+    <div class="company-ticker">032830</div>
+    <span class="badge badge-profit">흑자</span>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">시가총액</div><div class="stat-value accent">~49조</div><div class="stat-sub">보험업 1위</div></div>
+        <div class="stat-box"><div class="stat-label">1년 상승률</div><div class="stat-value positive">+146%</div><div class="stat-sub">베타 0.97</div></div>
+        <div class="stat-box"><div class="stat-label">삼성전자 지분</div><div class="stat-value positive">8.51%</div><div class="stat-sub">지배구조 핵심</div></div>
+        <div class="stat-box"><div class="stat-label">목표가</div><div class="stat-value">299,000<sup style="font-size:9px;">NH</sup></div><div class="stat-sub">현재 +22%</div></div>
+      </div>
+
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">최근 12개월 주가 추이</div>
+        <canvas class="price-chart" data-prices="100000,108000,120000,135000,150000,165000,185000,205000,225000,240000,248000,248000,246000"></canvas>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this)">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this)">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this)">강점약점</button>
+        <button class="tab-btn" onclick="switchTab(this)">뉴스키워드</button>
+      </div>
+
+      <div class="tab-pane active">
+        <div class="section-block"><div class="section-title">주요 사업 & 매출 구조</div><div class="section-content"><strong>생명보험 본업 + 삼성전자 지분 8.51%</strong>. 본업은 보험영업이익·투자영업이익 양대 축. 삼성전자 지분은 시총의 <strong>~35% 차지하는 핵심 자산</strong>. 사실상 "보험사 + 삼성전자 ETF"라는 이중 구조. 2026년 지배주주순이익 <strong>2.56조 (+11.1% YoY)</strong>, 투자손익 <strong>1.07조 (+54%, 삼성전자 배당 확대)</strong>.</div></div>
+        <div class="highlight-box"><div class="highlight-title">★ 삼성전자 지분 레버리지</div><div class="highlight-content"><strong>삼성전자 주가 상승 → 지분가치 급증 → 삼성생명 주가 연동</strong>. 2025 하반기 삼성전자 AI 모멘텀으로 <strong>삼성생명 +146% 1년 랠리</strong>. NH투자증권 목표가 213K → 252K → <strong>299K 연쇄 상향</strong>. 한화투자증권 25만원 (투자의견 '중립' — 이미 선반영 지적).</div>
+          <div class="probability"><span class="prob-label">배당성향 44% → 50% (2028)</span><div class="prob-bar-track"><div class="prob-bar-fill prob-high" style="width:75%"></div></div><span class="prob-pct high">75%</span></div>
+          <div class="probability"><span class="prob-label">삼성전자 12만원 돌파 연동 수혜</span><div class="prob-bar-track"><div class="prob-bar-fill prob-mid" style="width:50%"></div></div><span class="prob-pct mid">50%</span></div>
+        </div>
+        <div class="section-block"><div class="section-title">2026 전망</div><div class="section-content">지배순이익 <strong>2.56조 (+11%)</strong>, 투자손익 <strong>1.07조 (+54%)</strong>. <strong>DPS 6,200원 전망, 배당수익률 ~2.4%</strong>. 다만 한화투자증권은 "추가 상승여력 1.6%에 그침"으로 <strong>중립 의견</strong>. NH는 목표가 29.9만 — 여력 +22%. <strong>증권사 의견 갈림</strong>이 현주가 레벨 특징.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="section-block"><div class="section-title">주가 히스토리</div><div class="section-content">2024년 초 ~8만원 → 2025년 4월 <strong>~10만원</strong> → 2025년 하반기 삼성전자 AI 랠리로 가파른 상승 → 2026년 4월 <strong>~24.6만원 (+146%)</strong>. 베타 0.97로 6종목 중 삼성전자 연동성 가장 강함. <strong>"반도체·AI 간접 투자"</strong> 성격.</div></div>
+        <div class="section-block"><div class="section-title">현재 주가 형성 이유</div><div class="section-content"><strong>이중 구조 투자</strong>: ① 본업 보험이익 안정(11% 성장) ② 삼성전자 지분가치 급등(35% 비중). 삼성전자 추가 상승 시 계속 수혜, 조정 시 같이 조정. <strong>"사실상 삼성전자 레버리지 ETF"</strong>로 인식돼 단순 보험주 밸류에이션 못 적용.</div></div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="sw-row">
+          <div class="sw-box strength"><div class="sw-title">강점</div><ul class="sw-list"><li>삼성전자 지분 8.51% (시총 35%)</li><li>생명보험 시장점유율 1위</li><li>투자손익 +54% 성장</li><li>배당성향 2028 50% 목표</li><li>NH 목표가 29.9만</li></ul></div>
+          <div class="sw-box weakness"><div class="sw-title">약점</div><ul class="sw-list"><li>1년 +146% 상당 부분 선반영</li><li>한화증권 '중립' 의견</li><li>삼성전자 조정 시 직격</li><li>생명보험 본업 성장 정체</li><li>지배구조 개편 리스크</li></ul></div>
+        </div>
+      </div>
+
+      <div class="tab-pane">
+        <div class="keyword-box">
+          <div class="keyword-title">뉴스 추적 키워드</div>
+          <div class="keyword-desc">태그를 길게 누르면 복사됩니다</div>
+          <div class="tag-group"><div class="tag-group-label">핵심기술</div><div class="tags"><span class="tag tag-core" onclick="copyTag(this)">삼성생명 자산운용</span><span class="tag tag-core" onclick="copyTag(this)">IFRS17</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">사업/서비스</div><div class="tags"><span class="tag tag-product" onclick="copyTag(this)">삼성생명 지분가치</span><span class="tag tag-product" onclick="copyTag(this)">삼성생명 배당</span><span class="tag tag-product" onclick="copyTag(this)">삼성전자 지분</span><span class="tag tag-product" onclick="copyTag(this)">삼성 지배구조</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">이벤트 신호</div><div class="tags"><span class="tag tag-event" onclick="copyTag(this)">삼성생명 실적</span><span class="tag tag-event" onclick="copyTag(this)">삼성생명 목표가</span><span class="tag tag-event" onclick="copyTag(this)">즉시연금</span></div></div>
+          <div class="tag-group"><div class="tag-group-label">적신호</div><div class="tags"><span class="tag tag-risk" onclick="copyTag(this)">삼성생명 중립</span><span class="tag tag-risk" onclick="copyTag(this)">삼성전자 조정</span><span class="tag tag-risk" onclick="copyTag(this)">생보 역성장</span></div></div>
+        </div>
+      </div>
+
+      <div class="scenario-tree">
+        <div class="sc-label">📊 12개월 시나리오</div>
+        <div class="sc-row bull"><div class="sc-tag">🟢 BULL<br>30%</div><div class="sc-content"><div class="sc-cond">삼성전자 12만+ + 배당성향 48% + 투자익 서프</div><div class="sc-price">310,000 ~ 360,000 (+26~46%)</div></div></div>
+        <div class="sc-row base"><div class="sc-tag">🟡 BASE<br>50%</div><div class="sc-content"><div class="sc-cond">삼성전자 박스 + 본업 견조, NH 목표가 수렴</div><div class="sc-price">240,000 ~ 290,000 (±10%)</div></div></div>
+        <div class="sc-row bear"><div class="sc-tag">🔴 BEAR<br>20%</div><div class="sc-content"><div class="sc-cond">삼성전자 -15% 조정 + 지배구조 이슈</div><div class="sc-price">180,000 ~ 210,000 (-15~27%)</div></div></div>
+        <div class="sc-expected"><strong>기대값(E):</strong> 0.3×335,000 + 0.5×265,000 + 0.2×195,000 ≈ <strong>272,500원</strong> — 현재가 대비 <span class="positive">+11%</span></div>
+      </div>
+
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 210,000 <span class="az-note">조정 대기</span></div>
+        <div class="az-row buy">💛 분할매수 210,000 ~ 240,000</div>
+        <div class="az-row hold">⚪ 관망 240,000 ~ 290,000</div>
+        <div class="az-row sell">🔴 차익실현 &gt; 310,000 <span class="az-note">NH 목표가 초과</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 200,000 <span class="az-note">삼성전자 -15% 시</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 딥다이브 ══ -->
+<span class="anchor" id="deep"></span>
+<div class="deep-section">
+  <div class="deep-header">
+    <div class="deep-header-tag">Deep Dive Analysis</div>
+    <div class="deep-header-title">코스피 6400 시대 —<br>단기 베타(증권) vs 구조적 복리(지주)</div>
+  </div>
+  <div class="deep-body">
+
+    <div class="deep-block compare">
+      <div class="deep-label">지수 상승 수혜의 '성격' — 완전히 다른 두 트랙</div>
+      <div class="deep-text">
+        금융주의 지수 상승 수혜는 보기와 다르게 <strong>두 개의 전혀 다른 메커니즘</strong>으로 나뉜다.<br><br>
+        <strong>트랙 A — "단기 베타" (증권주)</strong><br>
+        지수↑ → 거래대금↑ → 수수료수익↑ → <strong>즉각 실적 반영</strong>. 키움증권·미래에셋증권이 대표. 2026.1월 국내 거래대금 62조원(+89% MoM), 키움 월말 약정 30조 돌파가 실제 사례. 2026 증권업 순이익 +42%(9.6조) 컨센이 이 구조 증명.<br><br>
+        <strong>트랙 B — "구조적 복리" (4대 지주)</strong><br>
+        지수↑ → 외인 유입↑ → <strong>저PBR 금융주 매수</strong> → PBR 리레이팅 누적. 동시에 밸류업 프로그램으로 배당·자사주 소각 강화 → 주주환원율 50%+ 돌파 → 추가 외인 매수 → 선순환. KB·하나 각각 연 +83%, 우리 +66%가 2년째 진행 중.<br><br>
+        <strong>한 줄 요약</strong>: 트랙 A는 폭죽(단기 폭발), 트랙 B는 연금(장기 복리). <strong>둘을 섞어야 완성</strong>된다.
+      </div>
+    </div>
+
+    <div class="deep-block hope">
+      <div class="deep-label">왜 지금 금융주인가 — 구조적 동인 5가지</div>
+      <div class="deep-item">
+        <div class="deep-item-num">01</div>
+        <div class="deep-item-text"><strong>코스피 1년 +150.5% — 구조적 리레이팅 진행</strong><br>2025.04 ~2,555 → 2026.04 ~6,388. 4월 첫 20일 수출 +49.4%, 반도체 출하 +180% 등 <strong>실적 기반 상승</strong>이라 2020~21 유동성 장세와 다름. 외국인 순매수 2026 YTD 10조+ — 금융주가 1차 수혜.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">02</div>
+        <div class="deep-item-text"><strong>밸류업 프로그램의 '제2라운드'</strong><br>2025년 KB금융 환원율 <strong>52.4%</strong>, 신한 50.2% 조기 달성. 2026년 <strong>55%+ 경쟁 돌입</strong>. 자사주 소각 + 비과세 감액배당 + CET1 개선이 3대 축. "환원율 50% 시대"가 구조적 상수가 됨.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">03</div>
+        <div class="deep-item-text"><strong>거래대금 '레벨업' — 구조적 변화</strong><br>2025 일평균 15조 → 2026.01 <strong>62조 (월 기준 +89%)</strong> → 연간 예상 32.8조(KB증권). 단순 변동성이 아닌 <strong>"코스피 지수 5000→6400 구조 이동"</strong>으로 거래 베이스라인 자체가 상향. 증권업 순이익 9.6조(+42%)가 이 변화 반영.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">04</div>
+        <div class="deep-item-text"><strong>금리 인하 사이클 진입 — 이자익 방어 + 자산 수요</strong><br>한은 2026 추가 인하 사이클. 은행 NIM 소폭 압박이나 <strong>예대마진 구조적 방어</strong> + 자산관리·수수료 수익 확대로 상쇄. 증권은 금리 인하 → 자금 유동성 → 거래대금으로 <strong>이중 수혜</strong>.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">05</div>
+        <div class="deep-item-text"><strong>삼성전자 AI 모멘텀 → 삼성생명 간접 수혜</strong><br>삼성전자 지분 8.51% 보유한 삼성생명은 사실상 <strong>"삼성전자 레버리지 ETF"</strong>. 삼성전자 +100% 국면에 삼성생명 +146% — 본업 실적 안정 위에 지분가치 상승분이 얹히는 구조. NH 목표가 29.9만원까지 연쇄 상향.</div>
+      </div>
+    </div>
+
+    <div class="deep-block reason">
+      <div class="deep-label">리스크 — 이 랠리가 꺾이려면 뭐가 와야 하나</div>
+      <div class="deep-item">
+        <div class="deep-item-num">01</div>
+        <div class="deep-item-text"><strong>지수 조정 (-15% 이상)</strong><br>코스피가 6400에서 5500 이하로 조정되면 <strong>증권주 베타가 역방향 작동</strong>. 거래대금 30조 → 20조 하회 시 증권업 순이익 컨센 급하락. 특히 <strong>키움·미래에셋</strong> 20~30% 하락 가능. 4대 지주는 방어적이나 <strong>10~15% 하락</strong> 가능.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">02</div>
+        <div class="deep-item-text"><strong>외국인 대량 매도 전환</strong><br>원/달러 환율 1450원+ 재진입, 미국 10년물 금리 5%+ 돌파, 지정학 쇼크 중 하나라도 오면 외인 집중 종목(하나 72%·KB 77%)이 가장 크게 타격. <strong>"코스피 저평가 매수" 내러티브 약화</strong>가 본질 위협.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">03</div>
+        <div class="deep-item-text"><strong>부동산 PF 부실 재발</strong><br>2024년 태영건설 사태 재연 가능성 낮지만 완전히 해소된 건 아님. 은행권 PF 잔액 감소 중이나 <strong>건설사 구조조정 본격화 시</strong> 대손비용 증가 → 순이익 훼손. KB·하나 상대적으로 PF 잔액 큼.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">04</div>
+        <div class="deep-item-text"><strong>미래에셋증권 PI자산 평가손실</strong><br>1Q26 순이익 1.32조 중 <strong>스페이스X 평가이익 ~1조</strong>. 비상장 자산은 2차 평가 시 손실 반전 가능. 스페이스X IPO가 계획대로 안 되거나 밸류에이션이 낮아질 경우 <strong>역베이스 효과</strong>로 실적 급락 리스크.</div>
+      </div>
+      <div class="deep-item">
+        <div class="deep-item-num">05</div>
+        <div class="deep-item-text"><strong>삼성전자 AI 모멘텀 둔화 → 삼성생명 직격</strong><br>삼성생명 주가 절반은 삼성전자 지분가치. 삼성전자 -20% 시 삼성생명 -15~20% 직결. 한화증권이 이미 <strong>"중립"</strong>으로 하향 — 상당 부분 선반영이라는 경고. 본업만으로는 현주가 설명 어려움.</div>
+      </div>
+    </div>
+
+    <div class="deep-block watch">
+      <div class="deep-label">실전 시그널 — 이 신호가 오면 주목</div>
+      <div class="deep-text" style="margin-bottom:12px;">아래 신호 중 <strong>2~3개가 동시에</strong> 나타나면 섹터 랠리 지속 확률이 크게 높아짐.</div>
+      <div class="signal-grid">
+        <div class="signal-card bullish"><div class="signal-icon">💰</div><div class="signal-name">일평균 거래대금 30조+ 유지</div><div class="signal-desc">증권주 실적 레벨업 지속 — 키움·미래에셋 직접 수혜</div></div>
+        <div class="signal-card bullish"><div class="signal-icon">📈</div><div class="signal-name">외국인 금융주 월 +1조 유입</div><div class="signal-desc">KB·하나 중심 구조적 리레이팅 추가</div></div>
+        <div class="signal-card bullish"><div class="signal-icon">🎁</div><div class="signal-name">자사주 소각 공시 연쇄</div><div class="signal-desc">환원율 55%+ 확정 — 밸류업 '제2라운드' 개막</div></div>
+        <div class="signal-card bullish"><div class="signal-icon">🤖</div><div class="signal-name">삼성전자 신고가 + AI 모멘텀</div><div class="signal-desc">삼성생명 지분가치 레버리지 추가 확대</div></div>
+        <div class="signal-card bearish"><div class="signal-icon">🌀</div><div class="signal-name">코스피 -10% 조정</div><div class="signal-desc">증권주 베타 역작용 — 20~30% 하락 가능</div></div>
+        <div class="signal-card bearish"><div class="signal-icon">💸</div><div class="signal-name">외국인 3주 연속 순매도</div><div class="signal-desc">저PBR 리레이팅 내러티브 약화 신호</div></div>
+        <div class="signal-card bearish"><div class="signal-icon">🏗</div><div class="signal-name">대형 건설사 PF 이슈</div><div class="signal-desc">은행권 대손비용 급증 → 순이익 훼손</div></div>
+        <div class="signal-card bearish"><div class="signal-icon">💵</div><div class="signal-name">원/달러 1450원 돌파</div><div class="signal-desc">외인 이탈 + 환차손 동시 — 이중 타격</div></div>
+      </div>
+    </div>
+
+    <div class="deep-block hope" style="background:rgba(8,145,178,0.04); border-color:rgba(8,145,178,0.15);">
+      <div class="deep-label" style="color:var(--accent);">결론 — 지수 더 오른다고 가정할 때 전략</div>
+      <div class="deep-text">
+        <strong>상관관계 분석이 알려주는 것</strong>: 향후 코스피 추가 상승 시 수혜 순위는 명확하다 — <strong>미래에셋(+12.6%) &gt; 키움(+11.2%) &gt; 삼성생명(+9.7%) &gt; KB·하나(+5.5%) &gt; 우리(+4.4%)</strong>. 지수 +10% 가정.<br><br>
+        그러나 이는 <strong>"과거 베타 연장선"</strong>이고, 현실에서는 각 종목의 <strong>밸류에이션 피로도</strong>가 다르다. 증권주(키움·미래에셋)는 이미 1년 +170~190% → 단기 과열, 삼성생명은 한화증권이 이미 "중립" → <strong>선반영 주의</strong>. 반면 4대 지주는 <strong>PBR 0.45~0.6으로 여전히 저평가</strong>, 특히 우리금융(0.45)은 리레이팅 공간이 가장 크다.<br><br>
+        <strong>지수 +10~20% 추가 가정 시 추천 배분</strong>:<br>
+        · <strong>단기 트레이딩 (3개월)</strong>: 키움·미래에셋 비중 확대 → 거래대금 폭발 베팅<br>
+        · <strong>중기 보유 (6~12개월)</strong>: KB·하나 중심 + 삼성생명 일부 → 배당+리레이팅+지분가치 3중 엔진<br>
+        · <strong>역발상 가치투자</strong>: 우리금융 비중 확대 → PBR 0.45 리레이팅 공간 최대 + 증권사 설립 이벤트 대기<br><br>
+        <strong>지수 조정 가정 시 방어책</strong>: 증권주부터 비중 축소, 4대 지주(특히 우리금융 배당 6%+)로 피난. 삼성생명은 삼성전자와 함께 움직이므로 <strong>반도체 모멘텀 체크</strong>가 선행.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ 수급 ══ -->
+<span class="anchor" id="flow"></span>
+<div class="flow-section">
+  <div class="cal-label" style="color:#3b82f6;">💰 수급 — 최근 1개월 순매수 (억원, 추정)</div>
+  <table class="flow-table">
+    <tr><th>종목</th><th>외국인</th><th>기관</th><th>개인</th><th>판정</th></tr>
+    <tr><td>키움증권</td><td class="pos">+580</td><td class="pos">+220</td><td class="neg">-790</td><td><span class="good">외인 매수</span></td></tr>
+    <tr><td>미래에셋증권</td><td class="pos">+420</td><td class="pos">+150</td><td class="neg">-560</td><td><span class="good">외인 매수</span></td></tr>
+    <tr><td>KB금융</td><td class="pos">+2,150</td><td class="pos">+410</td><td class="neg">-2,520</td><td><span class="good">외인 압도</span></td></tr>
+    <tr><td>하나금융</td><td class="pos">+1,820</td><td class="pos">+280</td><td class="neg">-2,080</td><td><span class="good">외인 압도</span></td></tr>
+    <tr><td>우리금융</td><td class="pos">+680</td><td class="pos">+110</td><td class="neg">-780</td><td><span class="good">외인 매수</span></td></tr>
+    <tr><td>삼성생명</td><td class="pos">+1,350</td><td class="pos">+240</td><td class="neg">-1,570</td><td><span class="good">외인 매수</span></td></tr>
+  </table>
+  <div style="margin-top:10px; font-size:12px; color:var(--muted); line-height:1.6;">
+    <strong>완전히 일관된 패턴</strong>: 6종목 전부 외국인·기관 매수 / 개인 매도. 2차전지와 정반대 — <strong>금융주는 "기관화된 섹터"</strong>. 특히 <strong>KB·하나</strong> 외인 매수액이 압도적 (월 +1,800~2,150억). 이 구조가 깨지는 순간이 섹터 전환점 — 외인 3주 연속 순매도가 가장 중요한 경고 지표. <em>※ KRX 언론보도 종합 추정치</em>
+  </div>
+</div>
+
+<!-- ══ 종합비교 ══ -->
+<span class="anchor" id="summary"></span>
+<div class="summary-card">
+  <div class="summary-header">SUMMARY — 금융 6대 종목 종합</div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">키움증권</div><div class="summary-ticker">039490</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~9조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val green">~7배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val green">~15%</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">1Y</div><div class="sum-stat-val green">+169%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">거래대금</div></div></div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">미래에셋증권</div><div class="summary-ticker">006800</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~5조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val green">~4배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val green">~13%</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">1Y</div><div class="sum-stat-val green">+190%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">IB+스페이스X</div></div></div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">KB금융</div><div class="summary-ticker">105560</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~44조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val green">~8배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val amber">~9%</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">1Y</div><div class="sum-stat-val green">+83%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">밸류업+환원</div></div></div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">하나금융지주</div><div class="summary-ticker">086790</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~30조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val green">~7배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val amber">~9%</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">1Y</div><div class="sum-stat-val green">+83%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">외인+환율</div></div></div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">우리금융지주</div><div class="summary-ticker">316140</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~19조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val green">~6배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val amber">~8%</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">1Y</div><div class="sum-stat-val green">+66%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">저PBR+증권사</div></div></div>
+    </div>
+  </div>
+
+  <div class="summary-item">
+    <div><div class="summary-name">삼성생명</div><div class="summary-ticker">032830</div></div>
+    <div>
+      <div class="summary-stats"><div><div class="sum-stat-label">시총</div><div class="sum-stat-val blue">~49조</div></div><div><div class="sum-stat-label">PER</div><div class="sum-stat-val amber">~11배</div></div><div><div class="sum-stat-label">ROE</div><div class="sum-stat-val amber">~7%</div></div></div>
+      <div class="summary-stats" style="margin-top:4px;"><div><div class="sum-stat-label">1Y</div><div class="sum-stat-val green">+146%</div></div><div><div class="sum-stat-label">위험도</div><div class="risk-stars">⭐⭐⭐</div></div><div><div class="sum-stat-label">주가동인</div><div class="sum-stat-val" style="font-size:13px;color:var(--label);">삼성전자 지분</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="insight-box">
+  <strong>핵심 인사이트</strong>: 지수 상승 수혜는 <strong style="color:#fff;">단기 베타(증권) vs 구조적 복리(지주)</strong> 2트랙. 코스피 +10% 추가 가정 시 <strong style="color:#fff;">미래에셋(+12.6%) &gt; 키움(+11.2%) &gt; 삼성생명(+9.7%) &gt; KB·하나(+5.5%) &gt; 우리(+4.4%)</strong>. 그러나 증권주는 이미 +170~190% 랠리로 과열, 4대 지주는 PBR 0.45~0.6으로 여전히 저평가 — <strong style="color:#fff;">"폭발력 vs 여력"</strong>의 트레이드오프가 핵심. 수급은 6종목 전부 외국인·기관 매수 / 개인 매도로 일관 — 금융주는 명확한 "기관화 섹터"이며, 외인 이탈이 가장 중요한 경고 지표.
+</div>
+
+<div class="per-note">
+  <strong>베타·PER 해석 주의</strong><br>
+  · 베타는 <strong>과거 1년 수익률 기반 근사치</strong>. CAPM 정식 베타와는 차이 있으며, 지수 추가 상승 국면에서 금융주 리레이팅 속도 둔화 가능.<br>
+  · 금융지주 PER 6~8배는 글로벌 은행(일본·유럽 10~12배) 대비 여전히 저평가. 밸류업 지속 시 PER 10배 리레이팅 여력.<br>
+  · 증권주 PER 4~7배는 거래대금 레벨업 지속 전제 → 거래대금 둔화 시 PER 10배로 역재평가 가능.<br>
+  · 삼성생명 PER 11배는 "보험사 + 삼성전자 지분" 이중 밸류에이션 — 단순 PER 비교 무의미.
+</div>
+
+<!-- ══ 체크리스트 ══ -->
+<span class="anchor" id="checklist"></span>
+<div class="checklist">
+  <div class="cl-label">📋 매수/보유 체크리스트 (체크 상태는 자동 저장됨)</div>
+  <label><input type="checkbox" data-id="f1"><span>일평균 거래대금 30조원 이상 유지 여부</span></label>
+  <label><input type="checkbox" data-id="f2"><span>외국인 금융주 3주 연속 순매수 지속 확인</span></label>
+  <label><input type="checkbox" data-id="f3"><span>4대 금융지주 1Q26 순이익 5조+ 달성 (5월)</span></label>
+  <label><input type="checkbox" data-id="f4"><span>키움증권 2026 브로커리지 수수료 1조 돌파</span></label>
+  <label><input type="checkbox" data-id="f5"><span>삼성전자 신고가 경신 (삼성생명 수혜 연동)</span></label>
+  <label><input type="checkbox" data-id="f6"><span>KB·신한·하나 주주환원율 55%+ 공시</span></label>
+  <label><input type="checkbox" data-id="f7"><span>우리투자증권 설립 인가 진척 모니터링</span></label>
+  <label><input type="checkbox" data-id="f8"><span>원/달러 환율 1400원 이하 안정 여부</span></label>
+  <label><input type="checkbox" data-id="f9"><span>부동산 PF 관련 대형 부실 사건 부재 확인</span></label>
+  <div class="cl-progress" id="clProgress">0 / 9 체크됨</div>
+</div>
+
+<!-- 참고자료 -->
+<div class="references">
+  <div class="ref-label">📚 참고 자료</div>
+  <ul>
+    <li><strong>실적</strong>DART 전자공시시스템 (2025 사업보고서 + 1Q26 프리뷰)</li>
+    <li><strong>컨센서스</strong>KB·삼성·하나·NH·유안타·한화·미래에셋 리서치</li>
+    <li><strong>주가·지수</strong>KRX, 네이버금융, Investing.com (2026.04.22 기준)</li>
+    <li><strong>거래대금</strong>KRX 시장통계 (일평균 거래대금)</li>
+    <li><strong>수급</strong>KRX 투자자별 매매동향 (최근 1개월 누적, 추정 포함)</li>
+    <li><strong>뉴스</strong>서울경제·파이낸셜·이지경제·뉴스1·머니투데이 (4월 20~22일 종합)</li>
+    <li><strong>베타</strong>1년 수익률 기반 근사치 (정식 CAPM과 차이 있음)</li>
+  </ul>
+</div>
+
+<!-- 관련 리포트 -->
+<div class="related-reports">
+  <div class="rel-label">🔗 관련 리포트</div>
+  <a class="rel-card" href="ev_battery_report_mobile.html">
+    <div class="rel-tag">2차전지</div>
+    <div class="rel-title">2차전지 6대 종목 — 3년 사이클 귀환 분석</div>
+    <div class="rel-desc">에코프로·LG엔솔·삼성SDI 등 ESS/AI 반등주</div>
+  </a>
+  <a class="rel-card" href="naver_kakao_report_mobile.html">
+    <div class="rel-tag">KOSPI 플랫폼</div>
+    <div class="rel-title">네이버 vs 카카오 박스권 탈출 분석 2026</div>
+    <div class="rel-desc">AI 전환기의 K-플랫폼 2대장 비교</div>
+  </a>
+  <a class="rel-card" href="kosdaq_bio_report_mobile.html">
+    <div class="rel-tag">코스닥 바이오</div>
+    <div class="rel-title">코스닥 바이오 8대 기업 분석 2026</div>
+    <div class="rel-desc">알테오젠·HLB·케어젠 등 핵심 8종목</div>
+  </a>
+</div>
+
+<!-- 하단 네비 -->
+<nav class="bottom-nav">
+  <div class="nav-items">
+    <a class="nav-item" href="#" onclick="scrollToTop(event)"><div class="nav-icon">⬆️</div><div class="nav-label">TOP</div></a>
+    <a class="nav-item" href="#corr"><div class="nav-icon">📈</div><div class="nav-label">상관관계</div></a>
+    <a class="nav-item" href="#c1"><div class="nav-icon">🏦</div><div class="nav-label">종목</div></a>
+    <a class="nav-item" href="#deep"><div class="nav-icon">🔍</div><div class="nav-label">딥다이브</div></a>
+    <a class="nav-item" href="#checklist"><div class="nav-icon">📋</div><div class="nav-label">체크</div></a>
+  </div>
+</nav>
+
+<div class="toast" id="toast">복사됨 ✓</div>
+
+<script>
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  header.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+function switchTab(btn) {
+  const card = btn.closest('.card-body');
+  const tabs = card.querySelectorAll('.tab-btn');
+  const panes = card.querySelectorAll('.tab-pane');
+  const idx = Array.from(tabs).indexOf(btn);
+  tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
+  panes.forEach((p, i) => p.classList.toggle('active', i === idx));
+}
+
+function copyTag(el) {
+  const text = el.textContent.trim();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => showToast());
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast();
+  }
+}
+
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+function scrollToTop(e) {
+  if (e) e.preventDefault();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const id = this.getAttribute('href').slice(1);
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) {
+      e.preventDefault();
+      const offset = el.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: offset, behavior: 'smooth' });
+    }
+  });
+});
+
+const BASE_DATE = '2026-04-23';
+function updateFreshness() {
+  const days = Math.floor((Date.now() - new Date(BASE_DATE)) / 86400000);
+  const el = document.getElementById('freshnessBadge');
+  if (!el) return;
+  if (days <= 7) {
+    el.textContent = `📅 작성 기준 ${BASE_DATE} (${days}일 전) — 최신`;
+  } else {
+    el.textContent = `⚠ 기준일 ${BASE_DATE}로부터 ${days}일 경과 — 최신 주가 확인 권장`;
+    el.classList.add('stale');
+  }
+}
+
+function renderPriceCharts() {
+  if (typeof Chart === 'undefined') return;
+  document.querySelectorAll('.price-chart').forEach(canvas => {
+    const prices = canvas.dataset.prices.split(',').map(Number);
+    const isUp = prices[prices.length-1] > prices[0];
+    const color = isUp ? '#188038' : '#d93025';
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: prices.map((_,i) => i),
+        datasets: [{
+          data: prices,
+          borderColor: color,
+          backgroundColor: isUp ? 'rgba(24,128,56,0.08)' : 'rgba(217,48,37,0.08)',
+          borderWidth: 2, pointRadius: 0, tension: 0.3, fill: true
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: {display:false}, tooltip: {enabled:false} },
+        scales: { x: {display:false}, y: {display:false} },
+        animation: { duration: 800 }
+      }
+    });
+  });
+}
+
+// 🆕 상관관계 멀티라인 차트
+function renderCorrelationChart() {
+  if (typeof Chart === 'undefined') return;
+  const ctx = document.getElementById('corrChart');
+  if (!ctx) return;
+
+  // 월별 (최근 13개월) 정규화 수익률 (기준일 100)
+  const labels = ['-12M','-11M','-10M','-9M','-8M','-7M','-6M','-5M','-4M','-3M','-2M','-1M','현재'];
+  const datasets = [
+    { label: '코스피',       data: [100,108,115,125,135,145,155,180,200,220,235,245,250], borderColor: '#0891b2', borderWidth: 3 },
+    { label: '키움증권',     data: [100,108,119,131,142,154,169,192,215,238,258,265,269], borderColor: '#d93025', borderWidth: 2 },
+    { label: '미래에셋증권', data: [100,112,128,144,168,192,220,240,252,268,280,286,290], borderColor: '#e67e00', borderWidth: 2 },
+    { label: '삼성생명',     data: [100,108,120,135,150,165,185,205,225,240,248,248,246], borderColor: '#9333ea', borderWidth: 2 },
+    { label: '하나금융',     data: [100,105,110,120,130,142,155,170,178,182,185,184,183], borderColor: '#188038', borderWidth: 2 },
+    { label: 'KB금융',       data: [100,105,110,120,130,142,153,165,173,180,183,185,183], borderColor: '#1a73e8', borderWidth: 2, borderDash: [5,3] },
+    { label: '우리금융',     data: [100,106,113,119,128,138,147,156,163,166,168,167,166], borderColor: '#64748b', borderWidth: 2 },
+  ];
+
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: datasets.map(d => ({...d, pointRadius: 0, tension: 0.25, fill: false})) },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true, position: 'bottom',
+          labels: { font: { size: 11, family: 'IBM Plex Mono' }, boxWidth: 14, padding: 8 }
+        },
+        tooltip: {
+          callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}` }
+        }
+      },
+      scales: {
+        x: { ticks: { font: { size: 10, family: 'IBM Plex Mono' } }, grid: { display: false } },
+        y: {
+          min: 80, max: 300,
+          ticks: { font: { size: 10, family: 'IBM Plex Mono' }, callback: v => v },
+          grid: { color: 'rgba(0,0,0,0.05)' }
+        }
+      },
+      animation: { duration: 1200 }
+    }
+  });
+}
+
+function initChecklist() {
+  const cl = document.querySelector('.checklist');
+  if (!cl) return;
+  const key = 'checklist_' + location.pathname.split('/').pop();
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  const boxes = cl.querySelectorAll('input[type=checkbox]');
+  const progress = document.getElementById('clProgress');
+  function update() {
+    const checked = [...boxes].filter(b => b.checked).length;
+    progress.textContent = `${checked} / ${boxes.length} 체크됨`;
+    progress.classList.toggle('done', checked === boxes.length);
+  }
+  boxes.forEach(cb => {
+    if (saved[cb.dataset.id]) cb.checked = true;
+    cb.addEventListener('change', () => {
+      saved[cb.dataset.id] = cb.checked;
+      localStorage.setItem(key, JSON.stringify(saved));
+      update();
+    });
+  });
+  update();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateFreshness();
+  renderPriceCharts();
+  renderCorrelationChart();
+  initChecklist();
+});
+</script>
+</body>
+</html>
