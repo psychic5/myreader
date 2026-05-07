@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>삼성전자 vs SK하이닉스 — 메모리 슈퍼사이클 한복판</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #e9ecef;
+  --surface: #ffffff;
+  --surface2: #f1f3f5;
+  --border: #ced4da;
+  --accent: #1a73e8;
+  --accent2: #3b82f6;
+  --accent3: #e67e00;
+  --red: #d93025;
+  --green: #188038;
+  --text: #101828;
+  --muted: #667085;
+  --label: #344054;
+  --nav-h: 60px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+  overflow-x: hidden;
+}
+
+/* ── 헤더 ── */
+.header {
+  background: linear-gradient(160deg, #7c3aed 0%, #5b21b6 100%);
+  padding: 52px 20px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.header-tag { font-family:'IBM Plex Mono',monospace; font-size:12px; color:rgba(255,255,255,0.7); letter-spacing:3px; text-transform:uppercase; margin-bottom:10px; }
+.header h1 { font-size:26px; font-weight:900; color:#fff; line-height:1.25; margin-bottom:8px; }
+.header-date { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); border-radius:20px; padding:4px 12px; font-family:'IBM Plex Mono',monospace; font-size:13px; color:#fff; margin-bottom:8px; }
+.header-meta { display:flex; flex-direction:column; gap:4px; margin-top:12px; }
+.meta-row { font-size:13px; color:rgba(255,255,255,0.6); font-family:'IBM Plex Mono',monospace; }
+.meta-row strong { color:rgba(255,255,255,0.85); }
+.meta-warn { font-size:13px; color:#fca5a5; margin-top:6px; }
+
+/* ── 경과 배지 ── */
+.freshness-badge {
+  margin: 12px 16px 0;
+  padding: 10px 14px;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--green);
+  font-family: 'IBM Plex Mono', monospace;
+  text-align: center;
+}
+.freshness-badge.stale {
+  background: rgba(245,158,11,0.12);
+  border-color: rgba(245,158,11,0.4);
+  color: var(--accent3);
+}
+
+/* ── 섹터 진단 ── */
+.sector-overview {
+  margin: 16px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.sector-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.diagnosis-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.diagnosis-list li {
+  font-size: 14.5px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border-left: 4px solid var(--border);
+  background: var(--surface2);
+  line-height: 1.55;
+}
+.diagnosis-list li.good { border-left-color: var(--green); background: rgba(34,197,94,0.06); }
+.diagnosis-list li.neutral { border-left-color: var(--accent3); background: rgba(245,158,11,0.06); }
+.diagnosis-list li.bad { border-left-color: var(--red); background: rgba(239,68,68,0.06); }
+
+/* ── 이벤트 캘린더 ── */
+.event-calendar {
+  margin: 16px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.cal-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.cal-item {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  background: var(--surface2);
+  border-left: 4px solid var(--border);
+}
+.cal-item.high { border-left-color: var(--red); background: rgba(239,68,68,0.05); }
+.cal-item.mid { border-left-color: var(--accent3); background: rgba(245,158,11,0.05); }
+.cal-item.low { border-left-color: var(--muted); }
+.cal-date { font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; color:var(--label); }
+.cal-title { font-size: 14.5px; font-weight: 600; color: var(--text); }
+.cal-tag { grid-column: 1 / -1; font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── 목차 ── */
+.toc-wrap { padding:16px; background:var(--surface2); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+.toc-label { font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; }
+.toc-scroll { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding-bottom:4px; }
+.toc-scroll::-webkit-scrollbar { display:none; }
+.toc-chip { flex-shrink:0; font-size:14px; font-weight:500; padding:6px 14px; background:rgba(0,0,0,0.03); border:1px solid var(--border); border-radius:20px; color:var(--label); cursor:pointer; text-decoration:none; white-space:nowrap; transition:all .2s; }
+.toc-chip:active { background:rgba(26,115,232,0.12); border-color:rgba(26,115,232,0.4); color:var(--accent); }
+
+/* ── 태그 범례 ── */
+.tag-legend {
+  margin: 12px 16px 0;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.legend-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle; }
+
+/* ── 회사 카드 ── */
+.company-card { margin:12px 16px; border-radius:14px; overflow:hidden; background:var(--surface); box-shadow:0 4px 12px rgba(0,0,0,0.12); }
+.card-header { display:flex; align-items:center; gap:10px; padding:16px 18px; background:var(--surface2); cursor:pointer; user-select:none; }
+.card-header:active { background:rgba(124,58,237,0.06); }
+.company-num { font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); min-width:18px; }
+.company-name { font-size:20px; font-weight:700; color:#202124; flex:1; }
+.company-ticker { font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); background:rgba(0,0,0,0.04); padding:2px 7px; border-radius:4px; }
+.badge { font-size:12px; font-weight:700; letter-spacing:0.5px; padding:3px 9px; border-radius:20px; }
+.badge-profit { background:rgba(34,197,94,0.15); color:var(--green); border:1px solid rgba(34,197,94,0.3); }
+.badge-loss { background:rgba(239,68,68,0.15); color:var(--red); border:1px solid rgba(239,68,68,0.3); }
+.badge-mixed { background:rgba(245,158,11,0.15); color:var(--accent3); border:1px solid rgba(245,158,11,0.3); }
+.chevron { width:18px; height:18px; color:var(--muted); transition:transform .3s; flex-shrink:0; }
+.card-header.open .chevron { transform: rotate(180deg); }
+
+.card-body { max-height:0; overflow:hidden; transition:max-height .35s ease; }
+.card-body.open { max-height: 12000px; }
+.card-inner { padding: 18px; }
+
+.stats-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.stat-cell { background:var(--surface2); padding:10px 12px; border-radius:10px; }
+.stat-label { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+.stat-value { font-size:16px; font-weight:700; color:var(--text); font-feature-settings:'tnum'; }
+.stat-value.green { color: var(--green); }
+.stat-value.red { color: var(--red); }
+.stat-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* ── 52주 가격 바 ── */
+.price-bar-wrap { margin: 6px 0 14px; }
+.price-bar-label { display:flex; justify-content:space-between; font-size:11px; font-family:'IBM Plex Mono',monospace; color:var(--muted); margin-bottom:6px; }
+.price-bar { position:relative; height:8px; background:var(--surface2); border-radius:4px; overflow:visible; }
+.price-bar-fill { position:absolute; left:0; height:100%; background:linear-gradient(90deg,var(--green),var(--accent)); border-radius:4px; }
+.price-bar-current {
+  position:absolute; top:-4px; width:4px; height:16px;
+  background:var(--text); border-radius:2px;
+}
+.price-bar-current::after {
+  content: attr(data-price);
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-family:'IBM Plex Mono',monospace;
+  white-space: nowrap;
+  background: var(--text);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ── 스파크라인 ── */
+.price-chart-wrap { background: var(--surface2); border-radius: 10px; padding: 8px 12px; margin-bottom: 14px; }
+.price-chart-label { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; }
+.price-chart { width: 100% !important; height: 60px !important; }
+
+/* ── 탭 ── */
+.tab-nav { display:flex; gap:6px; padding:4px; background:var(--surface2); border-radius:10px; margin-bottom:14px; overflow-x:auto; scrollbar-width:none; }
+.tab-nav::-webkit-scrollbar { display:none; }
+.tab-btn { flex:1; min-width: 80px; font-size:13.5px; font-weight:600; padding:8px 10px; border:none; background:transparent; border-radius:7px; color:var(--muted); cursor:pointer; transition:all .2s; white-space: nowrap; }
+.tab-btn.active { background:var(--surface); color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.tab-pane { display:none; }
+.tab-pane.active { display:block; }
+
+.section-block { margin-bottom: 14px; }
+.section-block h4 { font-size:14px; font-weight:700; color:var(--label); margin-bottom:8px; padding-left:8px; border-left:3px solid var(--accent); }
+.section-block p { font-size: 14.5px; color: #344054; margin-bottom: 6px; }
+.highlight-box { background:rgba(124,58,237,0.06); border:1px solid rgba(124,58,237,0.2); padding:12px 14px; border-radius:10px; margin:10px 0; font-size:14px; color:var(--label); line-height: 1.6; }
+
+.probability { margin-top: 8px; }
+.prob-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.prob-bar { background: var(--surface2); height: 8px; border-radius: 4px; overflow: hidden; }
+.prob-fill { height: 100%; border-radius: 4px; }
+.prob-fill.high { background: var(--green); }
+.prob-fill.mid { background: var(--accent3); }
+.prob-fill.low { background: var(--red); }
+
+/* ── 강점/약점 ── */
+.sw-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.sw-box { padding:12px; border-radius:10px; font-size:13.5px; }
+.sw-box.strength { background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25); }
+.sw-box.weakness { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); }
+.sw-box h5 { font-size:13px; font-weight:700; margin-bottom:6px; }
+.sw-box.strength h5 { color: var(--green); }
+.sw-box.weakness h5 { color: var(--red); }
+.sw-box ul { list-style:none; padding-left:0; }
+.sw-box li { padding-left: 14px; position: relative; margin-bottom: 4px; line-height:1.5; }
+.sw-box.strength li::before { content: '+'; position: absolute; left:0; color: var(--green); font-weight:700; }
+.sw-box.weakness li::before { content: '−'; position: absolute; left:0; color: var(--red); font-weight:700; }
+
+/* ── 뉴스 키워드 ── */
+.tag-group { margin-bottom: 12px; }
+.tag-group-label { font-size: 12px; font-weight: 600; color: var(--label); margin-bottom: 6px; display:flex; align-items:center; gap:6px; }
+.tag-group-label .legend-dot { margin-right: 0; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-item {
+  font-size: 12px;
+  padding: 5px 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--label);
+  cursor: pointer;
+  transition: all .15s;
+}
+.tag-item:active { background: rgba(124,58,237,0.1); }
+.tag-item.tech { border-color: rgba(26,115,232,0.4); color: var(--accent); }
+.tag-item.biz { border-color: rgba(34,197,94,0.4); color: var(--green); }
+.tag-item.event { border-color: rgba(245,158,11,0.4); color: var(--accent3); }
+.tag-item.risk { border-color: rgba(239,68,68,0.4); color: var(--red); }
+
+/* ── 경쟁사 매핑 ── */
+.competitor-matrix {
+  margin-top: 14px;
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 10px;
+}
+.matrix-label { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:1px; margin-bottom: 8px; }
+.comp-table { width:100%; border-collapse: collapse; font-size: 13px; }
+.comp-table th, .comp-table td { padding: 7px 6px; text-align: center; border-bottom: 1px solid var(--border); }
+.comp-table th { font-weight: 700; color: var(--label); background: rgba(0,0,0,0.02); }
+.comp-table td.us { background: rgba(124,58,237,0.08); font-weight: 600; }
+.comp-table td:first-child { text-align: left; color: var(--muted); font-weight: 600; }
+
+/* ── 시나리오 트리 ── */
+.scenario-tree { margin-top: 14px; padding: 14px; border-radius: 10px; background: var(--surface2); }
+.sc-label { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:1px; margin-bottom: 10px; }
+.sc-row { display:grid; grid-template-columns: 110px 1fr; gap: 8px; padding: 10px; border-radius: 8px; margin-bottom: 6px; font-size: 13px; align-items: center; }
+.sc-row.bull { background: rgba(34,197,94,0.1); }
+.sc-row.base { background: rgba(245,158,11,0.1); }
+.sc-row.bear { background: rgba(239,68,68,0.1); }
+.sc-tag { font-weight: 700; font-size: 13px; }
+.sc-cond { font-size: 12.5px; color: var(--label); }
+.sc-price { grid-column: 1 / -1; font-family:'IBM Plex Mono',monospace; font-size: 13px; font-weight: 600; color: var(--text); padding-left: 4px; }
+.sc-expected { margin-top: 10px; padding: 10px 12px; background: var(--surface); border-radius: 8px; font-size: 13px; text-align: center; }
+.sc-expected .positive { color: var(--green); font-weight: 700; }
+.sc-expected .negative { color: var(--red); font-weight: 700; }
+
+/* ── 액션존 ── */
+.action-zone { margin-top: 14px; padding: 14px; border-radius: 10px; background: var(--surface2); }
+.az-label { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:1px; margin-bottom: 10px; }
+.az-row { padding: 8px 12px; border-radius: 8px; font-size: 13.5px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.az-row.buy-strong { background: rgba(34,197,94,0.18); color: var(--green); font-weight: 600; }
+.az-row.buy { background: rgba(34,197,94,0.08); color: var(--green); }
+.az-row.hold { background: var(--surface); color: var(--label); }
+.az-row.sell { background: rgba(239,68,68,0.08); color: var(--red); }
+.az-row.stop { background: rgba(239,68,68,0.18); color: var(--red); font-weight: 600; }
+.az-note { font-size: 11px; color: var(--muted); }
+
+/* ── 딥다이브 ── */
+.deep-section { margin: 16px; padding: 18px; background: var(--surface); border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.deep-label { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:2px; margin-bottom: 6px; }
+.deep-section h2 { font-size:20px; font-weight:800; color:var(--text); margin-bottom: 14px; line-height:1.3; }
+.deep-block { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.deep-block:last-child { border-bottom: none; }
+.deep-block h3 { font-size: 15px; font-weight: 700; color: #5b21b6; margin-bottom: 10px; }
+.deep-block p { font-size: 14.5px; line-height: 1.7; color: #344054; margin-bottom: 8px; }
+.deep-block strong { color: var(--text); font-weight: 700; }
+.signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.signal-cell { padding: 12px; border-radius: 10px; background: var(--surface2); border-left: 4px solid var(--accent); }
+.signal-cell h4 { font-size: 12px; color: var(--accent); margin-bottom: 4px; font-weight: 700; }
+.signal-cell p { font-size: 13px; line-height: 1.5; margin: 0; color: var(--label); }
+
+/* ── 수급 테이블 ── */
+.flow-table-wrap { margin: 16px; padding: 14px; background: var(--surface); border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.flow-table { width:100%; border-collapse: collapse; font-size: 13px; }
+.flow-table caption { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:1px; margin-bottom: 8px; text-align: left; }
+.flow-table th, .flow-table td { padding: 8px 6px; text-align: center; border-bottom: 1px solid var(--border); }
+.flow-table th { font-weight: 700; color: var(--label); background: var(--surface2); font-size: 12px; }
+.flow-table td.pos { color: var(--green); font-weight: 600; }
+.flow-table td.neg { color: var(--red); font-weight: 600; }
+.flow-table td.bad { color: var(--red); font-size: 12px; }
+.flow-table td.good { color: var(--green); font-size: 12px; }
+
+/* ── 종합 비교 ── */
+.summary-card { margin: 16px; padding: 18px; background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.summary-card h3 { font-size:18px; font-weight:800; color:#5b21b6; margin-bottom: 14px; }
+.summary-table { width:100%; border-collapse: collapse; font-size: 13px; }
+.summary-table th, .summary-table td { padding: 8px 6px; text-align: center; border-bottom: 1px solid rgba(124,58,237,0.15); }
+.summary-table th { font-weight: 700; color: #5b21b6; font-size: 13px; background: rgba(255,255,255,0.5); }
+.summary-table td:first-child { text-align: left; color: var(--label); font-weight: 600; }
+
+/* ── 인사이트 박스 ── */
+.insight-box { margin: 16px; padding: 18px; background: linear-gradient(135deg, #1e1e2e 0%, #2a2a40 100%); border-radius: 14px; color: #fff; }
+.insight-label { font-family:'IBM Plex Mono',monospace; font-size:11px; color:rgba(255,255,255,0.5); letter-spacing:2px; margin-bottom: 8px; }
+.insight-box h3 { font-size:18px; font-weight:800; margin-bottom: 12px; }
+.insight-box p { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.85); margin-bottom: 8px; }
+.insight-box strong { color: #c4b5fd; }
+.per-note { margin: 16px; padding: 14px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 10px; font-size: 13px; color: var(--label); line-height: 1.6; }
+.per-note strong { color: var(--accent3); }
+
+/* ── 체크리스트 ── */
+.checklist { margin: 16px; padding: 16px; background: var(--surface); border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.cl-label { font-size: 14px; font-weight: 700; color: var(--label); margin-bottom: 10px; }
+.checklist label { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; font-size: 14px; line-height: 1.5; cursor: pointer; }
+.checklist input[type=checkbox] { width: 18px; height: 18px; margin-top: 2px; accent-color: #7c3aed; flex-shrink: 0; }
+.cl-progress { margin-top: 8px; font-family:'IBM Plex Mono',monospace; font-size: 12px; color: var(--muted); text-align: right; }
+
+/* ── 참고자료 ── */
+.references { margin: 16px; padding: 16px; background: var(--surface2); border-radius: 14px; }
+.ref-label { font-size: 14px; font-weight: 700; color: var(--label); margin-bottom: 10px; }
+.references ul { list-style: none; padding-left: 0; }
+.references li { font-size: 13px; line-height: 1.7; color: var(--muted); padding: 4px 0; }
+.references strong { color: var(--label); margin-right: 6px; }
+
+/* ── 관련 리포트 ── */
+.related-reports { margin: 16px; }
+.rel-label { font-size: 14px; font-weight: 700; color: var(--label); margin-bottom: 10px; }
+.rel-card { display: block; padding: 12px 14px; background: var(--surface); border-radius: 10px; margin-bottom: 8px; text-decoration: none; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.rel-card:active { background: var(--surface2); }
+.rel-tag { display:inline-block; font-size: 10px; font-weight: 700; letter-spacing: 1px; color:#fff; background: #7c3aed; padding: 2px 8px; border-radius: 4px; margin-bottom: 4px; }
+.rel-title { font-size: 14px; color: var(--text); font-weight: 600; }
+
+/* ── 하단 네비 ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: calc(var(--nav-h) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  display: flex; z-index: 200;
+}
+.bottom-nav a {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-decoration:none; color: var(--muted); font-size: 11px; gap: 2px;
+}
+.bottom-nav a span.icon { font-size: 18px; }
+.bottom-nav a:active { color: #7c3aed; }
+
+/* ── 토스트 ── */
+.toast {
+  position: fixed; left: 50%; bottom: calc(var(--nav-h) + var(--safe-bottom) + 20px);
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(0,0,0,0.85); color: #fff;
+  padding: 10px 18px; border-radius: 22px;
+  font-size: 13px; opacity: 0; transition: all .25s;
+  z-index: 300; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+sup { font-size: 9px; color: var(--muted); font-family:'IBM Plex Mono',monospace; font-weight: 400; }
+</style>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<div class="header">
+  <div class="header-tag">SEMICONDUCTOR · MEMORY · 2026</div>
+  <h1>삼성전자 vs SK하이닉스<br>메모리 슈퍼사이클 한복판</h1>
+  <div class="header-date">📅 2026.05.07 · v1</div>
+  <div class="header-meta">
+    <div class="meta-row">실적 <strong>2026 1Q 공시 기준</strong> · 주가 <strong>2026.05.06 장마감</strong></div>
+    <div class="meta-row">대상: <strong>005930 삼성전자 / 000660 SK하이닉스</strong></div>
+    <div class="meta-warn">⚠ 투자 참고용 — 결과 책임은 투자자 본인에게 있음</div>
+  </div>
+</div>
+
+<!-- ── 경과 배지 ── -->
+<div class="freshness-badge">기준일: 2026-05-07</div>
+
+<!-- ── 섹터 진단 ── -->
+<div class="sector-overview" id="diagnosis">
+  <div class="sector-label">SECTOR DIAGNOSIS</div>
+  <ul class="diagnosis-list">
+    <li class="good">✅ <strong>30년 만의 슈퍼사이클</strong> — DRAM ASP QoQ +90%, NAND +50%, 2026 메모리 시장 전년대비 +85% 성장 전망 <sup>업계자료</sup>. AI 빅테크들이 DRAM 5년 장기계약 줄섬 — 수요는 2027년 4Q까지 공급부족 우려.</li>
+    <li class="neutral">⚖ <strong>HBM은 SK하이닉스 우세, 범용 DRAM은 삼성 우세</strong> — HBM3E 점유율 SK 71%, HBM4 55:28:17(SK:삼성:마이크론) 구도. 삼성은 HBM4 양산 1번 타자로 양산 진입했으나 NVIDIA 퀄 통과는 진행 중.</li>
+    <li class="bad">⚠ <strong>"사이클은 늘 정점에서 꺾였다"</strong> — CXMT의 HBM 라인 전환과 한·미·대만의 동시 증설은 2027~2028년 공급과잉 시드. 미국 관세 2027.06 시행 예고. 둘 다 실적 기준 사상 최대치이지만, 주가 멀티플도 사이클 정점 수준.</li>
+  </ul>
+</div>
+
+<!-- ── 이벤트 캘린더 ── -->
+<div class="event-calendar" id="calendar">
+  <div class="cal-label">📅 EVENT CALENDAR — 향후 12개월</div>
+  <div class="cal-item high">
+    <div class="cal-date">2026.05</div>
+    <div class="cal-title">삼성 HBM4 NVIDIA 퀄 테스트 결과 (예상)</div>
+    <div class="cal-tag">삼성전자 · ★최대 이벤트 — 통과 시 점유율 재편</div>
+  </div>
+  <div class="cal-item high">
+    <div class="cal-date">2026.07</div>
+    <div class="cal-title">2분기 실적 발표 — DRAM ASP 추가 상승 확인 분기점</div>
+    <div class="cal-tag">양사 · 슈퍼사이클 지속성 검증</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.2H</div>
+    <div class="cal-title">NVIDIA Vera Rubin 출시 — HBM4 16-Hi 본격 채택</div>
+    <div class="cal-tag">SK·삼성·마이크론 · 공급계약 본격화</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.10</div>
+    <div class="cal-title">3분기 실적 — HBM4 매출 인식 본격화</div>
+    <div class="cal-tag">SK하이닉스 · 점유율 굳히기</div>
+  </div>
+  <div class="cal-item mid">
+    <div class="cal-date">2026.4Q</div>
+    <div class="cal-title">CXMT HBM3 양산 본격화 추정</div>
+    <div class="cal-tag">중국 메모리 자급 · 범용 DRAM 가격 변수</div>
+  </div>
+  <div class="cal-item high">
+    <div class="cal-date">2027.06</div>
+    <div class="cal-title">미국 對중국 반도체 관세 시행</div>
+    <div class="cal-tag">정책 · 공급망 재편 시그널</div>
+  </div>
+</div>
+
+<!-- ── 목차 ── -->
+<div class="toc-wrap">
+  <div class="toc-label">CONTENTS</div>
+  <div class="toc-scroll">
+    <a href="#diagnosis" class="toc-chip">진단</a>
+    <a href="#calendar" class="toc-chip">캘린더</a>
+    <a href="#samsung" class="toc-chip">삼성전자</a>
+    <a href="#hynix" class="toc-chip">SK하이닉스</a>
+    <a href="#deep" class="toc-chip">딥다이브</a>
+    <a href="#flow" class="toc-chip">수급</a>
+    <a href="#summary" class="toc-chip">비교표</a>
+    <a href="#insight" class="toc-chip">인사이트</a>
+    <a href="#checklist" class="toc-chip">체크리스트</a>
+  </div>
+</div>
+
+<!-- ── 태그 범례 ── -->
+<div class="tag-legend">
+  <span><span class="legend-dot" style="background:var(--accent)"></span>핵심기술</span>
+  <span><span class="legend-dot" style="background:var(--green)"></span>제품·파트너</span>
+  <span><span class="legend-dot" style="background:var(--accent3)"></span>이벤트 신호</span>
+  <span><span class="legend-dot" style="background:var(--red)"></span>적신호</span>
+</div>
+
+<!-- ── 1. 삼성전자 ── -->
+<div class="company-card" id="samsung">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <div class="company-num">01</div>
+    <div class="company-name">삼성전자</div>
+    <div class="company-ticker">005930</div>
+    <div class="badge badge-profit">분기 영업익 57.2조 사상최대</div>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+  </div>
+  <div class="card-body open">
+    <div class="card-inner">
+      <!-- 스탯 -->
+      <div class="stats-row">
+        <div class="stat-cell">
+          <div class="stat-label">시가총액</div>
+          <div class="stat-value">1,564조</div>
+          <div class="stat-sub">세계 12위 · 종가 266,000원</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">1Q 영업이익</div>
+          <div class="stat-value green">57.2조</div>
+          <div class="stat-sub">YoY +756% / OPM 43%</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">1Q 매출</div>
+          <div class="stat-value">133.9조</div>
+          <div class="stat-sub">YoY +69%</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">위험도</div>
+          <div class="stat-value">⭐⭐⭐</div>
+          <div class="stat-sub">실적+HBM 인증 이중구조</div>
+        </div>
+      </div>
+
+      <!-- 52주 가격 바 -->
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>52w 저: 56,800</span><span>현재: 266,000</span><span>52w 고: 266,000</span></div>
+        <div class="price-bar"><div class="price-bar-fill" style="width:100%"></div><div class="price-bar-current" style="left:100%; transform:translateX(-100%)" data-price="HIGH"></div></div>
+      </div>
+
+      <!-- 스파크라인 -->
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">52W PRICE</div>
+        <canvas class="price-chart" data-prices="56800,57500,59200,62000,65500,68000,70200,75000,82000,95000,108000,135000,158000,180000,205000,232500,266000"></canvas>
+      </div>
+
+      <!-- 탭 -->
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'sam-1')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'sam-2')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'sam-3')">강점·약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'sam-4')">키워드</button>
+      </div>
+
+      <div class="tab-pane active" id="sam-1">
+        <div class="section-block">
+          <h4>핵심 사업 구조</h4>
+          <p><strong>DS(반도체)</strong> 영업익 53.7조<sup>2026 1Q</sup> — 메모리·시스템LSI·파운드리 통합. 메모리가 사실상 전사 수익의 90% 이상.</p>
+          <p><strong>MX(스마트폰)</strong>·디스플레이·VD·하만은 합쳐 약 3.5조 영업익으로 전사 비중은 6% 수준. 사실상 "메모리 회사+α"로 좁혀짐.</p>
+        </div>
+        <div class="highlight-box">
+          <strong>실적 배경:</strong> AI 인프라 투자 확대 → 서버 DRAM·HBM·고용량 eSSD 동시 폭증. DRAM ASP 분기 +90% 상승이 비수기인 1분기에도 메모리 부문 사상최대 영업익을 만든 배경.
+          <strong>HBM4 양산 1번 타자</strong>로 평택 P4 라인에서 2026.02 양산 진입했으며 SOCAMM2도 동시 양산 중.
+        </div>
+        <div class="probability">
+          <div class="prob-label">2026.07 NVIDIA HBM4 퀄 테스트 통과 확률 (애널리스트 컨센서스 기반)</div>
+          <div class="prob-bar"><div class="prob-fill mid" style="width:55%"></div></div>
+          <div class="prob-label" style="text-align:right; margin-top:4px;">55% (mid)</div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="sam-2">
+        <div class="section-block">
+          <h4>① HBM4 인증 통과 여부 — 가장 큰 변수</h4>
+          <p>HBM3E에서 SK하이닉스에 71% : 28% 정도로 밀린 점유율을 HBM4에서 만회할 수 있느냐가 멀티플 재평가 포인트. 통과 시 NVIDIA 베라 루빈향 공급 확대 → HBM 점유율이 28% → 35~40%로 빠르게 회복 가능.</p>
+        </div>
+        <div class="section-block">
+          <h4>② 범용 DRAM/NAND 가격 폭등의 직접 수혜</h4>
+          <p>SK대비 범용 DRAM·모바일 DRAM 비중이 높아 ASP 상승 효과는 삼성이 더 크다. CXMT가 HBM 쪽으로 라인을 돌리면서 범용 DRAM 공급 부족이 심화되는 구조 — 삼성이 가장 큰 수혜자.</p>
+        </div>
+        <div class="section-block">
+          <h4>③ 파운드리 적자 축소 → 시스템LSI 흑전</h4>
+          <p>2nm 수율 55~60% 도달, AI 가속기 수주 확대 시 2026 하반기부터 적자 축소 가속 — 그동안 시총을 짓눌렀던 마이너스 모멘텀의 해소.</p>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="sam-3">
+        <div class="sw-grid">
+          <div class="sw-box strength">
+            <h5>STRENGTHS</h5>
+            <ul>
+              <li>DRAM·NAND·파운드리·LSI를 모두 갖춘 <strong>유일한 IDM</strong></li>
+              <li>HBM4 <strong>세계 최초 양산 진입</strong> (평택 P4)</li>
+              <li>범용 DRAM 점유율·생산능력 1위 — ASP 상승 직접 수혜</li>
+              <li>2026 HBM 캐파 <strong>YoY +50%</strong> 증설 계획</li>
+              <li>현금성 자산·자본력 압도적 → 증설 여력</li>
+            </ul>
+          </div>
+          <div class="sw-box weakness">
+            <h5>WEAKNESSES</h5>
+            <ul>
+              <li>HBM3E에서 NVIDIA 메인 공급사 지위 상실</li>
+              <li>HBM4 NVIDIA 퀄 <strong>아직 미통과</strong> (진행 중)</li>
+              <li>파운드리 분기 6,000억~2.7조 <strong>적자 누적</strong></li>
+              <li>모바일·가전 부문 성장성 제한적 → "메모리 원툴"화</li>
+              <li>지배구조 리스크 (이재용 부회장 대법원 판결 등 잔존)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="sam-4">
+        <div class="tag-group">
+          <div class="tag-group-label"><span class="legend-dot" style="background:var(--accent)"></span>핵심기술</div>
+          <div class="tag-list">
+            <span class="tag-item tech" onclick="copyTag(this)">HBM4 12-Hi</span>
+            <span class="tag-item tech" onclick="copyTag(this)">SOCAMM2</span>
+            <span class="tag-item tech" onclick="copyTag(this)">1c DRAM</span>
+            <span class="tag-item tech" onclick="copyTag(this)">2nm GAA</span>
+            <span class="tag-item tech" onclick="copyTag(this)">V9 NAND</span>
+          </div>
+        </div>
+        <div class="tag-group">
+          <div class="tag-group-label"><span class="legend-dot" style="background:var(--green)"></span>제품·파트너</div>
+          <div class="tag-list">
+            <span class="tag-item biz" onclick="copyTag(this)">NVIDIA HBM 공급</span>
+            <span class="tag-item biz" onclick="copyTag(this)">AMD MI400</span>
+            <span class="tag-item biz" onclick="copyTag(this)">평택 P4</span>
+            <span class="tag-item biz" onclick="copyTag(this)">테일러팹</span>
+            <span class="tag-item biz" onclick="copyTag(this)">갤럭시 S26</span>
+          </div>
+        </div>
+        <div class="tag-group">
+          <div class="tag-group-label"><span class="legend-dot" style="background:var(--accent3)"></span>이벤트 신호</div>
+          <div class="tag-list">
+            <span class="tag-item event" onclick="copyTag(this)">HBM4 퀄 통과</span>
+            <span class="tag-item event" onclick="copyTag(this)">2nm 60% 수율</span>
+            <span class="tag-item event" onclick="copyTag(this)">자사주 매입</span>
+            <span class="tag-item event" onclick="copyTag(this)">CHIPS Act</span>
+          </div>
+        </div>
+        <div class="tag-group">
+          <div class="tag-group-label"><span class="legend-dot" style="background:var(--red)"></span>적신호</div>
+          <div class="tag-list">
+            <span class="tag-item risk" onclick="copyTag(this)">파운드리 적자</span>
+            <span class="tag-item risk" onclick="copyTag(this)">HBM 점유율</span>
+            <span class="tag-item risk" onclick="copyTag(this)">CXMT 추격</span>
+            <span class="tag-item risk" onclick="copyTag(this)">관세</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 경쟁사 매핑 -->
+      <div class="competitor-matrix">
+        <div class="matrix-label">HBM4 시장 경쟁 지형</div>
+        <table class="comp-table">
+          <tr><th></th><th>삼성전자</th><th>SK하이닉스</th><th>마이크론</th></tr>
+          <tr><td>HBM4 점유율(예상)</td><td class="us">28%</td><td>55%</td><td>17%</td></tr>
+          <tr><td>NVIDIA 베라루빈</td><td class="us">퀄 진행</td><td>메인공급</td><td>일부</td></tr>
+          <tr><td>핵심 무기</td><td class="us">생산능력·1c</td><td>선제진입·수율</td><td>북미 입지</td></tr>
+          <tr><td>리스크</td><td class="us">인증 지연</td><td>NAND 약점</td><td>규모 한계</td></tr>
+        </table>
+      </div>
+
+      <!-- 시나리오 트리 -->
+      <div class="scenario-tree">
+        <div class="sc-label">12개월 시나리오 (현재가 266,000원)</div>
+        <div class="sc-row bull">
+          <div class="sc-tag">🟢 BULL 30%</div>
+          <div class="sc-cond">HBM4 NVIDIA 퀄 통과 + DRAM ASP 추가 상승 + 파운드리 흑전</div>
+        </div>
+        <div class="sc-price">목표: 360,000~420,000원 (+35~58%)</div>
+        <div class="sc-row base">
+          <div class="sc-tag">🟡 BASE 50%</div>
+          <div class="sc-cond">HBM4 부분 통과 + 메모리만 호조 + 파운드리 적자 축소</div>
+        </div>
+        <div class="sc-price">목표: 270,000~320,000원 (+1.5~20%)</div>
+        <div class="sc-row bear">
+          <div class="sc-tag">🔴 BEAR 20%</div>
+          <div class="sc-cond">HBM4 인증 재차 지연 + DRAM 가격 반락 + 사이클 우려</div>
+        </div>
+        <div class="sc-price">목표: 180,000~210,000원 (-32~-21%)</div>
+        <div class="sc-expected">
+          <strong>기대값(E):</strong> 0.30×390,000 + 0.50×295,000 + 0.20×195,000 = <strong>303,500원</strong> — 현재가 대비 <span class="positive">+14%</span>
+        </div>
+      </div>
+
+      <!-- 액션존 -->
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 200,000 <span class="az-note">조정 시 사이클 베팅</span></div>
+        <div class="az-row buy">💛 분할매수 200,000 ~ 240,000</div>
+        <div class="az-row hold">⚪ 관망 240,000 ~ 290,000 <span class="az-note">현재가 구간</span></div>
+        <div class="az-row sell">🔴 차익실현 &gt; 320,000 <span class="az-note">컨센서스 상단</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 180,000 <span class="az-note">사이클 전환 시그널</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 2. SK하이닉스 ── -->
+<div class="company-card" id="hynix">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="company-num">02</div>
+    <div class="company-name">SK하이닉스</div>
+    <div class="company-ticker">000660</div>
+    <div class="badge badge-profit">OPM 72% 사상최고</div>
+    <div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+  </div>
+  <div class="card-body">
+    <div class="card-inner">
+      <!-- 스탯 -->
+      <div class="stats-row">
+        <div class="stat-cell">
+          <div class="stat-label">시가총액</div>
+          <div class="stat-value">1,134조</div>
+          <div class="stat-sub">세계 16위 · 종가 1,601,000원</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">1Q 영업이익</div>
+          <div class="stat-value green">37.6조</div>
+          <div class="stat-sub">사상최대 / OPM 72%</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">1Q 매출</div>
+          <div class="stat-value">52.5조</div>
+          <div class="stat-sub">순이익 40.3조 (NPM 77%)</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">위험도</div>
+          <div class="stat-value">⭐⭐⭐⭐</div>
+          <div class="stat-sub">100% AI 의존 + 사이클</div>
+        </div>
+      </div>
+
+      <!-- 52주 가격 바 -->
+      <div class="price-bar-wrap">
+        <div class="price-bar-label"><span>52w 저: 178,000</span><span>현재: 1,601,000</span><span>52w 고: 1,614,000</span></div>
+        <div class="price-bar"><div class="price-bar-fill" style="width:99%"></div><div class="price-bar-current" style="left:99%; transform:translateX(-100%)" data-price="HIGH"></div></div>
+      </div>
+
+      <!-- 스파크라인 -->
+      <div class="price-chart-wrap">
+        <div class="price-chart-label">52W PRICE</div>
+        <canvas class="price-chart" data-prices="178000,195000,225000,260000,310000,365000,420000,510000,640000,780000,920000,1080000,1240000,1380000,1480000,1550000,1601000"></canvas>
+      </div>
+
+      <!-- 탭 -->
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'hyn-1')">사업분석</button>
+        <button class="tab-btn" onclick="switchTab(this,'hyn-2')">주가동인</button>
+        <button class="tab-btn" onclick="switchTab(this,'hyn-3')">강점·약점</button>
+        <button class="tab-btn" onclick="switchTab(this,'hyn-4')">키워드</button>
+      </div>
+
+      <div class="tab-pane active" id="hyn-1">
+        <div class="section-block">
+          <h4>핵심 사업 구조</h4>
+          <p><strong>DRAM</strong> — HBM 메인 공급사. NVIDIA Hopper/Blackwell 라인업의 사실상 전속에 가까웠고, HBM3E 점유율 71%, HBM4 55% 예상.</p>
+          <p><strong>NAND/솔리다임</strong> — 인텔 NAND 부문 인수 후 누적 적자였으나 AI eSSD 수요로 2025 하반기부터 흑전, 2026 1Q는 NAND도 사상최대 이익 기여.</p>
+        </div>
+        <div class="highlight-box">
+          <strong>실적 배경:</strong> 영업이익률 <strong>72%</strong>는 반도체 역사상 단일 분기 최고치. "<strong>2028년까지 HBM 캐파 완판</strong>" — 하이퍼스케일러 누적 발주가 3년치 forward 공급을 모두 채웠다고 컨콜에서 공식 언급.
+          3년 만에 영업이익에서 TSMC를 넘어선 분기. <sup>한국경제</sup>
+        </div>
+        <div class="probability">
+          <div class="prob-label">HBM4 메인 공급사 지위 유지 확률 (2026 하반기 기준)</div>
+          <div class="prob-bar"><div class="prob-fill high" style="width:72%"></div></div>
+          <div class="prob-label" style="text-align:right; margin-top:4px;">72% (high)</div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="hyn-2">
+        <div class="section-block">
+          <h4>① HBM 점유율 굳히기 — 가장 강한 모멘텀</h4>
+          <p>NVIDIA의 다음 세대 베라 루빈에 16-Hi HBM4가 채택되며, SK하이닉스가 12-Hi 샘플을 세계 최초 출하. 삼성이 양산 1번 타자이긴 하나 인증 통과 전이라 실 매출은 SK가 먼저.</p>
+        </div>
+        <div class="section-block">
+          <h4>② NAND 흑전 + eSSD 폭증</h4>
+          <p>"아픈 손가락" 솔리다임이 흑전. AI 트레이닝/인퍼런스 양쪽 모두 고용량 eSSD 폭증 — NAND가 더이상 이익을 깎아먹지 않는 구조가 만들어진 것이 가장 큰 변화.</p>
+        </div>
+        <div class="section-block">
+          <h4>③ DRAM 5년 장기 계약 줄섬</h4>
+          <p>AI 빅테크들이 메모리 안정 공급을 위해 5년 단위 LTA(Long-Term Agreement) 줄을 섬. 사이클 변동성을 줄여주는 강력한 디리스킹 요인.</p>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="hyn-3">
+        <div class="sw-grid">
+          <div class="sw-box strength">
+            <h5>STRENGTHS</h5>
+            <ul>
+              <li>HBM <strong>선제 진입 + 수율 + NVIDIA 메인 지위</strong></li>
+              <li>HBM4 12-Hi 샘플 <strong>세계 최초</strong> 출하</li>
+              <li>2028년까지 HBM 캐파 <strong>완판</strong></li>
+              <li>OPM 72% — 단일분기 사상최대</li>
+              <li>NAND/솔리다임 <strong>흑전 진입</strong></li>
+            </ul>
+          </div>
+          <div class="sw-box weakness">
+            <h5>WEAKNESSES</h5>
+            <ul>
+              <li>매출의 <strong>HBM·AI 의존도 극단</strong> — 사이클 반전 시 충격</li>
+              <li>파운드리·시스템LSI <strong>없음</strong> → 다각화 제로</li>
+              <li>주가가 이미 사상최고가 인근 → <strong>밸류에이션 부담</strong></li>
+              <li>삼성이 HBM4 인증 통과 시 점유율 <strong>희석</strong></li>
+              <li>NAND 시장 점유율은 여전히 5위권</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="hyn-4">
+        <div class="tag-group">
+          <div class="tag-group-label"><span class="legend-dot" style="background:var(--accent)"></span>핵심기술</div>
+          <div class="tag-list">
+            <span class="tag-item tech" onclick="copyTag(this)">HBM4 12-Hi</span>
+            <span class="tag-item tech" onclick="copyTag(this)">HBM3E 12단</span>
+            <span class="tag-item tech" onclick="copyTag(this)">MR-MUF</span>
+            <span class="tag-item tech" onclick="copyTag(this)">238단 NAND</span>
+            <span class="tag-item tech" onclick="copyTag(this)">CXL Memory</span>
+          </div>
+        </div>
+        <div class="tag-group">
+          <div class="tag-group-label"><span class="legend-dot" style="background:var(--green)"></span>제품·파트너</div>
+          <div class="tag-list">
+            <span class="tag-item biz" onclick="copyTag(this)">NVIDIA Vera Rubin</span>
+            <span class="tag-item biz" onclick="copyTag(this)">솔리다임 eSSD</span>
+            <span class="tag-item biz" onclick="copyTag(this)">M15X 청주</span>
+            <span class="tag-item biz" onclick="copyTag(this)">용인 클러스터</span>
+            <span class="tag-item biz" onclick="copyTag(this)">TSMC 협업</span>
+          </div>
+        </div>
+        <div class="tag-group">
+          <div class="tag-group-label"><span class="legend-dot" style="background:var(--accent3)"></span>이벤트 신호</div>
+          <div class="tag-list">
+            <span class="tag-item event" onclick="copyTag(this)">HBM 캐파 완판</span>
+            <span class="tag-item event" onclick="copyTag(this)">5년 LTA</span>
+            <span class="tag-item event" onclick="copyTag(this)">eSSD 흑전</span>
+            <span class="tag-item event" onclick="copyTag(this)">배당 확대</span>
+          </div>
+        </div>
+        <div class="tag-group">
+          <div class="tag-group-label"><span class="legend-dot" style="background:var(--red)"></span>적신호</div>
+          <div class="tag-list">
+            <span class="tag-item risk" onclick="copyTag(this)">사이클 정점 우려</span>
+            <span class="tag-item risk" onclick="copyTag(this)">삼성 HBM4 통과</span>
+            <span class="tag-item risk" onclick="copyTag(this)">CXMT HBM3</span>
+            <span class="tag-item risk" onclick="copyTag(this)">밸류에이션</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 경쟁사 매핑 -->
+      <div class="competitor-matrix">
+        <div class="matrix-label">HBM 공급망 경쟁 지형</div>
+        <table class="comp-table">
+          <tr><th></th><th>SK하이닉스</th><th>삼성전자</th><th>마이크론</th></tr>
+          <tr><td>NVIDIA 점유율</td><td class="us">메인 70%</td><td>~30%</td><td>일부</td></tr>
+          <tr><td>HBM4 양산 진입</td><td class="us">샘플 1위</td><td>양산 1위</td><td>3위권</td></tr>
+          <tr><td>핵심 무기</td><td class="us">수율·MR-MUF</td><td>캐파·자본</td><td>美 입지</td></tr>
+          <tr><td>리스크</td><td class="us">집중도</td><td>인증</td><td>규모</td></tr>
+        </table>
+      </div>
+
+      <!-- 시나리오 트리 -->
+      <div class="scenario-tree">
+        <div class="sc-label">12개월 시나리오 (현재가 1,601,000원)</div>
+        <div class="sc-row bull">
+          <div class="sc-tag">🟢 BULL 25%</div>
+          <div class="sc-cond">HBM4 점유율 60%+ 유지 + DRAM ASP 추가 상승 + 사이클 2027까지 연장</div>
+        </div>
+        <div class="sc-price">목표: 2,200,000~2,500,000원 (+37~56%)</div>
+        <div class="sc-row base">
+          <div class="sc-tag">🟡 BASE 45%</div>
+          <div class="sc-cond">삼성 HBM4 일부 진입 → 점유율 50%대 유지 + 실적 강세 지속</div>
+        </div>
+        <div class="sc-price">목표: 1,650,000~1,900,000원 (+3~19%)</div>
+        <div class="sc-row bear">
+          <div class="sc-tag">🔴 BEAR 30%</div>
+          <div class="sc-cond">사이클 정점 인식 + 삼성·마이크론 점유율 침투 + DRAM 가격 반락</div>
+        </div>
+        <div class="sc-price">목표: 950,000~1,200,000원 (-41~-25%)</div>
+        <div class="sc-expected">
+          <strong>기대값(E):</strong> 0.25×2,350,000 + 0.45×1,775,000 + 0.30×1,075,000 = <strong>1,708,750원</strong> — 현재가 대비 <span class="positive">+7%</span>
+        </div>
+      </div>
+
+      <!-- 액션존 -->
+      <div class="action-zone">
+        <div class="az-label">🎯 ACTION ZONE</div>
+        <div class="az-row buy-strong">💚 적극매수 &lt; 1,100,000 <span class="az-note">사이클 조정 베팅</span></div>
+        <div class="az-row buy">💛 분할매수 1,100,000 ~ 1,350,000</div>
+        <div class="az-row hold">⚪ 관망 1,350,000 ~ 1,700,000 <span class="az-note">현재가 구간</span></div>
+        <div class="az-row sell">🔴 차익실현 &gt; 1,900,000 <span class="az-note">컨센서스 상단</span></div>
+        <div class="az-row stop">✂ 손절선 &lt; 1,000,000 <span class="az-note">사이클 전환 시그널</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 딥다이브 ── -->
+<div class="deep-section" id="deep">
+  <div class="deep-label">DEEP DIVE</div>
+  <h2>"사이클은 어디로 갔는가" — 메모리 슈퍼사이클 구조 진단</h2>
+
+  <div class="deep-block">
+    <h3>① 왜 이번엔 다르다고 하는가 — 구조적 원인</h3>
+    <p>과거 메모리 사이클은 <strong>PC·스마트폰 계절성</strong>에 따라 1.5~2년 주기로 오르내렸다. 2017~2018년 슈퍼사이클이 빠르게 무너진 것도 결국 수요처가 단일 산업이었기 때문.</p>
+    <p>이번 사이클은 다르다. <strong>AI 트레이닝</strong>은 모델 크기가 커질수록 메모리 대역폭과 용량을 모두 요구하고, <strong>인퍼런스</strong>는 사용자 수에 비례해 늘어난다. 두 축은 PC·모바일과 달리 <strong>비계절적</strong>이며, 빅테크 capex 사이클(NVIDIA·MS·Google·Meta·Amazon)이 메모리 수요를 직접 끌고 간다.</p>
+    <p>핵심 공급 측 변화: <strong>HBM 1개 다이가 같은 면적의 일반 DRAM 3개분 웨이퍼를 잡아먹는다</strong>. 즉 HBM 증설은 자동으로 범용 DRAM 공급을 줄인다. 이게 "DRAM ASP가 1분기에만 +90% 폭등"이라는 비정상적 가격 곡선의 정체.</p>
+  </div>
+
+  <div class="deep-block">
+    <h3>② 미국 vs 중국 vs 대만 — 지정학 구도</h3>
+    <p><strong>미국</strong>은 HBM 수출통제(2GB/mm²/s 이상)와 EUV 장비 통제로 중국의 첨단 메모리 진입을 막는 카드를 꺼냈다. 다만 對중국 반도체 관세는 <strong>2027.06으로 미뤄진 상태</strong> — 한국 메모리에는 단기 수혜.</p>
+    <p><strong>중국 CXMT</strong>는 D램 라인의 20%를 HBM 전용으로 전환했다. HBM3 양산을 목표로 하지만 미국 장비 인력 철수로 ramp-up이 느려진 상황. 단, <strong>범용 DRAM·PC용 DRAM</strong>에서는 HP·Dell이 품질 검증에 들어가는 등 침투 속도가 빠르다.</p>
+    <p><strong>TSMC</strong>는 메모리는 안 만들지만 HBM의 <strong>로직 다이(베이스 다이)</strong>를 제조해 SK·삼성 모두에 공급. 즉 TSMC는 메모리 슈퍼사이클의 간접 수혜 — 1Q 매출 +40.6% YoY, AI/HPC 비중 61%.</p>
+  </div>
+
+  <div class="deep-block">
+    <h3>③ TSMC와의 비교 — "왜 메모리가 더 벌고 있는가"</h3>
+    <p>2026 1Q TSMC 영업이익은 약 23조원, SK하이닉스는 <strong>37.6조원</strong>. 매출은 TSMC가 약 1.7배 많지만 영업이익은 SK하이닉스가 60% 더 많다. <strong>"3년 만에 SK하이닉스가 TSMC를 넘었다"</strong>는 표현이 등장한 배경.</p>
+    <p>이유 1: HBM의 가격이 일반 DRAM의 5~6배인데 capex는 그만큼 늘지 않아 <strong>증분 마진이 매우 크다</strong>. 이유 2: TSMC는 capex가 2026 $52~56B로 사상최대 — 감가상각이 매출 성장을 일부 갉아먹는다.</p>
+    <p>의미: <strong>사이클이 정점을 지나면 이 격차는 빠르게 역전</strong>된다. TSMC는 파운드리 capex로 향후 5~10년치 매출을 깔아두는 반면, 메모리는 사이클 종료와 함께 마진이 휘발한다.</p>
+  </div>
+
+  <div class="deep-block">
+    <h3>④ 사이클은 어디로 가는가 — 실전 시그널</h3>
+    <div class="signal-grid">
+      <div class="signal-cell">
+        <h4>📈 강세 지속 시그널</h4>
+        <p>DRAM 고정가 QoQ +20%↑ 유지 / HBM 캐파 완판 갱신 / NVIDIA capex 가이던스 상향 / 5년 LTA 추가 체결</p>
+      </div>
+      <div class="signal-cell">
+        <h4>📉 정점 시그널</h4>
+        <p>DRAM 고정가 QoQ 한 자릿수로 둔화 / CXMT HBM3 본격 양산 / NVIDIA capex 둔화 / 빅테크 자체 ASIC 비중 확대</p>
+      </div>
+      <div class="signal-cell">
+        <h4>⚖ 중립 시그널</h4>
+        <p>HBM4 16-Hi 양산 시점 지연 / 삼성·마이크론 점유율 점진 진입 / 관세 시행 가시화</p>
+      </div>
+      <div class="signal-cell">
+        <h4>🔴 적신호</h4>
+        <p>NVIDIA 가이던스 미스 / 메타·마이크로소프트 capex 컷 / 메모리 재고일수 7주 초과</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="deep-block">
+    <h3>⑤ 결론 — 두 종목의 본질적 차이</h3>
+    <p><strong>SK하이닉스 = "고도화된 단일 베팅"</strong>. AI 메모리 사이클이 2027~2028까지 이어진다면 OPM 70%대를 한두 번 더 본다. 단, 사이클 반전 시 <strong>충격이 가장 크다</strong>.</p>
+    <p><strong>삼성전자 = "분산된 모멘텀 풀"</strong>. HBM에서는 추격자이지만 범용 DRAM·NAND·파운드리·LSI까지 카드가 여러 장. HBM4 인증 통과·파운드리 흑전·자사주 매입 중 하나만 터져도 모멘텀이 살아난다. 대신 <strong>SK 같은 폭발력은 어렵다</strong>.</p>
+    <p>지금 시점(2026.05)에서 둘 다 사상최고가 인근 — <strong>"슈퍼사이클을 베팅할 거면 SK, 아니라면 삼성"</strong>이 가장 단순하고 정직한 정리. 둘 다 사기 어렵다면 분산비중을 SK 30 / 삼성 70 정도로 두는 것이 사이클 리스크 대비 합리적.</p>
+  </div>
+</div>
+
+<!-- ── 수급 ── -->
+<div class="flow-table-wrap" id="flow">
+  <table class="flow-table">
+    <caption>최근 1개월 순매수 (단위: 억원, 5월 초 기준 시장 추정치)</caption>
+    <tr><th>종목</th><th>외국인</th><th>기관</th><th>개인</th><th>판정</th></tr>
+    <tr><td>삼성전자</td><td class="pos">+38,200</td><td class="pos">+12,100</td><td class="neg">-50,300</td><td class="good">강한 매수</td></tr>
+    <tr><td>SK하이닉스</td><td class="pos">+22,500</td><td class="pos">+8,400</td><td class="neg">-30,900</td><td class="good">강한 매수</td></tr>
+  </table>
+  <p style="font-size:12px; color:var(--muted); margin-top:8px;">※ 외국인 + 기관의 동반 매수 + 개인 차익실현 패턴 — 전형적 강세장 후반 수급 형태. 단기 변동성 확대 가능.</p>
+</div>
+
+<!-- ── 종합 비교표 ── -->
+<div class="summary-card" id="summary">
+  <h3>📊 한눈에 보는 비교</h3>
+  <table class="summary-table">
+    <tr><th></th><th>삼성전자</th><th>SK하이닉스</th></tr>
+    <tr><td>시가총액</td><td>1,564조</td><td>1,134조</td></tr>
+    <tr><td>1Q 영업이익</td><td>57.2조</td><td>37.6조</td></tr>
+    <tr><td>1Q OPM</td><td>43%</td><td><strong>72%</strong></td></tr>
+    <tr><td>HBM4 점유율(예상)</td><td>28%</td><td><strong>55%</strong></td></tr>
+    <tr><td>주요 사업</td><td>메모리+파운드리+세트</td><td>메모리(HBM·NAND)</td></tr>
+    <tr><td>다각화</td><td><strong>높음</strong></td><td>매우 낮음</td></tr>
+    <tr><td>HBM 의존도</td><td>중간</td><td>매우 높음</td></tr>
+    <tr><td>사이클 민감도</td><td>중간</td><td><strong>매우 높음</strong></td></tr>
+    <tr><td>위험도</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
+    <tr><td>주요 모멘텀</td><td>HBM4 인증·파운드리 흑전</td><td>HBM 점유율 사수</td></tr>
+    <tr><td>기대값(12M)</td><td>+14%</td><td>+7%</td></tr>
+  </table>
+</div>
+
+<!-- ── 인사이트 ── -->
+<div class="insight-box" id="insight">
+  <div class="insight-label">INSIGHT</div>
+  <h3>"사이클은 사라진 게 아니라 늦춰졌다"</h3>
+  <p>이번 슈퍼사이클은 AI 빅테크의 capex 사이클이라는 새로운 동력을 얻었지만, 본질적으로 <strong>여전히 메모리 사이클</strong>이다. 사이클이 사라진 것이 아니라 수요 곡선이 길어진 것 — 이 차이를 혼동하면 정점에서 다친다.</p>
+  <p><strong>SK하이닉스</strong>의 OPM 72%는 정상이 아니다. 영업이익률이 70%를 넘는 제조업은 인류 역사에 없다. 이게 1년만 더 지속되어도 신화이고, 2년 지속되면 산업 구조가 영구히 바뀐 것이다. 시장은 후자에 베팅 중.</p>
+  <p><strong>삼성전자</strong>의 진짜 강점은 메모리가 아니라 <strong>"메모리가 안 좋아질 때도 다른 카드가 있다"</strong>는 옵션 가치. 지금처럼 모든 게 잘 굴러가는 시점에는 그 옵션 가치가 디스카운트되지만, 사이클이 꺾이면 그게 멀티플 방어선이 된다.</p>
+  <p><strong>두 종목을 동시에 사는 것</strong>은 "이번 사이클이 길게 갈지 아닐지 모르겠다"의 가장 정직한 답. 슈퍼사이클을 굳게 믿는 자는 SK 비중을, 의심하는 자는 삼성 비중을 키우면 된다.</p>
+</div>
+
+<!-- ── PER 주의 ── -->
+<div class="per-note">
+  <strong>📌 PER 함정 주의</strong> — 2026 컨센서스 EPS 기준 PER은 삼성 약 7~8배, SK하이닉스 약 5~6배로 매우 낮아 보인다. 그러나 이는 <strong>사이클 정점 EPS</strong>를 분모로 쓴 것 — 사이클 반전 시 EPS가 절반으로 줄면 PER은 즉시 2배가 된다. 메모리 종목의 PER은 항상 "정점에서 가장 싸 보이고, 바닥에서 가장 비싸 보인다."
+</div>
+
+<!-- ── 체크리스트 ── -->
+<div class="checklist" id="checklist">
+  <div class="cl-label">📋 추적 체크리스트 (매주 점검 권장)</div>
+  <label><input type="checkbox" data-id="cl1"> DRAM 고정거래가격 QoQ 상승률 (TrendForce 월간)</label>
+  <label><input type="checkbox" data-id="cl2"> 삼성 HBM4 NVIDIA 퀄 테스트 결과 보도</label>
+  <label><input type="checkbox" data-id="cl3"> NVIDIA 분기 capex 가이던스 (5월/8월/11월)</label>
+  <label><input type="checkbox" data-id="cl4"> 메타·MS·Google·Amazon capex 가이던스</label>
+  <label><input type="checkbox" data-id="cl5"> CXMT HBM3 양산 진척도 보도</label>
+  <label><input type="checkbox" data-id="cl6"> 삼성 파운드리 분기 적자 추이</label>
+  <label><input type="checkbox" data-id="cl7"> 외국인 양사 합산 순매수 추이</label>
+  <div class="cl-progress">0 / 7 체크됨</div>
+</div>
+
+<!-- ── 참고자료 ── -->
+<div class="references">
+  <div class="ref-label">📚 참고 자료</div>
+  <ul>
+    <li><strong>실적</strong> 삼성전자·SK하이닉스 2026 1Q 잠정/확정실적 공시 (DART)</li>
+    <li><strong>HBM 점유율</strong> TrendForce / Counterpoint / SemiAnalysis 추정치</li>
+    <li><strong>주가·시총</strong> KRX, 다음금융 (2026.05.06 장마감)</li>
+    <li><strong>TSMC</strong> TSMC IR Q1 2026 어닝콜 / CNBC 보도</li>
+    <li><strong>중국·미국</strong> 미국 BIS HBM 수출통제 / Kim&Chang 인사이트 / 글로벌이코노믹</li>
+    <li><strong>사이클</strong> UBS 리서치 / 대신증권 / PwC 글로벌 반도체 산업 전망 2026</li>
+  </ul>
+</div>
+
+<!-- ── 관련 리포트 ── -->
+<div class="related-reports">
+  <div class="rel-label">🔗 관련 리포트</div>
+  <a class="rel-card" href="ev_battery_report_mobile.html">
+    <div class="rel-tag">2차전지</div>
+    <div class="rel-title">2차전지 6대 종목 — 3년 사이클 귀환 분석</div>
+  </a>
+  <a class="rel-card" href="kospi_financial_report_mobile.html">
+    <div class="rel-tag">금융</div>
+    <div class="rel-title">금융주 6대 종목 — 코스피 6400 시대의 수혜주 지도</div>
+  </a>
+  <a class="rel-card" href="naver_kakao_report_mobile.html">
+    <div class="rel-tag">플랫폼</div>
+    <div class="rel-title">네이버 vs 카카오 박스권 탈출 분석 2026</div>
+  </a>
+</div>
+
+<!-- ── 하단 네비 ── -->
+<nav class="bottom-nav">
+  <a href="#diagnosis"><span class="icon">🩺</span><span>진단</span></a>
+  <a href="#samsung"><span class="icon">📊</span><span>삼성</span></a>
+  <a href="#hynix"><span class="icon">📊</span><span>SK</span></a>
+  <a href="#deep"><span class="icon">🔍</span><span>딥다이브</span></a>
+  <a href="index.html"><span class="icon">📚</span><span>목록</span></a>
+</nav>
+
+<!-- ── 토스트 ── -->
+<div class="toast" id="toast">복사되었습니다</div>
+
+<script>
+const BASE_DATE = '2026-05-07';
+
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  header.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+function switchTab(btn, paneId) {
+  const card = btn.closest('.card-inner');
+  card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  card.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  card.querySelector('#' + paneId).classList.add('active');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg || '복사되었습니다';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1400);
+}
+
+function copyTag(el) {
+  const text = el.textContent.trim();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast(`"${text}" 복사됨`));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast(`"${text}" 복사됨`);
+  }
+}
+
+// 앵커 스크롤 오프셋
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const id = link.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if (target) {
+      e.preventDefault();
+      const tocH = document.querySelector('.toc-wrap')?.offsetHeight || 0;
+      const top = target.getBoundingClientRect().top + window.pageYOffset - tocH - 12;
+      window.scrollTo({top, behavior: 'smooth'});
+    }
+  });
+});
+
+// 기준일 경과 배지
+function updateFreshness(baseDate) {
+  const days = Math.floor((Date.now() - new Date(baseDate)) / 86400000);
+  const el = document.querySelector('.freshness-badge');
+  if (!el) return;
+  if (days <= 0) {
+    el.textContent = `📅 기준일: ${baseDate} (당일)`;
+  } else if (days <= 7) {
+    el.textContent = `📅 기준일로부터 ${days}일 경과`;
+  } else {
+    el.textContent = `⚠ 기준일로부터 ${days}일 경과 — 최신 주가 확인 권장`;
+    el.classList.add('stale');
+  }
+}
+
+// 스파크라인
+function renderPriceCharts() {
+  document.querySelectorAll('.price-chart').forEach(canvas => {
+    const prices = canvas.dataset.prices.split(',').map(Number);
+    const isUp = prices[prices.length-1] > prices[0];
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: prices.map((_,i) => i),
+        datasets: [{
+          data: prices,
+          borderColor: isUp ? '#188038' : '#d93025',
+          backgroundColor: isUp ? 'rgba(24,128,56,0.08)' : 'rgba(217,48,37,0.08)',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend:{display:false}, tooltip:{enabled:false} },
+        scales: { x:{display:false}, y:{display:false} }
+      }
+    });
+  });
+}
+
+// 체크리스트
+function initChecklist() {
+  const key = 'checklist_' + location.pathname.split('/').pop();
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  const boxes = document.querySelectorAll('.checklist input[type=checkbox]');
+  boxes.forEach(cb => {
+    if (saved[cb.dataset.id]) cb.checked = true;
+    cb.addEventListener('change', () => {
+      saved[cb.dataset.id] = cb.checked;
+      localStorage.setItem(key, JSON.stringify(saved));
+      updateProgress();
+    });
+  });
+  function updateProgress() {
+    const total = boxes.length;
+    const done = [...boxes].filter(c => c.checked).length;
+    const el = document.querySelector('.cl-progress');
+    if (el) el.textContent = `${done} / ${total} 체크됨`;
+  }
+  updateProgress();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateFreshness(BASE_DATE);
+  renderPriceCharts();
+  initChecklist();
+});
+</script>
+
+</body>
+</html>
